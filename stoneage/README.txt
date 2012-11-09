@@ -16,4 +16,3 @@ Stage 2:
 -----------------
 1) Adding a gameloop so one human player can play against the AI from Stage 1
 
-
