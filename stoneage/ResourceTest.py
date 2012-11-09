@@ -38,4 +38,8 @@ class ResourceTest(unittest.TestCase):
         self.assertTrue(wood in range(1,11))
 
 if __name__ == '__main__':
-    unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(ResourceTest)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+    
+# alternatively use this for shorter output
+##    unittest.main()
