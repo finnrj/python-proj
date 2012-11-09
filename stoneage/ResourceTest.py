@@ -11,7 +11,7 @@ class ResourceTest(unittest.TestCase):
         rs.addPerson(3)
         food = rs.getResources()
 
-        self.assertTrue(food in range(1,10))
+        self.assertIn(food, range(1,10))
 
     def testGetFoodWith1Person(self):
         rs = Resource("food")
@@ -19,7 +19,7 @@ class ResourceTest(unittest.TestCase):
         rs.addPerson(1)
         food = rs.getResources()
 
-        self.assertTrue(food in range(0,4))
+        self.assertIn(food, range(0,4))
 
     def testGetWoodWith2Persons(self):
         rs = Resource("wood")
@@ -27,7 +27,7 @@ class ResourceTest(unittest.TestCase):
         rs.addPerson(2)
         wood = rs.getResources()
 
-        self.assertTrue(wood in range(0,5))
+        self.assertIn(wood, range(0,5))
         
     def testGetWoodWith5Persons(self):
         rs = Resource("wood")
@@ -35,7 +35,7 @@ class ResourceTest(unittest.TestCase):
         rs.addPerson(5)
         wood = rs.getResources()
 
-        self.assertTrue(wood in range(1,11))
+        self.assertIn(wood, range(1,11))
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(ResourceTest)
