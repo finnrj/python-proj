@@ -37,6 +37,14 @@ class ResourceTest(unittest.TestCase):
 
         self.assertIn(wood, range(1,11))
 
+    def testUnknownResourceType(self):
+        rs = Resource("illegal resource type")
+
+        rs.addPerson(1)
+        res = rs.getResources()
+
+        self.assertIn(res, range(0,4))
+        
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(ResourceTest)
     unittest.TextTestRunner(verbosity=2).run(suite)

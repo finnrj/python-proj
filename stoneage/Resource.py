@@ -4,13 +4,13 @@ from random import randint
 
 class Resource():
     types = {"food" : 2,
-            "wood" : 3,
+             "wood" : 3,
              "clay" : 4,
              "stone" : 5,
              "gold" : 6}
 
     def __init__(self, resourceType):
-        self.type = Resource.types[resourceType]
+        self.type = Resource.types.get(resourceType, 2)
 
     def addPerson(self, n):
         self.n = n
