@@ -3,20 +3,47 @@
 from random import randint
 
 class Resource():
-    types = {"food" : 2,
-             "wood" : 3,
-             "clay" : 4,
-             "stone" : 5,
-             "gold" : 6}
+    """Class to represent a resource field on the board. """
 
-    def __init__(self, resourceType):
-        self.type = Resource.types.get(resourceType, 2)
+    def __init__(self):
+        pass
 
     def addPerson(self, n):
         self.n = n
 
-    def getResources(self):
-        return int(sum([randint(1,6) for roll in range(0, self.n)])/self.type)
+    def reapResources(self):
+        return int(sum([randint(1,6) for roll in range(0, self.n)])/self.resourceValue)
+
+class HuntingGrounds(Resource):
+    """Class to represent a food resource field on the board."""
+
+    def __init__(self):
+        self.resourceValue = 2
+
+class Forest(Resource):
+    """Class to represent a wood resource field on the board."""
+
+    def __init__(self):
+        self.resourceValue = 3
+
+class ClayPit(Resource):
+    """Class to represent a clay resource field on the board."""
+
+    def __init__(self):
+        self.resourceValue = 4
+
+class Quarry(Resource):
+    """Class to represent a stone resource field on the board."""
+
+    def __init__(self):
+        self.resourceValue = 5
+
+class River(Resource):
+    """Class to represent a gold resource field on the board."""
+
+    def __init__(self):
+        self.resourceValue = 6
+
     
 if __name__ == '__main__':
     print("hallo")
