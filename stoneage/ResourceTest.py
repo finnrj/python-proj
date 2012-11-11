@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from Resource import Resource, HuntingGrounds, Food, Forest, Wood
+from Resource import Resource, HuntingGrounds, Forest
 import unittest
 
 class ResourceTest(unittest.TestCase):
@@ -12,7 +12,8 @@ class ResourceTest(unittest.TestCase):
         food = rs.reapResources()
 
         self.assertIn(len(food), range(1,10))
-        self.assertIsInstance(food[0], Food)
+        self.assertIsInstance(food[0], int)
+        self.assertEquals(len(food), food.count(2))
 
     def testReapFoodWith1Person(self):
         rs = HuntingGrounds()
@@ -37,7 +38,8 @@ class ResourceTest(unittest.TestCase):
         wood = rs.reapResources()
 
         self.assertIn(len(wood), range(1,11))
-        self.assertIsInstance(wood[0], Wood)
+        self.assertIsInstance(wood[0], int)
+        self.assertEquals(len(wood), wood.count(3))
 
     def testPureResource(self):
         rs = Resource()
