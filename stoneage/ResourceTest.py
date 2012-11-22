@@ -47,7 +47,8 @@ class ResourceTest(unittest.TestCase):
         rs.addPerson(1)
         with self.assertRaisesRegex(AttributeError, "object has no attribute 'resourceValue'"):
             rs.reapResources()
-            
+
+    
 
 
 def main():

@@ -6,10 +6,13 @@ class Resource():
     """Class to represent a resource field on the board. """
 
     def __init__(self):
-        pass
+        self.n = 0
 
     def addPerson(self, n):
         self.n = n
+
+    def count(self):
+        return self.n
 
     def reapResources(self):
         count = int(sum([randint(1, 6) for roll in range(0, self.n)])/self.resourceValue)
@@ -19,30 +22,35 @@ class HuntingGrounds(Resource):
     """Class to represent a food resource field on the board."""
 
     def __init__(self):
+        Resource.__init__(self)
         self.resourceValue = 2
 
 class Forest(Resource):
     """Class to represent a wood resource field on the board."""
 
     def __init__(self):
+        Resource.__init__(self)
         self.resourceValue = 3
 
 class ClayPit(Resource):
     """Class to represent a clay resource field on the board."""
 
     def __init__(self):
+        Resource.__init__(self)        
         self.resourceValue = 4
 
 class Quarry(Resource):
     """Class to represent a stone resource field on the board."""
 
     def __init__(self):
+        Resource.__init__(self)
         self.resourceValue = 5
 
 class River(Resource):
     """Class to represent a gold resource field on the board."""
 
     def __init__(self):
+        Resource.__init__(self)        
         self.resourceValue = 6
 
 if __name__ == '__main__':

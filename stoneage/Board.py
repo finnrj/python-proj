@@ -2,6 +2,8 @@
 
 from BuildingTile import BuildingTile
 from random import shuffle
+from Resource import HuntingGrounds, Forest, ClayPit, Quarry, River
+
 
 class Board:
     """Class representing the gameboard """
@@ -24,6 +26,13 @@ class Board:
              BuildingTile(4,5,6),
              BuildingTile(5,5,6)
              ]
+
+    players = []
+    huntingGrounds = HuntingGrounds()
+    forest         = Forest()
+    clayPit        = ClayPit()
+    quarry         = Quarry()
+    river          = River()
     
     def __init__(self):
         shuffle(Board.tiles)
@@ -38,6 +47,22 @@ class Board:
     def availableBuildingTiles(self):
         return [stack[-1] for stack in self.tileStacks]
 
+    def addHunters(self, count):
+        self.huntingGrounds.addPerson(count)
+    
+    def addLumberjacks(self, count):
+        self.forest.addPerson(count)
+    
+    def addClayDiggers(self, count):
+        self.clayPit.addPerson(count)
+    
+    def personCount(self):
+        return sum([resource.count() for resource in [self.huntingGrounds, 
+                                                  self.forest, 
+                                                  self.clayPit, 
+                                                  self.quarry, 
+                                                  self.river]])
+    
 def main():
     pass
 

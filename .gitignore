@@ -13,6 +13,10 @@ sdist
 develop-eggs
 .installed.cfg
 
+# eclipse files
+.project
+.pydevproject
+
 # Installer logs
 pip-log.txt
 
