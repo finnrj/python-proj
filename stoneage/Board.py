@@ -33,6 +33,7 @@ class Board:
     clayPit        = ClayPit()
     quarry         = Quarry()
     river          = River()
+    grounds = [huntingGrounds, forest, clayPit, quarry, river]
     
     def __init__(self):
         shuffle(Board.tiles)
@@ -40,6 +41,7 @@ class Board:
                             Board.tiles[4:8],
                             Board.tiles[8:12],
                             Board.tiles[12:]]
+
 
     def numberOfBuildingTilesLeft(self):
         return [len(stack) for stack in self.tileStacks]
@@ -56,13 +58,18 @@ class Board:
     def addClayDiggers(self, count):
         self.clayPit.addPerson(count)
     
+    def addStoneDiggers(self, count):
+        self.quarry.addPerson(count)
+
+    def addGoldDiggers(self, count):
+        self.river.addPerson(count)
+        
     def personCount(self):
-        return sum([resource.count() for resource in [self.huntingGrounds, 
-                                                  self.forest, 
-                                                  self.clayPit, 
-                                                  self.quarry, 
-                                                  self.river]])
+        return sum([resource.count() for resource in self.grounds])
     
+    def reapResources(self):
+        [resource.reapResources() for resource in self.grounds]
+
 def main():
     pass
 

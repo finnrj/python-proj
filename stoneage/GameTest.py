@@ -10,7 +10,6 @@ from Player import Player
 
 class Test(unittest.TestCase):
 
-
     def setUp(self):
         self.game = Game()
 
@@ -20,6 +19,8 @@ class Test(unittest.TestCase):
         self.game.addPlayer(Player())
         self.assertEqual(self.game.playerCount(), 1, "one player added")
 
+    def testGameFinished(self):
+        self.assertFalse(self.game.finished(), "game should not be finished at start")
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

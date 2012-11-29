@@ -1,9 +1,27 @@
 #! /usr/bin/env python3
 
-from Resource import Resource, HuntingGrounds, Forest
+from Resource import Resource, HuntingGrounds, Forest, River, Quarry, PlacementError
 import unittest
 
+
 class ResourceTest(unittest.TestCase):
+    
+    def testCount(self):
+        rs = River()
+
+        rs.addPerson(1)
+        self.assertEqual(1, rs.count())
+        
+        with self.assertRaisesRegex(PlacementError, "Already added person to this Resource"):
+            rs.addPerson(1)
+        self.assertEqual(1, rs.count())
+        
+    def testCountAfterReaping(self):
+        rs = Quarry()
+        rs.addPerson(1)
+        self.assertEqual(1, rs.count())        
+        rs.reapResources()
+        self.assertEqual(0, rs.count())
 
     def testReapFoodWith3Persons(self):
         rs = HuntingGrounds()

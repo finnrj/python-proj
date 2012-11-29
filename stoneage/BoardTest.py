@@ -3,13 +3,16 @@
 from Board import Board
 from BuildingTile import BuildingTile
 import unittest
-from Player import Player
+from Resource import PlacementError
 
 class BoardTest(unittest.TestCase):
 
     def setUp(self):
         self.board = Board()
 
+    def tearDown(self):
+        self.board.reapResources()
+        
     def testBoardInitialization(self):
         self.assertListEqual([4,4,4,5], self.board.numberOfBuildingTilesLeft())
 
@@ -28,7 +31,20 @@ class BoardTest(unittest.TestCase):
         
         self.assertEqual(5, self.board.personCount())
        
+    def testIllegalPlacement(self):
+        self.board.addStoneDiggers(2)
         
+        self.assertEqual(2, self.board.personCount())
+        with self.assertRaises(PlacementError):
+            self.board.addStoneDiggers(1)
+        
+        self.assertEqual(2, self.board.personCount())
+        
+    def testNoBuildingTilesLeft(self):
+        nBuildingTiles = self.board.numberOfBuildingTilesLeft()
+        
+        
+
 def main():
 ##    suite = unittest.TestLoader().loadTestsFromTestCase(BoardTest)
 ##    unittest.TextTestRunner(verbosity=2).run(suite)
