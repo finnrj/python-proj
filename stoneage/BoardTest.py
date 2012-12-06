@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from Board import Board
-from BuildingTile import BuildingTile
+from Hut import Hut
 import unittest
 from Resource import PlacementError
 
@@ -14,14 +14,22 @@ class BoardTest(unittest.TestCase):
         self.board.reapResources()
         
     def testBoardInitialization(self):
-        self.assertListEqual([4,4,4,5], self.board.numberOfBuildingTilesLeft())
+        self.assertListEqual([4,4,4,5], self.board.numberOfHutsLeft())
 
-    def testAvailableBuildingTiles(self):
-        abt = self.board.availableBuildingTiles()
-        self.assertEqual(4, len(abt))
-        self.assertIsInstance(abt[0], BuildingTile)
+    def testAvailableHuts(self):
+        ahs = self.board.availableHuts()
+        self.assertEqual(4, len(ahs))
+        self.assertIsInstance(ahs[0], Hut)
+    
+    def testPlaceOnHut(self):
+        ahs = self.board.availableHuts()
+        targetHut = ahs[0]
+        self.board.placeOnHut(targetHut)
+        ahs = self.board.availableHuts()
+        self.assertEqual(3, len(ahs), "should only be 3 huts left")
+        self.assertNotIn(targetHut, ahs, "hut should not be available")
         
-    def testPlacePersons(self):
+    def testPlacePersonsWithoutResources(self):
         self.board.addHunters(2)
         self.board.addLumberjacks(2)
 
@@ -41,7 +49,7 @@ class BoardTest(unittest.TestCase):
         self.assertEqual(2, self.board.personCount())
         
     def testNoBuildingTilesLeft(self):
-        nBuildingTiles = self.board.numberOfBuildingTilesLeft()
+        nBuildingTiles = self.board.numberOfHutsLeft()
         
         
 

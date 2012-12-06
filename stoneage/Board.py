@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from BuildingTile import BuildingTile
+from Hut import Hut
 from random import shuffle
 from Resource import HuntingGrounds, Forest, ClayPit, Quarry, River
 
@@ -8,23 +8,23 @@ from Resource import HuntingGrounds, Forest, ClayPit, Quarry, River
 class Board:
     """Class representing the gameboard """
 
-    tiles = [BuildingTile(3,3,4),
-             BuildingTile(3,3,5),
-             BuildingTile(3,3,6),
-             BuildingTile(3,4,5),
-             BuildingTile(3,4,4),
-             BuildingTile(3,5,5),
-             BuildingTile(3,4,6),
-             BuildingTile(3,4,6),
-             BuildingTile(3,4,5),
-             BuildingTile(3,5,6),
-             BuildingTile(3,5,6),
-             BuildingTile(4,4,5),
-             BuildingTile(4,4,6),
-             BuildingTile(4,5,5),
-             BuildingTile(4,5,6),
-             BuildingTile(4,5,6),
-             BuildingTile(5,5,6)
+    huts = [Hut(3,3,4),
+             Hut(3,3,5),
+             Hut(3,3,6),
+             Hut(3,4,5),
+             Hut(3,4,4),
+             Hut(3,5,5),
+             Hut(3,4,6),
+             Hut(3,4,6),
+             Hut(3,4,5),
+             Hut(3,5,6),
+             Hut(3,5,6),
+             Hut(4,4,5),
+             Hut(4,4,6),
+             Hut(4,5,5),
+             Hut(4,5,6),
+             Hut(4,5,6),
+             Hut(5,5,6)
              ]
 
     players = []
@@ -36,18 +36,18 @@ class Board:
     grounds = [huntingGrounds, forest, clayPit, quarry, river]
     
     def __init__(self):
-        shuffle(Board.tiles)
-        self.tileStacks = [Board.tiles[0:4],
-                            Board.tiles[4:8],
-                            Board.tiles[8:12],
-                            Board.tiles[12:]]
+        shuffle(Board.huts)
+        self.hutStacks = [Board.huts[0:4],
+                            Board.huts[4:8],
+                            Board.huts[8:12],
+                            Board.huts[12:]]
 
 
-    def numberOfBuildingTilesLeft(self):
-        return [len(stack) for stack in self.tileStacks]
+    def numberOfHutsLeft(self):
+        return [len(stack) for stack in self.hutStacks]
 
-    def availableBuildingTiles(self):
-        return [stack[-1] for stack in self.tileStacks]
+    def availableHuts(self):
+        return [stack[-1] for stack in self.hutStacks if not stack[-1].isOccupied()]
 
     def addHunters(self, count):
         self.huntingGrounds.addPerson(count)
@@ -69,6 +69,9 @@ class Board:
     
     def reapResources(self):
         [resource.reapResources() for resource in self.grounds]
+        
+    def placeOnHut(self, hut):
+        hut.placePerson()
 
 def main():
     pass

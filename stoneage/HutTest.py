@@ -1,33 +1,32 @@
 #! /usr/bin/env python3
 
-from BuildingTile import BuildingTile
+from Hut import Hut
 import unittest
 
-class BuildingTileTest(unittest.TestCase):
+class HutTest(unittest.TestCase):
 
-    def testBuildingTilePayable(self):
-        hut = BuildingTile(3,3,4)
+    def testHutPayable(self):
+        hut = Hut(3,3,4)
         resources = [3,3,3,4,4]
                 
         self.assertEquals([], hut.missing(resources))
 
 
-    def testBuildingTileNotPayable(self):
-        hut = BuildingTile(3,3,4)
+    def testHutNotPayable(self):
+        hut = Hut(3,3,4)
         resources = [3,4,4,4]
                 
         self.assertEquals([3], hut.missing(resources))
 
 
-    def testBuildingTileNotPayable2(self):
-        hut = BuildingTile(3,3,4)
+    def testHutNotPayable2(self):
+        hut = Hut(3,3,4)
         resources = [2,2,3,5,5]
                 
         self.assertEquals([3,4], hut.missing(resources))
 
-
 if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(BuildingTileTest)
+    suite = unittest.TestLoader().loadTestsFromTestCase(HutTest)
     unittest.TextTestRunner(verbosity=2).run(suite)
     
 # alternatively use this for shorter output

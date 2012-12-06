@@ -28,7 +28,7 @@ class Game(object):
     def processRound(self):
         while self.board.personCount() < 5:
             for player in self.players: 
-                player.placePersons()
+                player.placePersons(self.board)
         for player in self.players: # reap resources and buy building tiles
             pass
         for player in self.players: # feed and adjust score
