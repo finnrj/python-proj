@@ -8,10 +8,9 @@ class Player():
     '''
     classdocs
     '''
-    resources = []
 
     def __init__(self):
-        pass
+        self.resources = []
 
     def isPayable(self, hut):
         return hut.missing(self.resources) == []
@@ -22,7 +21,12 @@ class Player():
                 return hut
         return None
     
+    def addResources(self, additionalResources):
+        self.resources.extend(additionalResources)
+    
     def placePersons(self, board):
+        if board.personCount() == 5:
+            return
 #       check huts
         ahs = board.availableHuts()
         payableHut = self.fetchPayableHut(ahs)
@@ -30,5 +34,6 @@ class Player():
             board.placeOnHut(payableHut)
             return
 #       place on resources
-        
+        if self.resources.count(3) < 2:
+            board.addLumberjacks(5)
             

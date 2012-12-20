@@ -28,14 +28,14 @@ class Board:
              ]
 
     players = []
-    huntingGrounds = HuntingGrounds()
-    forest         = Forest()
-    clayPit        = ClayPit()
-    quarry         = Quarry()
-    river          = River()
-    grounds = [huntingGrounds, forest, clayPit, quarry, river]
     
     def __init__(self):
+        self.huntingGrounds = HuntingGrounds()
+        self.forest         = Forest()
+        self.clayPit        = ClayPit()
+        self.quarry         = Quarry()
+        self.river          = River()
+        self.grounds = [self.huntingGrounds, self.forest, self.clayPit, self.quarry, self.river]
         shuffle(Board.huts)
         self.hutStacks = [Board.huts[0:4],
                             Board.huts[4:8],
