@@ -31,7 +31,7 @@ class ResourceTest(unittest.TestCase):
 
         self.assertIn(len(food), range(1,10))
         self.assertIsInstance(food[0], int)
-        self.assertEquals(len(food), food.count(2))
+        self.assertEqual(len(food), food.count(2))
 
     def testReapFoodWith1Person(self):
         rs = HuntingGrounds()
@@ -57,7 +57,7 @@ class ResourceTest(unittest.TestCase):
 
         self.assertIn(len(wood), range(1,11))
         self.assertIsInstance(wood[0], int)
-        self.assertEquals(len(wood), wood.count(3))
+        self.assertEqual(len(wood), wood.count(3))
 
     def testPureResource(self):
         rs = Resource()

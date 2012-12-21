@@ -4,13 +4,16 @@ class Hut:
     """Class representing a 'hut' building tile"""
     
     def __init__(self, r1, r2, r3):
-        self.costs = [r1, r2, r3]
-        self.occupied = False
+        self._costs = [r1, r2, r3]
+        self._occupied = False
+
+    def costs(self):
+        return self._costs[:]
 
     def missing(self, resources):
         clone = resources[:]
         missing = []
-        for res in self.costs:
+        for res in self._costs:
             try:
                 clone.remove(res)
             except:
@@ -18,10 +21,14 @@ class Hut:
         return missing
     
     def placePerson(self):
-        self.occupied = True
+        self._occupied = True
+
+    def removePerson(self):
+        if self._occupied:
+            self._occupied = False
 
     def isOccupied(self):
-        return self.occupied
+        return self._occupied
 
 def main():
     pass

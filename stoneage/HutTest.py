@@ -9,21 +9,21 @@ class HutTest(unittest.TestCase):
         hut = Hut(3,3,4)
         resources = [3,3,3,4,4]
                 
-        self.assertEquals([], hut.missing(resources))
+        self.assertEqual([], hut.missing(resources))
 
 
     def testHutNotPayable(self):
         hut = Hut(3,3,4)
         resources = [3,4,4,4]
                 
-        self.assertEquals([3], hut.missing(resources))
+        self.assertEqual([3], hut.missing(resources))
 
 
     def testHutNotPayable2(self):
         hut = Hut(3,3,4)
         resources = [2,2,3,5,5]
                 
-        self.assertEquals([3,4], hut.missing(resources))
+        self.assertEqual([3,4], hut.missing(resources))
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(HutTest)

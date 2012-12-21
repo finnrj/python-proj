@@ -10,9 +10,6 @@ class BoardTest(unittest.TestCase):
     def setUp(self):
         self.board = Board()
 
-    def tearDown(self):
-        self.board.reapResources()
-        
     def testBoardInitialization(self):
         self.assertListEqual([4,4,4,5], self.board.numberOfHutsLeft())
 
@@ -28,8 +25,14 @@ class BoardTest(unittest.TestCase):
         ahs = self.board.availableHuts()
         self.assertEqual(3, len(ahs), "should only be 3 huts left")
         self.assertNotIn(targetHut, ahs, "hut should not be available")
+
+    def testPersonCountAfterPlacingOnHut(self):
+        self.assertEqual(0, self.board.personCount())
+        self.board.placeOnHut(self.board.availableHuts()[0])
+        self.assertEqual(1, self.board.personCount())
         
     def testPlacePersonsWithoutResources(self):
+        self.assertEqual(0, self.board.personCount())
         self.board.addHunters(2)
         self.board.addLumberjacks(2)
 
@@ -48,14 +51,10 @@ class BoardTest(unittest.TestCase):
         
         self.assertEqual(2, self.board.personCount())
         
-    def testNoBuildingTilesLeft(self):
-        nBuildingTiles = self.board.numberOfHutsLeft()
-        
-        
 
 def main():
-##    suite = unittest.TestLoader().loadTestsFromTestCase(BoardTest)
-##    unittest.TextTestRunner(verbosity=2).run(suite)
+#    suite = unittest.TestLoader().loadTestsFromTestCase(BoardTest)
+#    unittest.TextTestRunner(verbosity=2).run(suite)
 
     # alternatively use this for shorter output
     unittest.main()

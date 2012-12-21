@@ -4,44 +4,49 @@ from Hut import Hut
 from random import shuffle
 from Resource import HuntingGrounds, Forest, ClayPit, Quarry, River
 
+from math import floor
 
 class Board:
     """Class representing the gameboard """
 
-    huts = [Hut(3,3,4),
-             Hut(3,3,5),
-             Hut(3,3,6),
-             Hut(3,4,5),
-             Hut(3,4,4),
-             Hut(3,5,5),
-             Hut(3,4,6),
-             Hut(3,4,6),
-             Hut(3,4,5),
-             Hut(3,5,6),
-             Hut(3,5,6),
-             Hut(4,4,5),
-             Hut(4,4,6),
-             Hut(4,5,5),
-             Hut(4,5,6),
-             Hut(4,5,6),
-             Hut(5,5,6)
-             ]
-
     players = []
     
-    def __init__(self):
+    def __init__(self, huts=None):
         self.huntingGrounds = HuntingGrounds()
-        self.forest         = Forest()
-        self.clayPit        = ClayPit()
-        self.quarry         = Quarry()
-        self.river          = River()
+        self.forest = Forest()
+        self.clayPit = ClayPit()
+        self.quarry = Quarry()
+        self.river = River()
         self.grounds = [self.huntingGrounds, self.forest, self.clayPit, self.quarry, self.river]
-        shuffle(Board.huts)
-        self.hutStacks = [Board.huts[0:4],
-                            Board.huts[4:8],
-                            Board.huts[8:12],
-                            Board.huts[12:]]
+        
+        if not huts:
+            huts = self._defaultHuts()
+        
+        shuffle(huts)
+        div = floor(len(huts) / 4)
+        self.hutStacks = [huts[0:div],
+                          huts[div: 2 * div],
+                          huts[2 * div: 3 * div],
+                          huts[3 * div:]]
 
+    def _defaultHuts(self):
+        return [Hut(3, 3, 4),
+                Hut(3, 3, 5),
+                Hut(3, 3, 6),
+                Hut(3, 4, 5),
+                Hut(3, 4, 4),
+                Hut(3, 5, 5),
+                Hut(3, 4, 6),
+                Hut(3, 4, 6),
+                Hut(3, 4, 5),
+                Hut(3, 5, 6),
+                Hut(3, 5, 6),
+                Hut(4, 4, 5),
+                Hut(4, 4, 6),
+                Hut(4, 5, 5),
+                Hut(4, 5, 6),
+                Hut(4, 5, 6),
+                Hut(5, 5, 6)]
 
     def numberOfHutsLeft(self):
         return [len(stack) for stack in self.hutStacks]
@@ -65,10 +70,13 @@ class Board:
         self.river.addPerson(count)
         
     def personCount(self):
-        return sum([resource.count() for resource in self.grounds])
+        return sum([resource.count() for resource in self.grounds]) + (4 - len(self.availableHuts()))
     
     def reapResources(self):
-        [resource.reapResources() for resource in self.grounds]
+        reapedResources = [resource.reapResources() for resource in self.grounds]
+        boughtHuts = [stack.pop() for stack in self.hutStacks if stack[-1].isOccupied()]
+        for hut in boughtHuts:
+            hut.removePerson()
         
     def placeOnHut(self, hut):
         hut.placePerson()

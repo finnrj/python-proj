@@ -6,6 +6,7 @@ Created on Nov 22, 2012
 import unittest
 from Player import Player
 from Board import Board
+from Hut import Hut
 
 
 class PlayerTest(unittest.TestCase):
@@ -15,13 +16,10 @@ class PlayerTest(unittest.TestCase):
         self.player = Player()
         self.board = Board()
         
-#    def testSetPersons(self):
-#        self.player.setPersons(board) 
     def testPlacePersonsWithoutResources(self):
         nPersonsBefore = self.board.personCount()
         self.player.placePersons(self.board)
         self.assertGreater(self.board.personCount(), nPersonsBefore)
-
 
     def testPlaceMax5Persons(self):
         nPersonsBefore = self.board.personCount()
@@ -33,15 +31,22 @@ class PlayerTest(unittest.TestCase):
         self.assertLessEqual(self.board.personCount() - nPersonsBefore, 5)
 
     def testPlaceMax5PersonsWithPersonOnHut(self):
-        minimumResourcesToBuyHut = [3,3,4,4,5,5,6]
-        self.player.addResources(minimumResourcesToBuyHut)
+        self.board = Board([Hut(3, 3, 4), Hut(3, 3, 5), Hut(3, 3, 6), Hut(3, 4, 5)])
+        self.player.addResources([3, 3, 4])
         
         nPersonsBefore = self.board.personCount()
         self.player.placePersons(self.board)
-#        self.assertGreater(self.board.personCount(), nPersonsBefore)
-
+        self.assertGreater(self.board.personCount(), nPersonsBefore)
+        self.assertEqual(1, self.board.personCount())
+        
+        self.player.placePersons(self.board)
+        self.assertGreater(self.board.personCount(), 1)
+        self.assertEqual(5, self.board.personCount())
+        
+        self.player.placePersons(self.board)
+        self.assertEqual(self.board.personCount(), 5)
 
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
+    # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
