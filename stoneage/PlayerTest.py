@@ -44,8 +44,41 @@ class PlayerTest(unittest.TestCase):
         self.assertEqual(5, self.board.personCount())
         
         self.player.placePersons(self.board)
-        self.assertEqual(self.board.personCount(), 5)
+        self.assertEqual(5, self.board.personCount())
+        
+    def testBuyingOfTwoHuts(self):
+        self.board = Board([Hut(3, 3, 4), Hut(3, 3, 5), Hut(3, 3, 6), Hut(3, 4, 5)])
+        self.player.addResources([3, 3, 4, 3, 4, 5])
+        
+        self.player.placePersons(self.board)
+        self.assertEqual(1, self.board.personCount())
 
+        self.player.placePersons(self.board)
+        self.assertEqual(2, self.board.personCount())
+
+        self.player.placePersons(self.board)
+        self.assertEqual(5, self.board.personCount())
+
+    def testPlacingOfNonHutPersons(self):
+        self.board = Board([Hut(3, 3, 4), Hut(3, 3, 5), Hut(3, 3, 6), Hut(3, 4, 5)])
+        self.player.addResources([3, 3])
+        
+        self.assertEqual(0, self.board.personCount())
+        self.player.placePersons(self.board)
+        self.assertEqual(5, self.board.personCount())
+
+    def testPrint(self):
+        self.player.addResources([3, 3, 4, 5])
+        self.player.addHuts([Hut(3,3,4), Hut(4,5,6)])
+        
+        self.player.printPlayer()
+
+        
+        
+        
+        
+        
+        
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

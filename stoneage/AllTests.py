@@ -10,4 +10,4 @@ import unittest
 
 if __name__ == "__main__":
     suite = unittest.defaultTestLoader.discover(".", "*Test.py")
-    unittest.TextTestRunner(verbosity=0).run(suite)
+    unittest.TextTestRunner(verbosity=2).run(suite)

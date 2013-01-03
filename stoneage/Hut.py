@@ -29,6 +29,9 @@ class Hut:
 
     def isOccupied(self):
         return self._occupied
+    
+    def toString(self):
+        return str(self._costs)
 
 def main():
     pass

@@ -8,6 +8,7 @@ Created on Nov 22, 2012
 
 from symbol import try_stmt
 from Board import Board
+from Player import Player
 
 class Game(object):
     '''
@@ -30,20 +31,27 @@ class Game(object):
             for player in self.players: 
                 player.placePersons(self.board)
         for player in self.players: # reap resources and buy building tiles
-            pass
+            resources, huts = self.board.reapResources()
+            player.addResources(resources)
+            player.addHuts(huts)
         for player in self.players: # feed and adjust score
             pass
 
         
     def finished(self):
         return False
+    
+    def position(self):
+        return "\n".join([player.toString() for player in self.players])
 
 def main():
     game = Game()
+    game.addPlayer(Player())
     try:
         while not game.finished():
             game.processRound()
-            print("Game is running")
+            print(game.position())
+            input("waiting...")
     except KeyboardInterrupt:
         print("bye")
     

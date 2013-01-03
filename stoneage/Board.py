@@ -11,7 +11,7 @@ class Board:
 
     players = []
     
-    def __init__(self, huts=None):
+    def __init__(self, huts = None):
         self.huntingGrounds = HuntingGrounds()
         self.forest = Forest()
         self.clayPit = ClayPit()
@@ -73,10 +73,14 @@ class Board:
         return sum([resource.count() for resource in self.grounds]) + (4 - len(self.availableHuts()))
     
     def reapResources(self):
-        reapedResources = [resource.reapResources() for resource in self.grounds]
+        reapedResources = []
+        for ground in self.grounds:
+            reapedResources.extend(ground.reapResources())
+        
         boughtHuts = [stack.pop() for stack in self.hutStacks if stack[-1].isOccupied()]
         for hut in boughtHuts:
             hut.removePerson()
+        return (reapedResources, boughtHuts)
         
     def placeOnHut(self, hut):
         hut.placePerson()
