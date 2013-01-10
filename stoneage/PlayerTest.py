@@ -47,7 +47,7 @@ class PlayerTest(unittest.TestCase):
         self.assertEqual(5, self.board.personCount())
         
     def testBuyingOfTwoHuts(self):
-        self.board = Board([Hut(3, 3, 4), Hut(3, 3, 5), Hut(3, 3, 6), Hut(3, 4, 5)])
+        self.board = Board([Hut(3, 3, 4), Hut(3, 5, 6), Hut(3, 3, 6), Hut(3, 4, 5)])
         self.player.addResources([3, 3, 4, 3, 4, 5])
         
         self.player.placePersons(self.board)
@@ -67,14 +67,14 @@ class PlayerTest(unittest.TestCase):
         self.player.placePersons(self.board)
         self.assertEqual(5, self.board.personCount())
 
-    def testPrint(self):
-        self.player.addResources([3, 3, 4, 5])
-        self.player.addHuts([Hut(3,3,4), Hut(4,5,6)])
-        
-        self.player.printPlayer()
+    def testFeeding(self):
+        self.assertEqual(0, self.player.foodMissing())
+        self.player.feed()
+        self.assertEqual(0, self.player.foodMissing())
+        self.player.feed()
+        self.assertEqual(3, self.player.foodMissing())
 
-        
-        
+     
         
         
         

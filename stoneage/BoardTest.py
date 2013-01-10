@@ -51,6 +51,12 @@ class BoardTest(unittest.TestCase):
         
         self.assertEqual(2, self.board.personCount())
         
+    def testIsFinished(self):
+        self.board = Board([Hut(3,3,4), Hut(3,3,4), Hut(3,3,4), Hut(3,3,4)])
+        self.assertFalse(self.board.isFinished())
+        self.board = Board([Hut(3,3,4), Hut(3,3,4), Hut(3,3,4)])
+        self.assertTrue(self.board.isFinished())
+        
 
 def main():
 #    suite = unittest.TestLoader().loadTestsFromTestCase(BoardTest)

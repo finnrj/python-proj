@@ -6,7 +6,6 @@ Created on Nov 22, 2012
 @author: finn
 '''
 
-from symbol import try_stmt
 from Board import Board
 from Player import Player
 
@@ -35,23 +34,23 @@ class Game(object):
             player.addResources(resources)
             player.addHuts(huts)
         for player in self.players: # feed and adjust score
-            pass
+            player.feed()
 
-        
     def finished(self):
-        return False
+        return self.board.isFinished()
     
     def position(self):
-        return "\n".join([player.toString() for player in self.players])
+        return """Available huts: %s 
+%s""" % (" ".join([hut.toString() for hut in self.board.availableHuts()]), "\n".join([player.toString() for player in self.players]))
 
 def main():
     game = Game()
     game.addPlayer(Player())
     try:
         while not game.finished():
+            input("waiting...")
             game.processRound()
             print(game.position())
-            input("waiting...")
     except KeyboardInterrupt:
         print("bye")
     

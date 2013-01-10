@@ -52,7 +52,7 @@ class Board:
         return [len(stack) for stack in self.hutStacks]
 
     def availableHuts(self):
-        return [stack[-1] for stack in self.hutStacks if not stack[-1].isOccupied()]
+        return [stack[-1] for stack in self.hutStacks if len(stack) > 0 and not stack[-1].isOccupied()]
 
     def addHunters(self, count):
         self.huntingGrounds.addPerson(count)
@@ -70,7 +70,7 @@ class Board:
         self.river.addPerson(count)
         
     def personCount(self):
-        return sum([resource.count() for resource in self.grounds]) + (4 - len(self.availableHuts()))
+        return sum([ground.count() for ground in self.grounds]) + (4 - len(self.availableHuts()))
     
     def reapResources(self):
         reapedResources = []
@@ -84,6 +84,9 @@ class Board:
         
     def placeOnHut(self, hut):
         hut.placePerson()
+        
+    def isFinished(self):
+        return [len(stack) for stack in self.hutStacks].count(0) > 0
 
 def main():
     pass

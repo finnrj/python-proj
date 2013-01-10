@@ -20,6 +20,9 @@ class Hut:
                 missing.append(res)
         return missing
     
+    def value(self):
+        return sum(self._costs)
+    
     def placePerson(self):
         self._occupied = True
 
