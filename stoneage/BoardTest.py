@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from Board import Board
-from Hut import Hut
+from Hut import Hut, SimpleHut
 import unittest
 from Resource import PlacementError
 
@@ -52,9 +52,9 @@ class BoardTest(unittest.TestCase):
         self.assertEqual(2, self.board.personCount())
         
     def testIsFinished(self):
-        self.board = Board([Hut(3,3,4), Hut(3,3,4), Hut(3,3,4), Hut(3,3,4)])
+        self.board = Board([SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4)])
         self.assertFalse(self.board.isFinished())
-        self.board = Board([Hut(3,3,4), Hut(3,3,4), Hut(3,3,4)])
+        self.board = Board([SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4)])
         self.assertTrue(self.board.isFinished())
         
 

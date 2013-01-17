@@ -1,29 +1,59 @@
 #! /usr/bin/env python3
 
-from Hut import Hut
+from Hut import SimpleHut, AnyHut, CountHut
 import unittest
 
 class HutTest(unittest.TestCase):
 
     def testHutPayable(self):
-        hut = Hut(3,3,4)
+        hut = SimpleHut(3,3,4)
         resources = [3,3,3,4,4]
                 
         self.assertEqual([], hut.missing(resources))
 
 
     def testHutNotPayable(self):
-        hut = Hut(3,3,4)
+        hut = SimpleHut(3,3,4)
         resources = [3,4,4,4]
                 
         self.assertEqual([3], hut.missing(resources))
 
 
     def testHutNotPayable2(self):
-        hut = Hut(3,3,4)
+        hut = SimpleHut(3,3,4)
         resources = [2,2,3,5,5]
                 
         self.assertEqual([3,4], hut.missing(resources))
+
+    def testAnyHutWithNoResources(self):
+        hut = AnyHut()
+        resources = []
+        
+        self.assertEqual([3], hut.missing(resources))
+        
+    def testAnyHutWithResources(self):
+        hut = AnyHut()
+        resources = [2,2,3,5,5]
+        
+        self.assertEqual([], hut.missing(resources))
+        self.assertEqual([3,5,5], hut.costs(resources))
+
+    def testAnyHutWithMoreThanSevenResources(self):
+        hut = AnyHut()
+        resources = [3,3,3,5,5,5,5,5]
+        
+        self.assertEqual([], hut.missing(resources))
+        self.assertEqual([3,3,3,5,5,5,5], hut.costs(resources))
+
+
+    def testAnyHutWithOnlyFood(self):
+        hut = AnyHut()
+        resources = [2,2]
+        
+        self.assertEqual([3], hut.missing(resources))
+        self.assertEqual([], hut.costs(resources))
+        
+        
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(HutTest)

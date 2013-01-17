@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from Hut import Hut
+from Hut import SimpleHut, AnyHut
 from random import shuffle
 from Resource import HuntingGrounds, Forest, ClayPit, Quarry, River
 
@@ -30,23 +30,25 @@ class Board:
                           huts[3 * div:]]
 
     def _defaultHuts(self):
-        return [Hut(3, 3, 4),
-                Hut(3, 3, 5),
-                Hut(3, 3, 6),
-                Hut(3, 4, 5),
-                Hut(3, 4, 4),
-                Hut(3, 5, 5),
-                Hut(3, 4, 6),
-                Hut(3, 4, 6),
-                Hut(3, 4, 5),
-                Hut(3, 5, 6),
-                Hut(3, 5, 6),
-                Hut(4, 4, 5),
-                Hut(4, 4, 6),
-                Hut(4, 5, 5),
-                Hut(4, 5, 6),
-                Hut(4, 5, 6),
-                Hut(5, 5, 6)]
+        return [SimpleHut(3, 3, 4),
+                SimpleHut(3, 3, 5),
+                SimpleHut(3, 3, 6),
+                SimpleHut(3, 4, 5),
+                SimpleHut(3, 4, 4),
+                SimpleHut(3, 5, 5),
+                SimpleHut(3, 4, 6),
+                SimpleHut(3, 4, 6),
+                SimpleHut(3, 4, 5),
+                SimpleHut(3, 5, 6),
+                SimpleHut(3, 5, 6),
+                SimpleHut(4, 4, 5),
+                SimpleHut(4, 4, 6),
+                SimpleHut(4, 5, 5),
+                SimpleHut(4, 5, 6),
+                SimpleHut(4, 5, 6),
+                SimpleHut(5, 5, 6),
+                AnyHut(),
+                AnyHut()]
 
     def numberOfHutsLeft(self):
         return [len(stack) for stack in self.hutStacks]

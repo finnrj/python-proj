@@ -47,13 +47,15 @@ class Player():
             self.plannedCosts.append(cost)
     
     def placePersons(self, board):
+        self.plannedCosts = []
+        
         if board.personCount() == self.personCount:
             return
         # check huts
         payableHut = self.fetchPayableHut(board.availableHuts())
         if payableHut is not None:
             board.placeOnHut(payableHut)
-            self.adjustResources(payableHut.costs())
+            self.adjustResources(payableHut.costs(self.resources))
             return
         # place on resources
         if self.resources.count(3) < 2:
