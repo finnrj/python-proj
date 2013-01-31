@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+from itertools import permutations
 
 class Hut:
     """Class representing a 'hut' building tile"""
@@ -23,7 +24,7 @@ class Hut:
         return sum(self._costs)
     
     def containsOnlyFood(self, resources):
-        return sum([resources.count(num) for num in [3,4,5,6]]) == 0
+        return sum([resources.count(num) for num in [3, 4, 5, 6]]) == 0
     
 class SimpleHut(Hut):
     """ hut with exactly three resources """
@@ -31,6 +32,8 @@ class SimpleHut(Hut):
         Hut.__init__(self)
         self._costs = [r1, r2, r3]
 
+    # used in player.adjustResources
+    # sets self._costs / returns costs
     def costs(self, resources):
         return self._costs
 
@@ -69,25 +72,40 @@ class CountHut(Hut):
         self.typesCount = typesCount
         self._costs = []
 
+
+
     def costs(self, resources):
+        result = []        
         nonFood = [resource for resource in resources if resource != 2]
-        self._costs = nonFood[:7]
-        return nonFood[:7]
+        if self.missing (resources):
+            return result
+
+        availableTypes = [num for num in [3, 4, 5, 6] if resources.count(num) > 0 ]
+        for p in permutations(availableTypes, self.typesCount):
+            if self.sufficientResources(resources, nonFood, p):
+                nonFood = [resource for resource in nonFood if resource in p]
+                result.extend(p)
+                for resource in p:
+                    nonFood.remove(resource)
+                result.extend(nonFood[:(self.resourceCount - self.typesCount)])
+                return result
+
+    def sufficientResources(self, resources, nonFood, p):
+        return sum([resources.count(num) for num in p if nonFood.count(num) > 0]) >= self.resourceCount
 
     def tooFewDifferentTypes(self, typesCounts):
         return typesCounts.count(0) > 4 - self.typesCount
-
 
     def tooFewResources(self, typesCounts):
         return sum(typesCounts) < self.resourceCount
 
     def missing(self, resources):
         if len(resources) == 0 or self.containsOnlyFood(resources) :
-            necessaryTypes = [3,4,5,6][:self.typesCount] 
+            necessaryTypes = [3, 4, 5, 6][:self.typesCount] 
             result = necessaryTypes + (self.resourceCount - self.typesCount) * [3]
             return result
         
-        typesCounts = [resources.count(num) for num in [3,4,5,6]]
+        typesCounts = [resources.count(num) for num in [3, 4, 5, 6]]
         if self.tooFewDifferentTypes(typesCounts):
             missingTypesCount = typesCounts.count(0) - (4 - self.typesCount)
             result = []

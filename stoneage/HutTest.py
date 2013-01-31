@@ -88,14 +88,35 @@ class HutTest(unittest.TestCase):
         
         hut = CountHut(4,4)
         resources = [2,2,3,3,5]
-        
         self.assertEqual([4,6], hut.missing(resources))
 
-
         hut = CountHut(5,2)
-        resources = [4,4,4,5]
-        
+        resources = [4,4,4,5]        
         self.assertEqual([4], hut.missing(resources))
+
+    def testCountHutCostsWithOnePossiblePayment(self):
+        hut = CountHut(4,2)
+        resources = [2,2,3,3,5,5]
+        self.assertEqual([3,3,5,5], sorted(hut.costs(resources)))
+        
+        hut = CountHut(5,3)
+        resources = [2,2,3,3,5,5,6]
+        self.assertEqual([3,3,5,5,6], sorted(hut.costs(resources)))
+
+    def testCountHutCostsWithMorePossiblePayments(self):
+        hut = CountHut(4,2)
+        resources = [3,3,3,3,5]
+        self.assertEqual([3,3,3,5], sorted(hut.costs(resources)))
+
+    def testCountHutCostsWithMorePossiblePayments2(self):
+        hut = CountHut(4,2)
+        resources = [5,5,5,3,3,3,4]
+        self.assertEqual([3,3,3,4], sorted(hut.costs(resources)))
+
+    def testCountHutCostsWithMorePossiblePayments3(self):
+        hut = CountHut(4,2)
+        resources = [3,4,5,5,5]
+        self.assertEqual([3,5,5,5], sorted(hut.costs(resources)))
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(HutTest)
