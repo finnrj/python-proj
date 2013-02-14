@@ -6,7 +6,7 @@ Created on Nov 22, 2012
 import unittest
 from Player import Player
 from Board import Board
-from Hut import Hut
+from Hut import SimpleHut
 
 
 class PlayerTest(unittest.TestCase):
@@ -30,8 +30,8 @@ class PlayerTest(unittest.TestCase):
         self.assertEqual(self.board.personCount(), nPersonsAfter)
         self.assertLessEqual(self.board.personCount() - nPersonsBefore, 5)
 
-    def testPlaceMax5PersonsWithPersonOnHut(self):
-        self.board = Board([Hut(3, 3, 4), Hut(3, 3, 5), Hut(3, 3, 6), Hut(3, 4, 5)])
+    def testPlaceMax5PersonsWithPersonOnSimpleHut(self):
+        self.board = Board([SimpleHut(3, 3, 4), SimpleHut(3, 3, 5), SimpleHut(3, 3, 6), SimpleHut(3, 4, 5)])
         self.player.addResources([3, 3, 4])
         
         nPersonsBefore = self.board.personCount()
@@ -46,8 +46,8 @@ class PlayerTest(unittest.TestCase):
         self.player.placePersons(self.board)
         self.assertEqual(5, self.board.personCount())
         
-    def testBuyingOfTwoHuts(self):
-        self.board = Board([Hut(3, 3, 4), Hut(3, 5, 6), Hut(3, 3, 6), Hut(3, 4, 5)])
+    def testBuyingOfTwoSimpleHuts(self):
+        self.board = Board([SimpleHut(3, 3, 4), SimpleHut(3, 5, 6), SimpleHut(3, 3, 6), SimpleHut(3, 4, 5)])
         self.player.addResources([3, 3, 4, 3, 4, 5])
         
         self.player.placePersons(self.board)
@@ -59,8 +59,8 @@ class PlayerTest(unittest.TestCase):
         self.player.placePersons(self.board)
         self.assertEqual(5, self.board.personCount())
 
-    def testPlacingOfNonHutPersons(self):
-        self.board = Board([Hut(3, 3, 4), Hut(3, 3, 5), Hut(3, 3, 6), Hut(3, 4, 5)])
+    def testPlacingOfNonSimpleHutPersons(self):
+        self.board = Board([SimpleHut(3, 3, 4), SimpleHut(3, 3, 5), SimpleHut(3, 3, 6), SimpleHut(3, 4, 5)])
         self.player.addResources([3, 3])
         
         self.assertEqual(0, self.board.personCount())

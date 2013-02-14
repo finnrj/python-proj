@@ -2,7 +2,7 @@
 from itertools import permutations
 
 class Hut:
-    """Class representing a 'hut' building tile"""
+    """Super Class representing a 'hut' building tile"""
     
     def __init__(self):
         self.occupied = False
@@ -62,6 +62,9 @@ class AnyHut(Hut):
         if len(resources) == 0 or self.containsOnlyFood(resources) :
             return [3]
         return [] 
+    
+    def toString(self):
+        return "[AnyHut]"
 
     
 class CountHut(Hut):
@@ -72,8 +75,6 @@ class CountHut(Hut):
         self.typesCount = typesCount
         self._costs = []
 
-
-
     def costs(self, resources):
         result = []        
         nonFood = [resource for resource in resources if resource != 2]
@@ -82,22 +83,27 @@ class CountHut(Hut):
 
         availableTypes = [num for num in [3, 4, 5, 6] if resources.count(num) > 0 ]
         for p in permutations(availableTypes, self.typesCount):
-            if self.sufficientResources(resources, nonFood, p):
+            if self.sufficientResources(nonFood, p):
                 nonFood = [resource for resource in nonFood if resource in p]
                 result.extend(p)
                 for resource in p:
                     nonFood.remove(resource)
                 result.extend(nonFood[:(self.resourceCount - self.typesCount)])
                 return result
+        raise("CountHut:missing is probably false")
 
-    def sufficientResources(self, resources, nonFood, p):
-        return sum([resources.count(num) for num in p if nonFood.count(num) > 0]) >= self.resourceCount
+    def sufficientResources(self, nonFood, p):
+        return sum([nonFood.count(num) for num in p if nonFood.count(num) > 0]) >= self.resourceCount
 
     def tooFewDifferentTypes(self, typesCounts):
         return typesCounts.count(0) > 4 - self.typesCount
 
-    def tooFewResources(self, typesCounts):
-        return sum(typesCounts) < self.resourceCount
+    def tooFewResources(self, resources):
+        availableTypes = [num for num in [3, 4, 5, 6] if resources.count(num) > 0 ]
+        for p in permutations(availableTypes, self.typesCount):
+            if self.sufficientResources(resources, p):
+                return False
+        return True
 
     def missing(self, resources):
         if len(resources) == 0 or self.containsOnlyFood(resources) :
@@ -116,12 +122,15 @@ class CountHut(Hut):
                 if missingTypesCount == 0:
                     break
             return result + (self.resourceCount - (sum(typesCounts) + len(result))) * [3]
-            
-        if self.tooFewResources(typesCounts):
-            for idx, count in enumerate(typesCounts):
-                if count != 0:   
-                    return (self.resourceCount - sum(typesCounts)) * [idx + 3]
+          
+        if self.tooFewResources(resources):
+            availableTypes = [num for num in [3, 4, 5, 6] if resources.count(num) > 0 ]
+            firstPossibleTypes = availableTypes[:self.typesCount]
+            return (self.resourceCount - sum([resources.count(num) for num in firstPossibleTypes])) * [firstPossibleTypes[0]] 
         return []
+    
+    def toString(self):
+        return "[CountHut: %d, %d]" %(self.resourceCount, self.typesCount)
         
          
 

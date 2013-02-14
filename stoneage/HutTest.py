@@ -77,8 +77,6 @@ class HutTest(unittest.TestCase):
         resources = [2,2,3,3,5,5,5,6]
         
         self.assertEqual([], hut.missing(resources))
-
-        
         
     def testCountHutWithToFewResources(self):
         hut = CountHut(4,2)
@@ -117,6 +115,16 @@ class HutTest(unittest.TestCase):
         hut = CountHut(4,2)
         resources = [3,4,5,5,5]
         self.assertEqual([3,5,5,5], sorted(hut.costs(resources)))
+        
+    def testCountHutError(self):
+        hut = CountHut(5, 1)
+        resources =  [3, 3, 3, 6, 4, 4, 4]
+        self.assertEqual([3,3], hut.missing(resources))
+
+    def testCountHutError2(self):
+        hut = CountHut(5, 2)
+        resources =  [4, 4, 5, 6, 6]
+        self.assertEqual([4, 4], hut.missing(resources))
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(HutTest)
