@@ -59,7 +59,7 @@ class PlayerTest(unittest.TestCase):
         self.player.placePersons(self.board)
         self.assertEqual(5, self.board.personCount())
 
-    def testPlacingOfNonSimpleHutPersons(self):
+    def testPlacingOfNoSimpleHutPersons(self):
         self.board = Board([SimpleHut(3, 3, 4), SimpleHut(3, 3, 5), SimpleHut(3, 3, 6), SimpleHut(3, 4, 5)])
         self.player.addResources([3, 3])
         

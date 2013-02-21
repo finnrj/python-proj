@@ -10,7 +10,7 @@ class HutTest(unittest.TestCase):
         resources = [3,3,3,4,4]
                 
         self.assertEqual([], hut.missing(resources))
-
+        self.assertEqual(10, hut.value(), "value should be 10")
 
     def testHutNotPayable(self):
         hut = SimpleHut(3,3,4)
@@ -43,7 +43,10 @@ class HutTest(unittest.TestCase):
         resources = [3,3,3,5,5,5,5,5]
         
         self.assertEqual([], hut.missing(resources))
+        self.assertEqual(0, hut.value(), "value should be 0 before cost is calculated")
+
         self.assertEqual([3,3,3,5,5,5,5], hut.costs(resources))
+        self.assertEqual(29, hut.value(), "value should be 29")
 
 
     def testAnyHutWithOnlyFood(self):
@@ -95,11 +98,15 @@ class HutTest(unittest.TestCase):
     def testCountHutCostsWithOnePossiblePayment(self):
         hut = CountHut(4,2)
         resources = [2,2,3,3,5,5]
+        self.assertEqual(0, hut.value(), "value should be 0 before cost is calculated")
+
         self.assertEqual([3,3,5,5], sorted(hut.costs(resources)))
+        self.assertEqual(16, hut.value(), "value should be 16")
         
         hut = CountHut(5,3)
         resources = [2,2,3,3,5,5,6]
         self.assertEqual([3,3,5,5,6], sorted(hut.costs(resources)))
+        self.assertEqual(22, hut.value(), "value should be 22")
 
     def testCountHutCostsWithMorePossiblePayments(self):
         hut = CountHut(4,2)

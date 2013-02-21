@@ -29,6 +29,7 @@ class Game(object):
         while self.board.personCount() < 5:
             for player in self.players: 
                 player.placePersons(self.board)
+                print (self.board.toString())
         for player in self.players: # reap resources and buy building tiles
             resources, huts = self.board.reapResources()
             player.addResources(resources)
@@ -40,17 +41,19 @@ class Game(object):
         return self.board.isFinished()
     
     def position(self):
-        return """Available huts: %s 
-%s""" % (" ".join([hut.toString() for hut in self.board.availableHuts()]), "\n".join([player.toString() for player in self.players]))
+        return """Available huts: %s
+         
+%s""" % (" ".join([hut.hutAsString() for hut in self.board.availableHuts()]), "\n\n".join([player.hutAsString() for player in self.players]))
 
 def main():
     game = Game()
     game.addPlayer(Player())
     try:
         while not game.finished():
-            input("waiting...")
+            input("waiting... (type return)\n")
             game.processRound()
-            print(game.position())
+        for player in game.players:
+            print("\nPlayer final score: %d" % player.finalScore())
     except KeyboardInterrupt:
         print("bye")
     

@@ -103,6 +103,11 @@ class Board:
         
     def isFinished(self):
         return [len(stack) for stack in self.hutStacks].count(0) > 0
+    
+    def toString(self):
+        stackstrings = ["[" * (len(stack)-1) + stack[-1].toString() for stack in self.hutStacks]
+        return "\nHut Stacks:\n%s" % "  ".join(stackstrings) + "\n" +\
+             "\n".join(ground.toString() for ground in self.grounds)
 
 def main():
     pass

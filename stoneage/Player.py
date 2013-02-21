@@ -66,8 +66,11 @@ class Player():
             board.addStoneDiggers(self.personCount - board.personCount())
         else:
             board.addGoldDiggers(self.personCount - board.personCount())
-            
+    
+    def finalScore(self):
+        return self.score + len(self.resources)
+    
     def toString(self):
         return """Resources: %s
-huts: %s
+huts: %s    
 score: %d""" % (str(self.resources), ",". join([hut.toString() for hut in self.huts]), self.score)

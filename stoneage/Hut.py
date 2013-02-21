@@ -17,14 +17,17 @@ class Hut:
     def isOccupied(self):
         return self.occupied
     
-    def toString(self):
-        return str(self._costs)
-    
     def value(self):
         return sum(self._costs)
     
     def containsOnlyFood(self, resources):
         return sum([resources.count(num) for num in [3, 4, 5, 6]]) == 0
+    
+    def toString(self):
+        suffix = ""
+        if self.isOccupied():
+            suffix = "r"
+        return self.hutAsString() + suffix
     
 class SimpleHut(Hut):
     """ hut with exactly three resources """
@@ -47,6 +50,9 @@ class SimpleHut(Hut):
                 missing.append(res)
         return missing
     
+    def hutAsString(self):
+        return str(self._costs)
+    
 class AnyHut(Hut):
     """ 1-7 Hut """
     def __init__(self):
@@ -63,12 +69,12 @@ class AnyHut(Hut):
             return [3]
         return [] 
     
-    def toString(self):
-        return "[AnyHut]"
+    def hutAsString(self):
+        return "[Any]"
 
     
 class CountHut(Hut):
-    """ Hut with four or five resources """
+    """ Hut with four or five resources of 1 to 5 different types"""
     def __init__(self, resourceCount, typesCount):
         Hut.__init__(self)
         self.resourceCount = resourceCount
@@ -82,13 +88,14 @@ class CountHut(Hut):
             return result
 
         availableTypes = [num for num in [3, 4, 5, 6] if resources.count(num) > 0 ]
-        for p in permutations(availableTypes, self.typesCount):
-            if self.sufficientResources(nonFood, p):
-                nonFood = [resource for resource in nonFood if resource in p]
-                result.extend(p)
-                for resource in p:
-                    nonFood.remove(resource)
-                result.extend(nonFood[:(self.resourceCount - self.typesCount)])
+        for permutation in permutations(availableTypes, self.typesCount):
+            if self.sufficientResources(nonFood, permutation):
+                permutationResources = [resource for resource in nonFood if resource in permutation]
+                result.extend(permutation)
+                for resource in permutation:
+                    permutationResources.remove(resource)
+                result.extend(permutationResources[:(self.resourceCount - self.typesCount)])
+                self._costs = result
                 return result
         raise("CountHut:missing is probably false")
 
@@ -100,28 +107,20 @@ class CountHut(Hut):
 
     def tooFewResources(self, resources):
         availableTypes = [num for num in [3, 4, 5, 6] if resources.count(num) > 0 ]
-        for p in permutations(availableTypes, self.typesCount):
-            if self.sufficientResources(resources, p):
+        for permutation in permutations(availableTypes, self.typesCount):
+            if self.sufficientResources(resources, permutation):
                 return False
         return True
 
     def missing(self, resources):
         if len(resources) == 0 or self.containsOnlyFood(resources) :
             necessaryTypes = [3, 4, 5, 6][:self.typesCount] 
-            result = necessaryTypes + (self.resourceCount - self.typesCount) * [3]
-            return result
+            return necessaryTypes + self.allWood(self.resourceCount - self.typesCount)
         
         typesCounts = [resources.count(num) for num in [3, 4, 5, 6]]
         if self.tooFewDifferentTypes(typesCounts):
-            missingTypesCount = typesCounts.count(0) - (4 - self.typesCount)
-            result = []
-            for idx, count in enumerate(typesCounts):
-                if count == 0:
-                    result.append(idx + 3)
-                    missingTypesCount -= 1
-                if missingTypesCount == 0:
-                    break
-            return result + (self.resourceCount - (sum(typesCounts) + len(result))) * [3]
+            result = self.findMissingResourceTypes(typesCounts)
+            return result + self.allWood(self.resourceCount - (sum(typesCounts) + len(result)))
           
         if self.tooFewResources(resources):
             availableTypes = [num for num in [3, 4, 5, 6] if resources.count(num) > 0 ]
@@ -129,8 +128,22 @@ class CountHut(Hut):
             return (self.resourceCount - sum([resources.count(num) for num in firstPossibleTypes])) * [firstPossibleTypes[0]] 
         return []
     
-    def toString(self):
-        return "[CountHut: %d, %d]" %(self.resourceCount, self.typesCount)
+    def findMissingResourceTypes(self, typesCounts):
+        missingTypesCount = typesCounts.count(0) - (4 - self.typesCount)
+        result = []
+        for idx, count in enumerate(typesCounts):
+            if count == 0:
+                result.append(idx + 3)
+                missingTypesCount -= 1
+            if missingTypesCount == 0:
+                return result
+        raise("findMissingResourceTypes called with illegal typesCounts: %s" % str(typesCounts))
+    
+    def allWood(self, count):
+        return count * [3]
+        
+    def hutAsString(self):
+        return "[Count:%d,%d]" %(self.resourceCount, self.typesCount)
         
          
 
