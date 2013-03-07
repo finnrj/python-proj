@@ -73,20 +73,20 @@ class Board:
     def addHunters(self, count):
         self.huntingGrounds.addPerson(count)
     
-    def addLumberjacks(self, count):
-        self.forest.addPerson(count)
+    def addLumberjacks(self, count, abr):
+        self.forest.addPerson(count, abr)
     
-    def addClayDiggers(self, count):
-        self.clayPit.addPerson(count)
+    def addClayDiggers(self, count, abr):
+        self.clayPit.addPerson(count, abr)
     
-    def addStoneDiggers(self, count):
-        self.quarry.addPerson(count)
+    def addStoneDiggers(self, count, abr):
+        self.quarry.addPerson(count, abr)
 
-    def addGoldDiggers(self, count):
-        self.river.addPerson(count)
+    def addGoldDiggers(self, count, abr):
+        self.river.addPerson(count, abr)
         
-    def personCount(self):
-        return sum([ground.count() for ground in self.grounds]) + (4 - len(self.availableHuts()))
+    def personCount(self, abr):
+        return sum([ground.count(abr) for ground in self.grounds]) + (4 - len(self.availableHuts()))
     
     def reapResources(self):
         reapedResources = []
@@ -98,15 +98,15 @@ class Board:
             hut.removePerson()
         return (reapedResources, boughtHuts)
         
-    def placeOnHut(self, hut):
-        hut.placePerson()
+    def placeOnHut(self, hut, color):
+        hut.placePerson(color)
         
     def isFinished(self):
         return [len(stack) for stack in self.hutStacks].count(0) > 0
     
     def toString(self):
         stackstrings = ["[" * (len(stack)-1) + stack[-1].toString() for stack in self.hutStacks]
-        return "\nHut Stacks:\n%s" % "  ".join(stackstrings) + "\n" +\
+        return "Hut Stacks:\n%s" % "  ".join(stackstrings) + "\n" +\
              "\n".join(ground.toString() for ground in self.grounds)
 
 def main():

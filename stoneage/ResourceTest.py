@@ -9,25 +9,34 @@ class ResourceTest(unittest.TestCase):
     def testCount(self):
         rs = River()
 
-        rs.addPerson(1)
-        self.assertEqual(1, rs.count())
+        rs.addPerson(1, "r")
+        self.assertEqual(1, rs.count("r"))
         
-        with self.assertRaisesRegex(PlacementError, "Already added person to this Resource"):
-            rs.addPerson(1)
-        self.assertEqual(1, rs.count())
+        with self.assertRaisesRegex(PlacementError, "Player r already added person to this Resource"):
+            rs.addPerson(1, "r")
+        self.assertEqual(1, rs.count("r"))
         
+    def testCountTwoPlayers(self):
+        rs = River()
+
+        rs.addPerson(1, "r")
+        self.assertEqual(1, rs.count("r"))
+        
+        rs.addPerson(3, "b")
+        self.assertEqual(3, rs.count("b"))
+
     def testCountAfterReaping(self):
         rs = Quarry()
-        rs.addPerson(1)
-        self.assertEqual(1, rs.count())        
-        rs.reapResources()
-        self.assertEqual(0, rs.count())
+        rs.addPerson(1, "r")
+        self.assertEqual(1, rs.count("r"))        
+        rs.reapResources("r")
+        self.assertEqual(0, rs.count("r"))
 
     def testReapFoodWith3Persons(self):
         rs = HuntingGrounds()
 
-        rs.addPerson(3)
-        food = rs.reapResources()
+        rs.addPerson(3, "r")
+        food = rs.reapResources("r")
 
         self.assertIn(len(food), range(1,10))
         self.assertIsInstance(food[0], int)
@@ -36,24 +45,24 @@ class ResourceTest(unittest.TestCase):
     def testReapFoodWith1Person(self):
         rs = HuntingGrounds()
 
-        rs.addPerson(1)
-        food = rs.reapResources()
+        rs.addPerson(1, "r")
+        food = rs.reapResources("r")
 
         self.assertIn(len(food), range(0,4))
 
     def testReapWoodWith2Persons(self):
         rs = Forest()
 
-        rs.addPerson(2)
-        wood = rs.reapResources()
+        rs.addPerson(2, "r")
+        wood = rs.reapResources("r")
 
         self.assertIn(len(wood), range(0,5))
         
     def testReapWoodWith5Persons(self):
         rs = Forest()
 
-        rs.addPerson(5)
-        wood = rs.reapResources()
+        rs.addPerson(5, "r")
+        wood = rs.reapResources("r")
 
         self.assertIn(len(wood), range(1,11))
         self.assertIsInstance(wood[0], int)
@@ -62,9 +71,9 @@ class ResourceTest(unittest.TestCase):
     def testPureResource(self):
         rs = Resource()
 
-        rs.addPerson(1)
+        rs.addPerson(1, "r")
         with self.assertRaisesRegex(AttributeError, "object has no attribute 'resourceValue'"):
-            rs.reapResources()
+            rs.reapResources("r")
 
     
 

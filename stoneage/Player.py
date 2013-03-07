@@ -9,12 +9,14 @@ class Player():
     classdocs
     '''
 
-    def __init__(self):
+    def __init__(self, color):
         self.resources = 12 * [2]
         self.plannedCosts = []
         self.huts = []
         self.personCount = 5
         self.score = 0
+        self.color = color
+        self.abr = color[:1].lower()
 
     def foodMissing(self):
         return max(0, self.personCount - self.resources.count(2))
@@ -49,26 +51,29 @@ class Player():
     def placePersons(self, board):
         self.plannedCosts = []
         
-        if board.personCount() == self.personCount:
+        if board.personCount(self.abr) == self.personCount:
             return
         # check huts
         payableHut = self.fetchPayableHut(board.availableHuts())
         if payableHut is not None:
-            board.placeOnHut(payableHut)
+            board.placeOnHut(payableHut, self.abr)
             self.adjustResources(payableHut.costs(self.resources))
             return
         # place on resources
         if self.resources.count(3) < 2:
-            board.addLumberjacks(self.personCount - board.personCount())
+            board.addLumberjacks(self.personCount - board.personCount(self.abr), self.abr)
         elif self.resources.count(4) < 2:
-            board.addClayDiggers(self.personCount - board.personCount())
+            board.addClayDiggers(self.personCount - board.personCount(self.abr), self.abr)
         elif self.resources.count(5) < 2:
-            board.addStoneDiggers(self.personCount - board.personCount())
+            board.addStoneDiggers(self.personCount - board.personCount(self.abr), self.abr)
         else:
-            board.addGoldDiggers(self.personCount - board.personCount())
+            board.addGoldDiggers(self.personCount - board.personCount(self.abr), self.abr)
     
     def finalScore(self):
         return self.score + len(self.resources)
+    
+    def getColor(self):
+        return self.color
     
     def toString(self):
         return """Resources: %s

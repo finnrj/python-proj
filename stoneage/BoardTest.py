@@ -21,35 +21,39 @@ class BoardTest(unittest.TestCase):
     def testPlaceOnHut(self):
         ahs = self.board.availableHuts()
         targetHut = ahs[0]
-        self.board.placeOnHut(targetHut)
+        self.board.placeOnHut(targetHut, "r")
         ahs = self.board.availableHuts()
         self.assertEqual(3, len(ahs), "should only be 3 huts left")
         self.assertNotIn(targetHut, ahs, "hut should not be available")
 
     def testPersonCountAfterPlacingOnHut(self):
-        self.assertEqual(0, self.board.personCount())
-        self.board.placeOnHut(self.board.availableHuts()[0])
-        self.assertEqual(1, self.board.personCount())
+        self.assertEqual(0, self.board.personCount("r"))
+        self.board.placeOnHut(self.board.availableHuts()[0], "r")
+        self.assertEqual(1, self.board.personCount("r"))
+        
+        self.assertEqual(0, self.board.personCount("b"))
+        self.board.placeOnHut(self.board.availableHuts()[1], "b")
+        self.assertEqual(1, self.board.personCount("b"))
         
     def testPlacePersonsWithoutResources(self):
-        self.assertEqual(0, self.board.personCount())
+        self.assertEqual(0, self.board.personCount("r"))
         self.board.addHunters(2)
         self.board.addLumberjacks(2)
 
-        self.assertEqual(4, self.board.personCount())
+        self.assertEqual(4, self.board.personCount("r"))
 
         self.board.addClayDiggers(1)
         
-        self.assertEqual(5, self.board.personCount())
+        self.assertEqual(5, self.board.personCount("r"))
        
     def testIllegalPlacement(self):
         self.board.addStoneDiggers(2)
         
-        self.assertEqual(2, self.board.personCount())
+        self.assertEqual(2, self.board.personCount("r"))
         with self.assertRaises(PlacementError):
             self.board.addStoneDiggers(1)
         
-        self.assertEqual(2, self.board.personCount())
+        self.assertEqual(2, self.board.personCount("r"))
         
     def testIsFinished(self):
         self.board = Board([SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4)])

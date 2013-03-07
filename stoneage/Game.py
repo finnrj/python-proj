@@ -25,15 +25,20 @@ class Game(object):
     def addPlayer(self, player):
         self.players.append(player)
         
-    def processRound(self):
-        while self.board.personCount() < 5:
+    def processRound(self, round):
+        print("\nRound: %d" % (round))
+        while self.board.personCount("Ingo") < 5 * self.playerCount():
             for player in self.players: 
-                player.placePersons(self.board)
                 print (self.board.toString())
+                print("Player: %s to place persons\n" % (player.getColor()))                
+                player.placePersons(self.board)
         for player in self.players: # reap resources and buy building tiles
+            print (self.board.toString())
+            print("Player: %s evaluates\n" % (player.getColor()))
             resources, huts = self.board.reapResources()
             player.addResources(resources)
             player.addHuts(huts)
+            print(player.toString())
         for player in self.players: # feed and adjust score
             player.feed()
 
@@ -47,11 +52,14 @@ class Game(object):
 
 def main():
     game = Game()
-    game.addPlayer(Player())
+    game.addPlayer(Player("Red"))
+    game.addPlayer(Player("Blue"))
+    round = 1
     try:
         while not game.finished():
             input("waiting... (type return)\n")
-            game.processRound()
+            game.processRound(round)
+            round +=1
         for player in game.players:
             print("\nPlayer final score: %d" % player.finalScore())
     except KeyboardInterrupt:

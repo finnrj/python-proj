@@ -5,17 +5,16 @@ class Hut:
     """Super Class representing a 'hut' building tile"""
     
     def __init__(self):
-        self.occupied = False
+        self.player = ""
 
-    def placePerson(self):
-        self.occupied = True
+    def placePerson(self, color):
+        self.player = color
 
     def removePerson(self):
-        if self.occupied:
-            self.occupied = False
+        self.player = ""
 
     def isOccupied(self):
-        return self.occupied
+        return (self.player != "")
     
     def value(self):
         return sum(self._costs)
@@ -24,10 +23,7 @@ class Hut:
         return sum([resources.count(num) for num in [3, 4, 5, 6]]) == 0
     
     def toString(self):
-        suffix = ""
-        if self.isOccupied():
-            suffix = "r"
-        return self.hutAsString() + suffix
+        return self.hutAsString() + self.player
     
 class SimpleHut(Hut):
     """ hut with exactly three resources """
