@@ -16,7 +16,7 @@ class Test(unittest.TestCase):
     def testAddingPlayer(self):
         self.assertEqual(self.game.playerCount(), 0, "no player at start")
         
-        self.game.addPlayer(Player())
+        self.game.addPlayer(Player("Red"))
         self.assertEqual(self.game.playerCount(), 1, "one player added")
 
     def testGameFinished(self):

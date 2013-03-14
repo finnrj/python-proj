@@ -24,10 +24,13 @@ class Game(object):
     
     def addPlayer(self, player):
         self.players.append(player)
-        
+    
+    def allPersonsPlaced(self):
+        return sum([player.personsLeft(self.board) for player in self.players]) == 0
+    
     def processRound(self, round):
         print("\nRound: %d" % (round))
-        while self.board.personCount("Ingo") < 5 * self.playerCount():
+        while not self.allPersonsPlaced():
             for player in self.players: 
                 print (self.board.toString())
                 print("Player: %s to place persons\n" % (player.getColor()))                
@@ -35,7 +38,7 @@ class Game(object):
         for player in self.players: # reap resources and buy building tiles
             print (self.board.toString())
             print("Player: %s evaluates\n" % (player.getColor()))
-            resources, huts = self.board.reapResources()
+            resources, huts = self.board.reapResources(player.getAbr())
             player.addResources(resources)
             player.addHuts(huts)
             print(player.toString())

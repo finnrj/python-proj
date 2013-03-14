@@ -15,6 +15,9 @@ class Hut:
 
     def isOccupied(self):
         return (self.player != "")
+
+    def isOccupiedBy(self):
+        return self.player
     
     def value(self):
         return sum(self._costs)

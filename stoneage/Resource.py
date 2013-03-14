@@ -10,18 +10,24 @@ class PlacementError(Exception):
 class Resource():
     """Class to represent a resource field on the board. """
 
+    maxPersons = 7
+    
     def __init__(self):
         self.persons = ""
 
     def addPerson(self, n, abr):
+        if n == 0: return
         if (self.persons.count(abr) > 0):
-            raise PlacementError("Player %s already added person to this Resource" % abr)
-        if (len(self.persons) + n > 7):
-            raise PlacementError("Not room for %d further persons on this Resource" % n)
+            raise PlacementError("Player %s already added person to the %s" % (abr, self.name))
+        if (len(self.persons) + n > self.maxPersons):
+            raise PlacementError("Not room for %d further persons in the %s" % (n, self.name))
         self.persons += n * abr
     
     def count(self, abr):
         return self.persons.count(abr)
+    
+    def freeSlots(self):
+        return self.maxPersons - len(self.persons)
 
     def reapResources(self, abr):
         count = int(sum([randint(1, 6) for dice in range(0, self.count(abr))])/self.resourceValue)
@@ -38,6 +44,9 @@ class HuntingGrounds(Resource):
         Resource.__init__(self)
         self.resourceValue = 2
         self.name = "Hunting grounds"
+
+    def freeSlots(self):
+        return 10
 
     def toString(self):
         return self.name + ": " + " ".join([ch for ch in self.persons])
@@ -74,6 +83,10 @@ class River(Resource):
         Resource.__init__(self)        
         self.resourceValue = 6
         self.name = "River"
+
+    
+    
+    
 
 if __name__ == '__main__':
     print("hallo")

@@ -12,7 +12,7 @@ class ResourceTest(unittest.TestCase):
         rs.addPerson(1, "r")
         self.assertEqual(1, rs.count("r"))
         
-        with self.assertRaisesRegex(PlacementError, "Player r already added person to this Resource"):
+        with self.assertRaisesRegex(PlacementError, "Player r already added person to the River"):
             rs.addPerson(1, "r")
         self.assertEqual(1, rs.count("r"))
         
@@ -21,9 +21,11 @@ class ResourceTest(unittest.TestCase):
 
         rs.addPerson(1, "r")
         self.assertEqual(1, rs.count("r"))
+        self.assertEqual(6, rs.freeSlots())
         
         rs.addPerson(3, "b")
         self.assertEqual(3, rs.count("b"))
+        self.assertEqual(3, rs.freeSlots())
 
     def testCountAfterReaping(self):
         rs = Quarry()

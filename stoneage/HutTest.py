@@ -18,6 +18,13 @@ class HutTest(unittest.TestCase):
                 
         self.assertEqual([3], hut.missing(resources))
 
+    def testPlacePerson(self):
+        hut = SimpleHut(3,3,4)
+        self.assertFalse(hut.isOccupied())
+        self.assertEqual("", hut.isOccupiedBy())
+        hut.placePerson("r")
+        self.assertTrue(hut.isOccupied())
+        self.assertEqual("r", hut.isOccupiedBy())
 
     def testHutNotPayable2(self):
         hut = SimpleHut(3,3,4)

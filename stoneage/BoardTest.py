@@ -37,21 +37,21 @@ class BoardTest(unittest.TestCase):
         
     def testPlacePersonsWithoutResources(self):
         self.assertEqual(0, self.board.personCount("r"))
-        self.board.addHunters(2)
-        self.board.addLumberjacks(2)
+        self.board.addHunters(2, "r")
+        self.board.addLumberjacks(2, "r")
 
         self.assertEqual(4, self.board.personCount("r"))
 
-        self.board.addClayDiggers(1)
+        self.board.addClayDiggers(1, "r")
         
         self.assertEqual(5, self.board.personCount("r"))
        
     def testIllegalPlacement(self):
-        self.board.addStoneDiggers(2)
+        self.board.addStoneDiggers(2, "r")
         
         self.assertEqual(2, self.board.personCount("r"))
         with self.assertRaises(PlacementError):
-            self.board.addStoneDiggers(1)
+            self.board.addStoneDiggers(1, "r")
         
         self.assertEqual(2, self.board.personCount("r"))
         

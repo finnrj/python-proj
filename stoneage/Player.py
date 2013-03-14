@@ -48,6 +48,9 @@ class Player():
             self.resources.remove(cost)
             self.plannedCosts.append(cost)
     
+    def personsLeft(self, board):
+        return self.personCount - board.personCount(self.abr)
+
     def placePersons(self, board):
         self.plannedCosts = []
         
@@ -60,20 +63,25 @@ class Player():
             self.adjustResources(payableHut.costs(self.resources))
             return
         # place on resources
-        if self.resources.count(3) < 2:
-            board.addLumberjacks(self.personCount - board.personCount(self.abr), self.abr)
-        elif self.resources.count(4) < 2:
-            board.addClayDiggers(self.personCount - board.personCount(self.abr), self.abr)
-        elif self.resources.count(5) < 2:
-            board.addStoneDiggers(self.personCount - board.personCount(self.abr), self.abr)
+        if self.resources.count(3) < 2 and board.freeForestSlots() > 0:
+            board.addLumberjacks(min(self.personsLeft(board), board.freeForestSlots()) , self.abr)
+        elif self.resources.count(4) < 2 and board.freeClayPitSlots() > 0:
+            board.addClayDiggers(min(self.personsLeft(board), board.freeClayPitSlots()), self.abr)
+        elif self.resources.count(5) < 2 and board.freeQuarrySlots() > 0:
+            board.addStoneDiggers(min(self.personsLeft(board), board.freeQuarrySlots()), self.abr)
+        elif board.freeRiverSlots() > 0:
+            board.addGoldDiggers(min(self.personsLeft(board), board.freeRiverSlots()), self.abr)
         else:
-            board.addGoldDiggers(self.personCount - board.personCount(self.abr), self.abr)
+            board.addHunters(self.personsLeft(board), self.abr)
     
     def finalScore(self):
         return self.score + len(self.resources)
     
     def getColor(self):
         return self.color
+
+    def getAbr(self):
+        return self.abr
     
     def toString(self):
         return """Resources: %s
