@@ -72,6 +72,8 @@ class PlayerTest(unittest.TestCase):
         self.assertEqual(0, self.player.foodMissing())
         self.player.feed()
         self.assertEqual(3, self.player.foodMissing())
+        
+    
 
 
 if __name__ == "__main__":

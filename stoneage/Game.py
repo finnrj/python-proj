@@ -40,10 +40,15 @@ class Game(object):
             print("Player: %s evaluates\n" % (player.getColor()))
             resources, huts = self.board.reapResources(player.getAbr())
             player.addResources(resources)
-            player.addHuts(huts)
+            
+            boughtHuts = player.buyHuts(huts)
+            self.board.popHuts(boughtHuts)
+                
+            #player.addHuts(huts)
             print(player.toString())
         for player in self.players: # feed and adjust score
             player.feed()
+        self.players = self.players[1:] + self.players[:1]  
 
     def finished(self):
         return self.board.isFinished()
@@ -64,7 +69,7 @@ def main():
             game.processRound(round)
             round +=1
         for player in game.players:
-            print("\nPlayer final score: %d" % player.finalScore())
+            print("\nPlayer %s final score: %d" % (player.getColor() , player.finalScore()))
     except KeyboardInterrupt:
         print("bye")
     

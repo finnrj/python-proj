@@ -111,10 +111,15 @@ class Board:
         for ground in self.grounds:
             reapedResources.extend(ground.reapResources(abr))
         
-        boughtHuts = [stack.pop() for stack in self.hutStacks if stack[-1].isOccupied()]
-        for hut in boughtHuts:
+        occupiedHuts = [stack[-1] for stack in self.hutStacks if len(stack) > 0 and stack[-1].isOccupiedBy() == abr]
+        
+        for hut in occupiedHuts:
             hut.removePerson()
-        return (reapedResources, boughtHuts)
+        return (reapedResources, occupiedHuts)
+    
+    def popHuts(self, huts):
+        for hut in huts:
+            [stack.pop() for stack in self.hutStacks if len(stack) > 0 and stack[-1] == hut]
         
     def placeOnHut(self, hut, color):
         hut.placePerson(color)
@@ -123,7 +128,7 @@ class Board:
         return [len(stack) for stack in self.hutStacks].count(0) > 0
     
     def toString(self):
-        stackstrings = ["[" * (len(stack)-1) + stack[-1].toString() for stack in self.hutStacks]
+        stackstrings = ["[" * (len(stack)-1) + stack[-1].toString() for stack in self.hutStacks if len(stack) > 0]
         return "Hut Stacks:\n%s" % "  ".join(stackstrings) + "\n" +\
              "\n".join(ground.toString() for ground in self.grounds)
 

@@ -11,12 +11,13 @@ class Player():
 
     def __init__(self, color):
         self.resources = 12 * [2]
-        self.plannedCosts = []
+        self.plannedCosts = {}
         self.huts = []
         self.personCount = 5
         self.score = 0
         self.color = color
         self.abr = color[:1].lower()
+
 
     def foodMissing(self):
         return max(0, self.personCount - self.resources.count(2))
@@ -28,7 +29,12 @@ class Player():
             self.resources.remove(2)
 
     def isPayable(self, hut):
-        return hut.missing(self.resources) == []
+        usableResources = self.resources[:]
+        plannedResources = [cost for costs in self.plannedCosts.values() for cost in costs]
+        
+        for resource in plannedResources:
+            usableResources.remove(resource)
+        return hut.missing(usableResources) == []
 
     def fetchPayableHut(self, availableHuts):
         for hut in availableHuts:
@@ -39,20 +45,26 @@ class Player():
     def addResources(self, additionalResources):
         self.resources.extend(additionalResources)
         
-    def addHuts(self, boughtHuts):
-        self.huts.extend(boughtHuts)
-        self.score += sum([hut.value() for hut in boughtHuts])
-        
-    def adjustResources(self, costs):
-        for cost in costs:
-            self.resources.remove(cost)
-            self.plannedCosts.append(cost)
+    def buyHuts(self, huts):
+        plannedResources = [cost for costs in self.plannedCosts.values() for cost in costs]
+        for resource in plannedResources:
+            self.resources.remove(resource)
+        self.huts.extend(huts)
+        self.score += sum([hut.value() for hut in huts])
+        return huts
+    
+    def adjustResources(self, hut):
+        self.plannedCosts[hut] = hut.costs(self.resources)
     
     def personsLeft(self, board):
         return self.personCount - board.personCount(self.abr)
 
+    def isNewRound(self, board):
+        return self.personsLeft(board) == self.personCount
+
     def placePersons(self, board):
-        self.plannedCosts = []
+        if self.isNewRound(board):
+            self.plannedCosts = {}
         
         if board.personCount(self.abr) == self.personCount:
             return
@@ -60,7 +72,7 @@ class Player():
         payableHut = self.fetchPayableHut(board.availableHuts())
         if payableHut is not None:
             board.placeOnHut(payableHut, self.abr)
-            self.adjustResources(payableHut.costs(self.resources))
+            self.adjustResources(payableHut)
             return
         # place on resources
         if self.resources.count(3) < 2 and board.freeForestSlots() > 0:

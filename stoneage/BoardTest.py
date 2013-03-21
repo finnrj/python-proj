@@ -61,6 +61,20 @@ class BoardTest(unittest.TestCase):
         self.board = Board([SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4)])
         self.assertTrue(self.board.isFinished())
         
+    def testReapResources(self):
+        hutForRed = SimpleHut(3, 3, 4)
+        hutForBlue = SimpleHut(3, 4, 4)
+        self.board = Board([hutForRed, hutForBlue, SimpleHut(3,3,4), SimpleHut(3,3,4)])
+        self.board.placeOnHut(hutForRed, "r")
+        self.board.placeOnHut(hutForBlue, "b")
+        
+        resources, huts = self.board.reapResources("r")
+        self.assertEqual([], resources)
+        self.assertEqual([hutForRed], huts)
+        
+        resources, huts = self.board.reapResources("b")
+        self.assertEqual([], resources)
+        self.assertEqual([hutForBlue], huts)
 
 def main():
 #    suite = unittest.TestLoader().loadTestsFromTestCase(BoardTest)
