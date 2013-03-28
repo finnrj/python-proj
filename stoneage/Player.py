@@ -18,7 +18,6 @@ class Player():
         self.color = color
         self.abr = color[:1].lower()
 
-
     def foodMissing(self):
         return max(0, self.personCount - self.resources.count(2))
     
@@ -29,12 +28,7 @@ class Player():
             self.resources.remove(2)
 
     def isPayable(self, hut):
-        usableResources = self.resources[:]
-        plannedResources = [cost for costs in self.plannedCosts.values() for cost in costs]
-        
-        for resource in plannedResources:
-            usableResources.remove(resource)
-        return hut.missing(usableResources) == []
+        return hut.missing(self.usableResources()) == []
 
     def fetchPayableHut(self, availableHuts):
         for hut in availableHuts:
@@ -54,7 +48,15 @@ class Player():
         return huts
     
     def adjustResources(self, hut):
-        self.plannedCosts[hut] = hut.costs(self.resources)
+        self.plannedCosts[hut] = hut.costs(self.usableResources())
+
+    def usableResources(self):
+        usableResources = self.resources[:]
+        plannedResources = [cost for costs in self.plannedCosts.values() for cost in costs]
+        
+        for resource in plannedResources:
+            usableResources.remove(resource)
+        return usableResources
     
     def personsLeft(self, board):
         return self.personCount - board.personCount(self.abr)
@@ -99,3 +101,14 @@ class Player():
         return """Resources: %s
 huts: %s    
 score: %d""" % (str(self.resources), ",". join([hut.toString() for hut in self.huts]), self.score)
+
+
+class HumanPlayer(Player):
+    
+    def __init__(self, color):
+        Player.__init__(self, color)
+
+
+
+
+

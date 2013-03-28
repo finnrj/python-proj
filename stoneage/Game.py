@@ -7,7 +7,8 @@ Created on Nov 22, 2012
 '''
 
 from Board import Board
-from Player import Player
+from Player import Player, HumanPlayer
+from random import shuffle
 
 class Game(object):
     '''
@@ -35,6 +36,7 @@ class Game(object):
                 print (self.board.toString())
                 print("Player: %s to place persons\n" % (player.getColor()))                
                 player.placePersons(self.board)
+
         for player in self.players: # reap resources and buy building tiles
             print (self.board.toString())
             print("Player: %s evaluates\n" % (player.getColor()))
@@ -46,8 +48,10 @@ class Game(object):
                 
             #player.addHuts(huts)
             print(player.toString())
+        
         for player in self.players: # feed and adjust score
             player.feed()
+        
         self.players = self.players[1:] + self.players[:1]  
 
     def finished(self):
@@ -58,10 +62,13 @@ class Game(object):
          
 %s""" % (" ".join([hut.hutAsString() for hut in self.board.availableHuts()]), "\n\n".join([player.hutAsString() for player in self.players]))
 
+
 def main():
     game = Game()
     game.addPlayer(Player("Red"))
     game.addPlayer(Player("Blue"))
+    game.addPlayer(HumanPlayer("Yellow"))
+    shuffle(game.players)
     round = 1
     try:
         while not game.finished():

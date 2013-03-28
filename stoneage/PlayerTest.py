@@ -6,7 +6,7 @@ Created on Nov 22, 2012
 import unittest
 from Player import Player
 from Board import Board
-from Hut import SimpleHut
+from Hut import SimpleHut, CountHut
 
 
 class PlayerTest(unittest.TestCase):
@@ -73,8 +73,29 @@ class PlayerTest(unittest.TestCase):
         self.player.feed()
         self.assertEqual(3, self.player.foodMissing())
         
-    
+    def testIsPayableBug(self):
+        self.player.addResources([4, 4, 5, 6, 3, 3, 3, 3, 3])
+        firstHut = CountHut(4, 2)
+        self.assertTrue(self.player.isPayable(firstHut))
+        self.player.adjustResources(firstHut)
+        
+        self.assertDictEqual({firstHut : [3,4,4,3]}, self.player.plannedCosts)
+        
+        secondHut = CountHut(4, 3)
+        self.assertTrue(self.player.isPayable(secondHut))
+        self.player.adjustResources(secondHut)
 
+        self.assertDictEqual({firstHut : [3,4,4,3], secondHut : [3,5,6,3]}, self.player.plannedCosts)
+        
+        thirdHut = SimpleHut(5, 5, 6)
+        self.assertFalse(self.player.isPayable(thirdHut))
+        
+        fourthHut = CountHut(5, 2)
+        self.assertFalse(self.player.isPayable(fourthHut))
+        
+        
+        
+        
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(PlayerTest)

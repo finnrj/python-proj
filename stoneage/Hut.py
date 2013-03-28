@@ -143,8 +143,7 @@ class CountHut(Hut):
         
     def hutAsString(self):
         return "[Count:%d,%d]" %(self.resourceCount, self.typesCount)
-        
-         
+
 
 def main():
     pass
