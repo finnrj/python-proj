@@ -130,7 +130,7 @@ class Board:
     def toString(self):
         stackstrings = ["[" * (len(stack)-1) + stack[-1].toString() for stack in self.hutStacks if len(stack) > 0]
         return "Hut Stacks:\n%s" % "  ".join(stackstrings) + "\n" +\
-             "\n".join(ground.toString() for ground in self.grounds)
+             "\n".join(ground.toString() for ground in self.grounds) + "\n"
 
 def main():
     pass

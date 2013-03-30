@@ -7,12 +7,12 @@ import unittest
 from Player import Player
 from Board import Board
 from Hut import SimpleHut, CountHut
-
+from Strategy import Strategy, StupidBot
 
 class PlayerTest(unittest.TestCase):
 
     def setUp(self):
-        self.player = Player("Red")
+        self.player = Player("Red", StupidBot())
         self.board = Board()
         
     def testPlacePersonsWithoutResources(self):

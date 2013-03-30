@@ -35,7 +35,7 @@ class Resource():
         return [self.resourceValue for resource in  range(0, count)]
 
     def toString(self):
-        return ("%-15s" % self.name) + ": " + " ".join([ch for ch in self.persons]) + " O" * (7 - len(self.persons))
+        return ("%-15s" % self.name) + ": " + " ".join(ch for ch in self.persons + "O" * (7 - len(self.persons)))
         
 class HuntingGrounds(Resource):
     """Class to represent a food resource field on the board."""

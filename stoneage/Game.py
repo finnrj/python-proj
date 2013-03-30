@@ -7,8 +7,9 @@ Created on Nov 22, 2012
 '''
 
 from Board import Board
-from Player import Player, HumanPlayer
 from random import shuffle
+from Strategy import StupidBot, Human
+from Player import Player
 
 class Game(object):
     '''
@@ -32,14 +33,14 @@ class Game(object):
     def processRound(self, round):
         print("\nRound: %d" % (round))
         while not self.allPersonsPlaced():
-            for player in self.players: 
+            for player in [p for p in self.players if not self.board.personCount(p.abr) == p.personCount]:
+                print("Player: %s to place persons" % (player.getColor()))                
                 print (self.board.toString())
-                print("Player: %s to place persons\n" % (player.getColor()))                
                 player.placePersons(self.board)
 
         for player in self.players: # reap resources and buy building tiles
+            print("Player: %s evaluates" % (player.getColor()))
             print (self.board.toString())
-            print("Player: %s evaluates\n" % (player.getColor()))
             resources, huts = self.board.reapResources(player.getAbr())
             player.addResources(resources)
             
@@ -65,9 +66,9 @@ class Game(object):
 
 def main():
     game = Game()
-    game.addPlayer(Player("Red"))
-    game.addPlayer(Player("Blue"))
-    game.addPlayer(HumanPlayer("Yellow"))
+    game.addPlayer(Player("Red", StupidBot()))
+    game.addPlayer(Player("Blue",  StupidBot()))
+    game.addPlayer(Player("Yellow",  Human()))
     shuffle(game.players)
     round = 1
     try:

@@ -6,6 +6,7 @@ Created on Nov 22, 2012
 import unittest
 from Game import Game
 from Player import Player
+from Strategy import Strategy
 
 
 class Test(unittest.TestCase):
@@ -16,7 +17,7 @@ class Test(unittest.TestCase):
     def testAddingPlayer(self):
         self.assertEqual(self.game.playerCount(), 0, "no player at start")
         
-        self.game.addPlayer(Player("Red"))
+        self.game.addPlayer(Player("Red", Strategy()))
         self.assertEqual(self.game.playerCount(), 1, "one player added")
 
     def testGameFinished(self):
