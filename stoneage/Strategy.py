@@ -11,6 +11,9 @@ class Strategy:
     def placePersons(self, player, board):
         raise StrategyNotImplemented("The placePersons() method should be implemented")
     
+    def buyHuts(self, huts):
+        raise StrategyNotImplemented("The buyHuts() method should be implemented")
+    
 class StupidBot(Strategy):
     
     def placePersons(self, player, board):
@@ -36,42 +39,70 @@ class StupidBot(Strategy):
         else:
             board.addHunters(player.personsLeft(board), player.abr)
         
+    def buyHuts(self, huts):
+        plannedResources = [cost for costs in self.player.plannedCosts.values() for cost in costs]
+        for resource in plannedResources:
+            self.player.resources.remove(resource)
+        self.player.huts.extend(huts)
+        self.player.score += sum([hut.value() for hut in huts])
+        return huts
 
 class Human(Strategy):
+    """Class for a human player"""
+    
+    prompt = """Please place persons!
+        Inputformat: [location][number], where
+
+            Grounds:                
+                Hunting: f
+                Forest : w
+                Clay:    c
+                Quarry:  s
+                River:   g
+
+            Hut (building): h
+    """
+    
     def placePersons(self, player, board):
-        inputString = input("Please do something!")
+        inputString = input(self.prompt)
         self.processInput(inputString, board)
     
     def processInput(self, inp, board):
         inp = inp.lower()
-        
-#        Inputformat:
-#            
-#        [stringAbreviation][number]
-
-#            Grounds:                
-#                Hunting: h
-#                Forest : f
-#                Clay: c
-#                Quarry: q
-#                River: r
-#
-#            Building: b
-
-
-
         abr = self.player.getAbr()
         
-        number = int(inp[1:])
         sa = inp[:1] #String argument
-        if sa == "h":   board.addHunters(number, abr)
-        elif sa == "f": board.addLumberjacks(number, abr)
+        number = int(inp[1:])
+        if   sa == "f":   board.addHunters(number, abr)
+        elif sa == "w": board.addLumberjacks(number, abr)
         elif sa == "c": board.addClayDiggers(number, abr)
-        elif sa == "q": board.addStoneDiggers(number, abr)
-        elif sa == "r": board.addGoldDiggers(number, abr)
-        elif sa == "b": board.placeOnHut(board.availableHuts()[number-1], abr)
+        elif sa == "s": board.addStoneDiggers(number, abr)
+        elif sa == "g": board.addGoldDiggers(number, abr)
+        elif sa == "h": board.placeOnHut(board.availableHuts()[number-1], abr)
+
        
+    def buyHuts(self, huts):
+        result = []
+        print("You have placed on following huts: " + " ".join(hut.toString() for hut in huts))
+        for hut in huts:
+            inputString = input(" ".join(["do you want to buy this hut:", hut.toString(), "? (Y|n)"]))
+            if inputString != "n":
+                self.player.huts.append(hut)
+                self.player.score += self.pay(hut)
+                result.append(hut)
+        return result
     
+    def pay(self, hut):
+        if hut.hutAsString().startswith("[Any") or hut.hutAsString().startswith("[Count"):
+            inputString = input(" ".join(["choose resources e.g.: 445...", str(self.player.resources), " "]))
+            costs = [int(ch) for ch in inputString]
+            self.player.removeResources(costs)
+            return sum(costs)
+        else:
+            self.player.removeResources(hut.costs([]))
+            return hut.value()
+        
+        
     
     
     

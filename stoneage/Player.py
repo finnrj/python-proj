@@ -42,14 +42,13 @@ class Player():
     def addResources(self, additionalResources):
         self.resources.extend(additionalResources)
         
-    def buyHuts(self, huts):
-        plannedResources = [cost for costs in self.plannedCosts.values() for cost in costs]
-        for resource in plannedResources:
+    def removeResources(self, resourcesToRemove):
+        for resource in resourcesToRemove:
             self.resources.remove(resource)
-        self.huts.extend(huts)
-        self.score += sum([hut.value() for hut in huts])
-        return huts
-    
+        
+    def buyHuts(self, huts):
+        return self.strategy.buyHuts(huts)
+            
     def adjustResources(self, hut):
         self.plannedCosts[hut] = hut.costs(self.usableResources())
 

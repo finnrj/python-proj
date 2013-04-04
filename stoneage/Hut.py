@@ -70,7 +70,6 @@ class AnyHut(Hut):
     
     def hutAsString(self):
         return "[Any]"
-
     
 class CountHut(Hut):
     """ Hut with four or five resources of 1 to 5 different types"""
