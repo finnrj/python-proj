@@ -73,11 +73,15 @@ class AnyHut(Hut):
     
 class CountHut(Hut):
     """ Hut with four or five resources of 1 to 5 different types"""
+    
     def __init__(self, resourceCount, typesCount):
         Hut.__init__(self)
         self.resourceCount = resourceCount
         self.typesCount = typesCount
         self._costs = []
+
+    def getResourceCount(self):
+        return self.resourceCount
 
     def costs(self, resources):
         result = []        

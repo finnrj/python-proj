@@ -39,6 +39,9 @@ class Player():
                 return hut
         return None
     
+    def getNonFood(self):
+        return [resource for resource in self.resources if resource != 2]
+    
     def addResources(self, additionalResources):
         self.resources.extend(additionalResources)
         

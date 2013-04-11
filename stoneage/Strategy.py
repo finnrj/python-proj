@@ -1,3 +1,4 @@
+from Hut import AnyHut
 class StrategyNotImplemented(Exception):
     """Exception class for not inheriting the Strategy class"""
     def __init__(self, msg):
@@ -65,9 +66,9 @@ class Human(Strategy):
     
     def placePersons(self, player, board):
         inputString = input(self.prompt)
-        self.processInput(inputString, board)
+        self.processPlacePersonsInput(inputString, board)
     
-    def processInput(self, inp, board):
+    def processPlacePersonsInput(self, inp, board):
         inp = inp.lower()
         abr = self.player.getAbr()
         
@@ -80,27 +81,57 @@ class Human(Strategy):
         elif sa == "g": board.addGoldDiggers(number, abr)
         elif sa == "h": board.placeOnHut(board.availableHuts()[number-1], abr)
 
-       
     def buyHuts(self, huts):
-        result = []
+        result = [] 
         print("You have placed on following huts: " + " ".join(hut.toString() for hut in huts))
         for hut in huts:
             inputString = input(" ".join(["do you want to buy this hut:", hut.toString(), "? (Y|n)"]))
             if inputString != "n":
-                self.player.huts.append(hut)
-                self.player.score += self.pay(hut)
-                result.append(hut)
+                self.processBuyHutInput(result, hut)
         return result
     
+    def processBuyHutInput(self, result, hut):
+        self.player.huts.append(hut)
+        self.player.score += self.pay(hut)
+        result.append(hut)
+            
     def pay(self, hut):
         if hut.hutAsString().startswith("[Any") or hut.hutAsString().startswith("[Count"):
-            inputString = input(" ".join(["choose resources e.g.: 445...", str(self.player.resources), " "]))
-            costs = [int(ch) for ch in inputString]
-            self.player.removeResources(costs)
-            return sum(costs)
+            return sum(self.processPayHut(self.fetchResourecestoPay(hut)))
         else:
             self.player.removeResources(hut.costs([]))
             return hut.value()
+    
+    def fetchResourecestoPay(self, hut):
+        finished = False
+        while not finished:
+            promptString = " ".join(["choose resources e.g.: 445...", str(self.player.getNonFood()), " "])
+            inputString = input(promptString)
+            inputResources = [int(ch) for ch in inputString]
+            clone = self.player.resources[:]
+            try:
+                for r in inputResources:
+                    clone.remove(r)
+            except ValueError:
+                print(" ".join(["Resources %s not available in " % inputString, str(self.player.getNonFood()), "\n"]))
+                continue # continue while loop ;-)
+
+            if isinstance(hut, AnyHut):
+                finished = len(inputString) > 0 and len(inputString) < 8
+            else: # CountHut
+                if len(hut.missing(inputResources)) != 0:
+                    print("missing resources: " + str(hut.missing(inputResources)))
+                if len(inputResources) != hut.getResourceCount():
+                    print("Given resource count:" + str(len(inputResources)) + ", required: " + str(hut.getResourceCount()))
+                finished = (len(hut.missing(inputResources)) == 0) and (len(inputResources) == hut.getResourceCount())  
+        return inputString
+
+    def processPayHut(self, inputString):
+        costs = [int(ch) for ch in inputString]
+        self.player.removeResources(costs)
+        return costs
+
+        
         
         
     
