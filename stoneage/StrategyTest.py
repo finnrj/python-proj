@@ -53,7 +53,7 @@ class StrategyTest(unittest.TestCase):
         result = []
         hut = SimpleHut(3,3,3)
         self.player.addResources([3,3,3,4,5,5])
-        self.human.processBuyHutInput(result, hut)
+        self.human.buyHut(result, hut)
         self.assertIn(hut, result)
 
     def testHumanPaySimpleHut(self):

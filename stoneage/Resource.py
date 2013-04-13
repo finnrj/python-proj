@@ -15,27 +15,27 @@ class Resource():
     def __init__(self):
         self.persons = ""
 
-    def addPerson(self, n, abr):
+    def addPerson(self, n, playerAbr):
         if n == 0: return
-        if (self.persons.count(abr) > 0):
-            raise PlacementError("Player %s already added person to the %s" % (abr, self.name))
+        if (self.persons.count(playerAbr) > 0):
+            raise PlacementError("Player %s already added person to the %s" % (playerAbr, self.name))
         if (len(self.persons) + n > self.maxPersons):
             raise PlacementError("Not room for %d further persons in the %s" % (n, self.name))
-        self.persons += n * abr
+        self.persons += n * playerAbr
     
-    def count(self, abr):
-        return self.persons.count(abr)
+    def count(self, playerAbr):
+        return self.persons.count(playerAbr)
     
     def freeSlots(self):
         return self.maxPersons - len(self.persons)
 
-    def reapResources(self, abr):
-        count = int(sum([randint(1, 6) for dice in range(0, self.count(abr))])/self.resourceValue)
-        self.persons = "".join([ch for ch in self.persons if ch != abr])
+    def reapResources(self, playerAbr):
+        count = int(sum([randint(1, 6) for dice in range(0, self.count(playerAbr))])/self.resourceValue)
+        self.persons = "".join([ch for ch in self.persons if ch != playerAbr])
         return [self.resourceValue for resource in  range(0, count)]
 
     def toString(self):
-        return ("%-20s" % self.name) + ": " + " ".join(ch for ch in self.persons + "O" * (7 - len(self.persons)))
+        return ("%-19s" % self.name) + ": " + " ".join(ch for ch in self.persons + "O" * (7 - len(self.persons)))
         
 class HuntingGrounds(Resource):
     """Class to represent a food resource field on the board."""

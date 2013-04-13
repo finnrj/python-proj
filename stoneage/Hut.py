@@ -26,7 +26,7 @@ class Hut:
         return sum([resources.count(num) for num in [3, 4, 5, 6]]) == 0
     
     def toString(self):
-        return self.hutAsString() + self.player
+        return self.asString() + self.player
     
 class SimpleHut(Hut):
     """ hut with exactly three resources """
@@ -49,7 +49,7 @@ class SimpleHut(Hut):
                 missing.append(res)
         return missing
     
-    def hutAsString(self):
+    def asString(self):
         return str(self._costs)
     
 class AnyHut(Hut):
@@ -68,7 +68,7 @@ class AnyHut(Hut):
             return [3]
         return [] 
     
-    def hutAsString(self):
+    def asString(self):
         return "[Any]"
     
 class CountHut(Hut):
@@ -144,7 +144,7 @@ class CountHut(Hut):
     def allWood(self, count):
         return count * [3]
         
-    def hutAsString(self):
+    def asString(self):
         return "[Count:%d,%d]" %(self.resourceCount, self.typesCount)
 
 

@@ -17,9 +17,8 @@ class Player():
         self.personCount = 5
         self.score = 0
         self.color = color
-        self.abr = color[:1].lower()
+        self.playerAbr = color[:1].lower()
         self.strategy = strategy
-        strategy.player = self
 
     def foodMissing(self):
         return max(0, self.personCount - self.resources.count(2))
@@ -40,7 +39,7 @@ class Player():
         return None
     
     def getNonFood(self):
-        return [resource for resource in self.resources if resource != 2]
+        return sorted([resource for resource in self.resources if resource != 2])
     
     def addResources(self, additionalResources):
         self.resources.extend(additionalResources)
@@ -50,7 +49,7 @@ class Player():
             self.resources.remove(resource)
         
     def buyHuts(self, huts):
-        return self.strategy.buyHuts(huts)
+        return self.strategy.buyHuts(self, huts)
             
     def adjustResources(self, hut):
         self.plannedCosts[hut] = hut.costs(self.usableResources())
@@ -61,10 +60,10 @@ class Player():
         
         for resource in plannedResources:
             usableResources.remove(resource)
-        return usableResources
+        return sorted(usableResources)
     
     def personsLeft(self, board):
-        return self.personCount - board.personCount(self.abr)
+        return self.personCount - board.personCount(self.playerAbr)
 
     def isNewRound(self, board):
         return self.personsLeft(board) == self.personCount
@@ -79,11 +78,11 @@ class Player():
         return self.color
 
     def getAbr(self):
-        return self.abr
+        return self.playerAbr
     
     def toString(self):
         return """Resources: %s
 huts: %s    
-score: %d\n""" % (str(self.resources), ",". join([hut.toString() for hut in self.huts]), self.score)
+score: %d\n""" % (str(sorted(self.resources)), ",". join([hut.toString() for hut in self.huts]), self.score)
 
 

@@ -70,48 +70,48 @@ class Board:
     def availableHuts(self):
         return [stack[-1] for stack in self.hutStacks if len(stack) > 0 and not stack[-1].isOccupied()]
 
-    def addHunters(self, count, abr):
-        self.huntingGrounds.addPerson(count, abr)
+    def addHunters(self, count, playerAbr):
+        self.huntingGrounds.addPerson(count, playerAbr)
     
-    def addLumberjacks(self, count, abr):
-        self.forest.addPerson(count, abr)
+    def addLumberjacks(self, count, playerAbr):
+        self.forest.addPerson(count, playerAbr)
         
     def freeForestSlots(self):
         return self.forest.freeSlots()
     
-    def addClayDiggers(self, count, abr):
-        self.clayPit.addPerson(count, abr)
+    def addClayDiggers(self, count, playerAbr):
+        self.clayPit.addPerson(count, playerAbr)
         
     def freeClayPitSlots(self):
         return self.clayPit.freeSlots()
     
-    def addStoneDiggers(self, count, abr):
-        self.quarry.addPerson(count, abr)
+    def addStoneDiggers(self, count, playerAbr):
+        self.quarry.addPerson(count, playerAbr)
         
     def freeQuarrySlots(self):
         return self.quarry.freeSlots()
 
-    def addGoldDiggers(self, count, abr):
-        self.river.addPerson(count, abr)
+    def addGoldDiggers(self, count, playerAbr):
+        self.river.addPerson(count, playerAbr)
         
     def freeRiverSlots(self):
         return self.river.freeSlots()
         
-    def personsOnHuts(self, abr):
-        return [stack[-1].isOccupiedBy() for stack in self.hutStacks].count(abr)
+    def personsOnHuts(self, playerAbr):
+        return [stack[-1].isOccupiedBy() for stack in self.hutStacks].count(playerAbr)
 
-    def personsOnGrounds(self, abr):
-        return sum([ground.count(abr) for ground in self.grounds])
+    def personsOnGrounds(self, playerAbr):
+        return sum([ground.count(playerAbr) for ground in self.grounds])
 
-    def personCount(self, abr):
-        return self.personsOnGrounds(abr) + self.personsOnHuts(abr)
+    def personCount(self, playerAbr):
+        return self.personsOnGrounds(playerAbr) + self.personsOnHuts(playerAbr)
     
-    def reapResources(self, abr):
+    def reapResources(self, playerAbr):
         reapedResources = []
         for ground in self.grounds:
-            reapedResources.extend(ground.reapResources(abr))
+            reapedResources.extend(ground.reapResources(playerAbr))
         
-        occupiedHuts = [stack[-1] for stack in self.hutStacks if len(stack) > 0 and stack[-1].isOccupiedBy() == abr]
+        occupiedHuts = [stack[-1] for stack in self.hutStacks if len(stack) > 0 and stack[-1].isOccupiedBy() == playerAbr]
         
         for hut in occupiedHuts:
             hut.removePerson()

@@ -33,7 +33,7 @@ class Game(object):
     def processRound(self, round):
         print("\nRound: %d" % (round))
         while not self.allPersonsPlaced():
-            for player in [p for p in self.players if not self.board.personCount(p.abr) == p.personCount]:
+            for player in [p for p in self.players if not self.board.personCount(p.playerAbr) == p.personCount]:
                 print("Player: %s to place persons" % (player.getColor()))                
                 print (self.board.toString())
                 player.placePersons(self.board)
@@ -61,7 +61,7 @@ class Game(object):
     def position(self):
         return """Available huts: %s
          
-%s""" % (" ".join([hut.hutAsString() for hut in self.board.availableHuts()]), "\n\n".join([player.hutAsString() for player in self.players]))
+%s""" % (" ".join([hut.asString() for hut in self.board.availableHuts()]), "\n\n".join([player.asString() for player in self.players]))
 
 
 def main():
@@ -73,7 +73,7 @@ def main():
     round = 1
     try:
         while not game.finished():
-            input("waiting... (type return)\n")
+            input("Press the return key to proceed to the next round....")
             game.processRound(round)
             round +=1
         for player in game.players:

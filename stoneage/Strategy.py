@@ -1,4 +1,9 @@
-from Hut import AnyHut
+from Hut import AnyHut, CountHut
+
+def suffix(object):
+    size = object if isinstance(object, type(1)) else len(object)
+    return "s" if size > 1 else ""
+
 class StrategyNotImplemented(Exception):
     """Exception class for not inheriting the Strategy class"""
     def __init__(self, msg):
@@ -12,7 +17,7 @@ class Strategy:
     def placePersons(self, player, board):
         raise StrategyNotImplemented("The placePersons() method should be implemented")
     
-    def buyHuts(self, huts):
+    def buyHuts(self, player, huts):
         raise StrategyNotImplemented("The buyHuts() method should be implemented")
     
 class StupidBot(Strategy):
@@ -25,34 +30,36 @@ class StupidBot(Strategy):
         # check huts
         payableHut = player.fetchPayableHut(board.availableHuts())
         if payableHut is not None:
-            board.placeOnHut(payableHut, player.abr)
+            board.placeOnHut(payableHut, player.playerAbr)
             player.adjustResources(payableHut)
             return
         # place on resources
         if player.resources.count(3) < 2 and board.freeForestSlots() > 0:
-            board.addLumberjacks(min(player.personsLeft(board), board.freeForestSlots()) , player.abr)
+            board.addLumberjacks(min(player.personsLeft(board), board.freeForestSlots()) , player.playerAbr)
         elif player.resources.count(4) < 2 and board.freeClayPitSlots() > 0:
-            board.addClayDiggers(min(player.personsLeft(board), board.freeClayPitSlots()), player.abr)
+            board.addClayDiggers(min(player.personsLeft(board), board.freeClayPitSlots()), player.playerAbr)
         elif player.resources.count(5) < 2 and board.freeQuarrySlots() > 0:
-            board.addStoneDiggers(min(player.personsLeft(board), board.freeQuarrySlots()), player.abr)
+            board.addStoneDiggers(min(player.personsLeft(board), board.freeQuarrySlots()), player.playerAbr)
         elif board.freeRiverSlots() > 0:
-            board.addGoldDiggers(min(player.personsLeft(board), board.freeRiverSlots()), player.abr)
+            board.addGoldDiggers(min(player.personsLeft(board), board.freeRiverSlots()), player.playerAbr)
         else:
-            board.addHunters(player.personsLeft(board), player.abr)
+            board.addHunters(player.personsLeft(board), player.playerAbr)
         
-    def buyHuts(self, huts):
-        plannedResources = [cost for costs in self.player.plannedCosts.values() for cost in costs]
+    def buyHuts(self, player,huts):
+        plannedResources = [cost for costs in player.plannedCosts.values() for cost in costs]
         for resource in plannedResources:
-            self.player.resources.remove(resource)
-        self.player.huts.extend(huts)
-        self.player.score += sum([hut.value() for hut in huts])
+            player.resources.remove(resource)
+        player.huts.extend(huts)
+        player.score += sum([hut.value() for hut in huts])
         return huts
 
 class Human(Strategy):
     """Class for a human player"""
     
-    prompt = """Please place persons!
-        Inputformat: [location][number], where
+    prompt = """You have following resource%s: %s 
+and %d person%s available. Please place person%s!
+     
+        Input format: [resource][number], where
 
             Grounds:                
                 Hunting: f
@@ -60,60 +67,84 @@ class Human(Strategy):
                 Clay:    c
                 Quarry:  s
                 River:   g
+            and 'number' the number of persons to
+            place in the chosen ground. 
 
-            Hut (building): h
-    """
-    
-    def placePersons(self, player, board):
-        inputString = input(self.prompt)
-        self.processPlacePersonsInput(inputString, board)
-    
-    def processPlacePersonsInput(self, inp, board):
-        inp = inp.lower()
-        abr = self.player.getAbr()
-        
-        sa = inp[:1] #String argument
-        number = int(inp[1:])
-        if   sa == "f":   board.addHunters(number, abr)
-        elif sa == "w": board.addLumberjacks(number, abr)
-        elif sa == "c": board.addClayDiggers(number, abr)
-        elif sa == "s": board.addStoneDiggers(number, abr)
-        elif sa == "g": board.addGoldDiggers(number, abr)
-        elif sa == "h": board.placeOnHut(board.availableHuts()[number-1], abr)
-
-    def buyHuts(self, huts):
-        result = [] 
-        print("You have placed on following huts: " + " ".join(hut.toString() for hut in huts))
-        for hut in huts:
-            inputString = input(" ".join(["do you want to buy this hut:", hut.toString(), "? (Y|n)"]))
-            if inputString != "n":
-                self.processBuyHutInput(result, hut)
-        return result
-    
-    def processBuyHutInput(self, result, hut):
-        self.player.huts.append(hut)
-        self.player.score += self.pay(hut)
-        result.append(hut)
+            Hut: h
+            and 'number' is the index of the hut (1-4)
             
-    def pay(self, hut):
-        if hut.hutAsString().startswith("[Any") or hut.hutAsString().startswith("[Count"):
-            return sum(self.processPayHut(self.fetchResourecestoPay(hut)))
-        else:
-            self.player.removeResources(hut.costs([]))
-            return hut.value()
-    
-    def fetchResourecestoPay(self, hut):
+    """
+   
+    def placePersons(self, player, board):
+        self.processPlacePersonsInput(self.fetchPlacePersonsInput(player.resources, player.personsLeft(board)), player.getAbr(), board)
+
+    def fetchPlacePersonsInput(self, resources, personsLeft):
         finished = False
         while not finished:
-            promptString = " ".join(["choose resources e.g.: 445...", str(self.player.getNonFood()), " "])
+            try:
+                inputString = input(self.prompt % (suffix(resources), str(resources), personsLeft, suffix(personsLeft), suffix(personsLeft))).lower()
+                resource, number = inputString[:1], int(inputString[1:])
+                finished = True
+            except ValueError:
+                print("'%s' do not seem to be a number!" % inputString[1:])
+        return (resource, number)
+
+    def processPlacePersonsInput(self, resourcePersonCount, playerAbr, board):
+        resource, personCount = resourcePersonCount
+        if   resource == "f": board.addHunters(personCount, playerAbr)
+        elif resource == "w": board.addLumberjacks(personCount, playerAbr)
+        elif resource == "c": board.addClayDiggers(personCount, playerAbr)
+        elif resource == "s": board.addStoneDiggers(personCount, playerAbr)
+        elif resource == "g": board.addGoldDiggers(personCount, playerAbr)
+        elif resource == "h": board.placeOnHut(board.availableHuts()[personCount-1], playerAbr)
+
+    def buyHuts(self, player, huts):
+        result = [] 
+        print("You have placed on following hut%s: " % suffix(huts) + " ".join(hut.asString() for hut in huts))
+        nonFood = player.getNonFood()
+        print("available resource%s: %s " % (suffix(nonFood), str(nonFood)))
+        
+        notPayable, payable = self.groupByPayable(player, huts)
+        if notPayable:
+            print("you can't afford the following hut%s: %s" % (suffix(notPayable), ", ".join([hut.asString() for hut in notPayable])))
+            
+        while payable:
+            hut = payable[0]
+            inputString = input("do you want to buy this hut: %s ? (Y|n) " % hut.asString())
+            if inputString != "n":
+                self.buyHut(player, hut)
+                result.append(hut)
+                payable.remove(hut)
+            notPayable, payable = self.groupByPayable(player, payable)
+            if notPayable:
+                print("you can't afford the following hut%s: %s" % (suffix(notPayable), ", ".join([hut.asString() for hut in notPayable])))
+        return result
+        
+    def groupByPayable(self, player, huts):
+        return ([hut for hut in huts if not player.isPayable(hut)], [hut for hut in huts if player.isPayable(hut)])
+    
+    def buyHut(self, player, hut):
+        player.huts.append(hut)
+        player.score += self.pay(player, hut)
+            
+    def pay(self, player, hut):
+        if isinstance(hut, AnyHut) or isinstance(hut, CountHut):
+            return sum(self.processPayHut(player, self.fetchResourecestoPay(player.getNonFood(), hut)))
+        else:
+            player.removeResources(hut.costs([]))
+            return hut.value()
+    
+    def fetchResourecestoPay(self, nonFoodResources, hut):
+        finished = False
+        while not finished:
+            promptString = "choose resources (format='445...') to pay the hut: %s\n available resources: %s " % (hut.asString(), str(nonFoodResources))
             inputString = input(promptString)
             inputResources = [int(ch) for ch in inputString]
-            clone = self.player.resources[:]
             try:
                 for r in inputResources:
-                    clone.remove(r)
+                    nonFoodResources[:].remove(r)
             except ValueError:
-                print(" ".join(["Resources %s not available in " % inputString, str(self.player.getNonFood()), "\n"]))
+                print("Resources %s not available in %s\n" % (inputString, str(nonFoodResources)))
                 continue # continue while loop ;-)
 
             if isinstance(hut, AnyHut):
@@ -126,9 +157,9 @@ class Human(Strategy):
                 finished = (len(hut.missing(inputResources)) == 0) and (len(inputResources) == hut.getResourceCount())  
         return inputString
 
-    def processPayHut(self, inputString):
+    def processPayHut(self, player, inputString):
         costs = [int(ch) for ch in inputString]
-        self.player.removeResources(costs)
+        player.removeResources(costs)
         return costs
 
         
