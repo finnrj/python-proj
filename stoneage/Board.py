@@ -4,7 +4,10 @@ from Hut import SimpleHut, AnyHut, CountHut
 from random import shuffle
 from Resource import HuntingGrounds, Forest, ClayPit, Quarry, River
 
-from math import floor
+class PlacementError(Exception):
+    """Exception class for illegal placements"""
+    def __init__(self, msg):
+        Exception.__init__(self, msg)
 
 class Board:
     """Class representing the gameboard """
@@ -67,9 +70,12 @@ class Board:
     def numberOfHutsLeft(self):
         return [len(stack) for stack in self.hutStacks]
 
+    def upperHuts(self):
+        return [stack[-1] for stack in self.hutStacks if len(stack) > 0]
+    
     def availableHuts(self):
-        return [stack[-1] for stack in self.hutStacks if len(stack) > 0 and not stack[-1].isOccupied()]
-
+        return [hut for hut in self.upperHuts() if not hut.isOccupied()]
+    
     def addHunters(self, count, playerAbr):
         self.huntingGrounds.addPerson(count, playerAbr)
     

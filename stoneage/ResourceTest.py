@@ -1,8 +1,7 @@
 #! /usr/bin/env python3
 
-from Resource import Resource, HuntingGrounds, Forest, River, Quarry, PlacementError
 import unittest
-
+from Resource import Resource, HuntingGrounds, Forest, River, Quarry
 
 class ResourceTest(unittest.TestCase):
     
@@ -12,6 +11,7 @@ class ResourceTest(unittest.TestCase):
         rs.addPerson(1, "r")
         self.assertEqual(1, rs.count("r"))
         
+        from Board import PlacementError
         with self.assertRaisesRegex(PlacementError, "Player r already added person to the River"):
             rs.addPerson(1, "r")
         self.assertEqual(1, rs.count("r"))

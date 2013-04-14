@@ -1,9 +1,8 @@
 #! /usr/bin/env python3
 
+import unittest
 from Board import Board
 from Hut import Hut, SimpleHut
-import unittest
-from Resource import PlacementError
 
 class BoardTest(unittest.TestCase):
 
@@ -50,6 +49,7 @@ class BoardTest(unittest.TestCase):
         self.board.addStoneDiggers(2, "r")
         
         self.assertEqual(2, self.board.personCount("r"))
+        from Board import PlacementError
         with self.assertRaises(PlacementError):
             self.board.addStoneDiggers(1, "r")
         

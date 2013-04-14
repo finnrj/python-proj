@@ -2,11 +2,6 @@
 
 from random import randint
 
-class PlacementError(Exception):
-    """Exception class for illegal placements"""
-    def __init__(self, msg):
-        Exception.__init__(self, msg)
-
 class Resource():
     """Class to represent a resource field on the board. """
 
@@ -18,8 +13,10 @@ class Resource():
     def addPerson(self, n, playerAbr):
         if n == 0: return
         if (self.persons.count(playerAbr) > 0):
+            from Board import PlacementError
             raise PlacementError("Player %s already added person to the %s" % (playerAbr, self.name))
         if (len(self.persons) + n > self.maxPersons):
+            from Board import PlacementError
             raise PlacementError("Not room for %d further persons in the %s" % (n, self.name))
         self.persons += n * playerAbr
     

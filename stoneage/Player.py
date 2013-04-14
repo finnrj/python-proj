@@ -3,7 +3,6 @@ Created on Nov 22, 2012
 
 @author: finn
 '''
-from Strategy import Strategy
 
 class Player():
     '''
@@ -48,11 +47,19 @@ class Player():
         for resource in resourcesToRemove:
             self.resources.remove(resource)
         
-    def buyHuts(self, huts):
-        return self.strategy.buyHuts(self, huts)
-            
     def adjustResources(self, hut):
         self.plannedCosts[hut] = hut.costs(self.usableResources())
+        
+    def buyHuts(self, huts):
+        return self.strategy.buyHuts(self, huts)
+
+    def buyHut(self, hut, payment):
+        self.huts.append(hut)
+        self.executeHutPayment(payment)
+
+    def executeHutPayment(self, payment):
+        self.removeResources(payment)
+        self.score += sum(payment)
 
     def usableResources(self):
         usableResources = self.resources[:]

@@ -7,7 +7,7 @@ import unittest
 from Player import Player
 from Board import Board
 from Hut import SimpleHut, CountHut
-from Strategy import Strategy, StupidBot
+from Strategy import StupidBot
 
 class PlayerTest(unittest.TestCase):
 
@@ -74,18 +74,18 @@ class PlayerTest(unittest.TestCase):
         self.assertEqual(3, self.player.foodMissing())
         
     def testIsPayableBug(self):
-        self.player.addResources([4, 4, 5, 6, 3, 3, 3, 3, 3])
+        self.player.addResources([3, 3, 3, 3, 3, 4, 4, 5, 6,])
         firstHut = CountHut(4, 2)
         self.assertTrue(self.player.isPayable(firstHut))
         self.player.adjustResources(firstHut)
         
-        self.assertDictEqual({firstHut : [3,4,4,3]}, self.player.plannedCosts)
+        self.assertDictEqual({firstHut : [3,4,3,3]}, self.player.plannedCosts)
         
         secondHut = CountHut(4, 3)
         self.assertTrue(self.player.isPayable(secondHut))
         self.player.adjustResources(secondHut)
 
-        self.assertDictEqual({firstHut : [3,4,4,3], secondHut : [3,5,6,3]}, self.player.plannedCosts)
+        self.assertDictEqual({firstHut : [3,4,3,3], secondHut : [3,4,5,3]}, self.player.plannedCosts)
         
         thirdHut = SimpleHut(5, 5, 6)
         self.assertFalse(self.player.isPayable(thirdHut))

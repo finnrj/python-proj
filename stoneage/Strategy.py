@@ -1,8 +1,5 @@
-from Hut import AnyHut, CountHut
-
-def suffix(object):
-    size = object if isinstance(object, type(1)) else len(object)
-    return "s" if size > 1 else ""
+from Hut import AnyHut, CountHut, SimpleHut
+from Board import PlacementError
 
 class StrategyNotImplemented(Exception):
     """Exception class for not inheriting the Strategy class"""
@@ -59,7 +56,7 @@ class Human(Strategy):
     prompt = """You have following resource%s: %s 
 and %d person%s available. Please place person%s!
      
-        Input format: [resource][number], where
+        Input format: <resource> <number>, where
 
             Grounds:                
                 Hunting: f
@@ -76,95 +73,135 @@ and %d person%s available. Please place person%s!
     """
    
     def placePersons(self, player, board):
-        self.processPlacePersonsInput(self.fetchPlacePersonsInput(player.resources, player.personsLeft(board)), player.getAbr(), board)
-
+        personsLeft = player.personsLeft(board)
+        try:
+            resource, number = self.fetchPlacePersonsInput(sorted(player.resources), personsLeft)
+            if resource != "h" and number > player.personsLeft(board):
+                raise PlacementError("cannot place %d persons with only %d left" % (number, personsLeft))
+            elif resource == "h" and  number > 4:
+                raise PlacementError("hut index has be between 1 - 4, not %d" % (number))
+            self.processPlacePersonsInput(resource, number, player.getAbr(), board)
+        except PlacementError as e:
+            print("ERROR: " + str(e) + "\n")
+            print (board.toString())
+            self.placePersons(player, board)
+    
     def fetchPlacePersonsInput(self, resources, personsLeft):
-        finished = False
-        while not finished:
-            try:
-                inputString = input(self.prompt % (suffix(resources), str(resources), personsLeft, suffix(personsLeft), suffix(personsLeft))).lower()
-                resource, number = inputString[:1], int(inputString[1:])
-                finished = True
-            except ValueError:
-                print("'%s' do not seem to be a number!" % inputString[1:])
-        return (resource, number)
+        return fetchConvertedInput(self.prompt % (suffix(resources), str(resources), personsLeft, suffix(personsLeft), suffix(personsLeft)),
+                                   lambda v: printfString("'%s' does not seem to be of format <resource><number>!", v), 
+                                   stringAndNumber)
+        
+    def processPlacePersonsInput(self, resource, number, playerAbr, board):
+        if   resource == "f": board.addHunters(number, playerAbr)
+        elif resource == "w": board.addLumberjacks(number, playerAbr)
+        elif resource == "c": board.addClayDiggers(number, playerAbr)
+        elif resource == "s": board.addStoneDiggers(number, playerAbr)
+        elif resource == "g": board.addGoldDiggers(number, playerAbr)
+        elif resource == "h": board.placeOnHut(board.upperHuts()[number-1], playerAbr)
 
-    def processPlacePersonsInput(self, resourcePersonCount, playerAbr, board):
-        resource, personCount = resourcePersonCount
-        if   resource == "f": board.addHunters(personCount, playerAbr)
-        elif resource == "w": board.addLumberjacks(personCount, playerAbr)
-        elif resource == "c": board.addClayDiggers(personCount, playerAbr)
-        elif resource == "s": board.addStoneDiggers(personCount, playerAbr)
-        elif resource == "g": board.addGoldDiggers(personCount, playerAbr)
-        elif resource == "h": board.placeOnHut(board.availableHuts()[personCount-1], playerAbr)
-
-    def buyHuts(self, player, huts):
-        result = [] 
-        print("You have placed on following hut%s: " % suffix(huts) + " ".join(hut.asString() for hut in huts))
+    def printResourceStatus(self, player):
         nonFood = player.getNonFood()
         print("available resource%s: %s " % (suffix(nonFood), str(nonFood)))
+
+    def buyHuts(self, player, huts):
+        if not huts: 
+            return
+        print("You have placed on following hut%s: " % suffix(huts) + " ".join(hut.asString() for hut in huts))
+        return self.doBuyHuts(player, self.filterOutPayableHuts(player, huts), [])
+    
+    def doBuyHuts(self, player, payableHuts, boughtHuts):
+        if not payableHuts:
+            return boughtHuts
+        else:
+            self.printResourceStatus(player)
+            hut = payableHuts.pop()
+            if self.wantsToBuy(hut):
+                self.buyHut(player, hut)
+                boughtHuts.append(hut)
+            return self.doBuyHuts(player, self.filterOutPayableHuts(player, payableHuts), boughtHuts)
         
-        notPayable, payable = self.groupByPayable(player, huts)
+    def wantsToBuy(self, hut):
+        return fetchConvertedInput("do you want to buy this hut: %s ? (y|n) " % hut.asString(), 
+                                   lambda v: printfString("please answer y(es) or n(o) - not: '%s'", v),
+                                   lambda s: s.lower()[0] if s.lower()[0] in ["y", "n"] else int(s.lower())) 
+        
+    def filterOutPayableHuts(self, player, huts):
+        notPayable, payable = [hut for hut in huts if not player.isPayable(hut)], [hut for hut in huts if player.isPayable(hut)]
         if notPayable:
             print("you can't afford the following hut%s: %s" % (suffix(notPayable), ", ".join([hut.asString() for hut in notPayable])))
-            
-        while payable:
-            hut = payable[0]
-            inputString = input("do you want to buy this hut: %s ? (Y|n) " % hut.asString())
-            if inputString != "n":
-                self.buyHut(player, hut)
-                result.append(hut)
-                payable.remove(hut)
-            notPayable, payable = self.groupByPayable(player, payable)
-            if notPayable:
-                print("you can't afford the following hut%s: %s" % (suffix(notPayable), ", ".join([hut.asString() for hut in notPayable])))
-        return result
-        
-    def groupByPayable(self, player, huts):
-        return ([hut for hut in huts if not player.isPayable(hut)], [hut for hut in huts if player.isPayable(hut)])
+        return payable
     
     def buyHut(self, player, hut):
-        player.huts.append(hut)
-        player.score += self.pay(player, hut)
+        if isinstance(hut, SimpleHut):
+            player.buyHut(hut, hut.costs([]))
+        else: # CountHut or AnyHut
+            player.buyHut(hut, self.chooseResourecestoPay(player.getNonFood(), hut))
             
-    def pay(self, player, hut):
-        if isinstance(hut, AnyHut) or isinstance(hut, CountHut):
-            return sum(self.processPayHut(player, self.fetchResourecestoPay(player.getNonFood(), hut)))
-        else:
-            player.removeResources(hut.costs([]))
-            return hut.value()
-    
-    def fetchResourecestoPay(self, nonFoodResources, hut):
+    def chooseResourecestoPay(self, nonFoodResources, hut):
+        promptString = "\nchoose resources (format='445...') to pay the hut: %s\n available resources: %s " % (hut.asString(), str(nonFoodResources))
+
         finished = False
         while not finished:
-            promptString = "choose resources (format='445...') to pay the hut: %s\n available resources: %s " % (hut.asString(), str(nonFoodResources))
-            inputString = input(promptString)
-            inputResources = [int(ch) for ch in inputString]
-            try:
-                for r in inputResources:
-                    nonFoodResources[:].remove(r)
-            except ValueError:
-                print("Resources %s not available in %s\n" % (inputString, str(nonFoodResources)))
-                continue # continue while loop ;-)
+            chosenResources = fetchConvertedInput(promptString,
+                                                 lambda v: printfString("the input '%s' does not consist of only numbers!", v),
+                                                 mapToNumbers)
+            finished = all([self.chosenResourcesAvailable(nonFoodResources, chosenResources),
+                            self.validPaymentIfAnyHut(hut, chosenResources),
+                            self.validPaymentIfCountHut(hut, chosenResources)])
+        return chosenResources
 
-            if isinstance(hut, AnyHut):
-                finished = len(inputString) > 0 and len(inputString) < 8
-            else: # CountHut
-                if len(hut.missing(inputResources)) != 0:
-                    print("missing resources: " + str(hut.missing(inputResources)))
-                if len(inputResources) != hut.getResourceCount():
-                    print("Given resource count:" + str(len(inputResources)) + ", required: " + str(hut.getResourceCount()))
-                finished = (len(hut.missing(inputResources)) == 0) and (len(inputResources) == hut.getResourceCount())  
-        return inputString
+    def chosenResourcesAvailable(self, available, chosen):
+        try:
+            clone = available[:]
+            for r in chosen:
+                clone.remove(r)
+            return True
+        except ValueError:
+            print("Resources %s not available in %s\n" % (str(chosen), str(available)))
+            return False
+        
+    def validPaymentIfAnyHut(self, hut, payment):
+        if not isinstance(hut, AnyHut):
+            return True
+        if len(payment) == 0:
+            print("please pay something!")
+        if len(payment) >= 8:
+            print("too much payment! (%d resources) Maximal 7 resources please" % len(payment))
+        return len(payment) > 0 and len(payment) < 8
 
-    def processPayHut(self, player, inputString):
-        costs = [int(ch) for ch in inputString]
-        player.removeResources(costs)
-        return costs
+    def validPaymentIfCountHut(self, hut, payment):
+        if not isinstance(hut, CountHut):
+            return True
+        if len(hut.missing(payment)) != 0:
+            print("missing resources: " + str(hut.missing(payment)))
+        if len(payment) != hut.getResourceCount():
+            print("Given resource count:" + str(len(payment)) + ", required count: " + str(hut.getResourceCount()))
+        return len(hut.missing(payment)) == 0 and len(payment) == hut.getResourceCount()
 
-        
-        
-        
+def suffix(numberOrList):
+    size = numberOrList if isinstance(numberOrList, type(1)) else len(numberOrList)
+    return "s" if size > 1 else ""
+
+def stringAndNumber(inputString):
+    return (inputString[:1], abs(int(inputString[1:])))
+
+def mapToNumbers(inputString):
+    return [int(ch) for ch in inputString]
+
+def printfString(string, values):
+    return string % values
+
+def fetchConvertedInput(promptMsg, errorMsgFunc, convertFunc):
+    inputString = input(promptMsg).lower()
+    finished = False
+    while not finished:
+        try:
+            result = convertFunc(inputString)
+            finished = True
+        except:
+            print(errorMsgFunc(inputString))
+            inputString = input(promptMsg).lower()
+    return result
     
     
     

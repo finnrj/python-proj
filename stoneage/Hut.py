@@ -8,6 +8,9 @@ class Hut:
         self.player = ""
 
     def placePerson(self, color):
+        if self.isOccupied():
+            from Board import PlacementError
+            raise PlacementError("hut is already occupied")
         self.player = color
 
     def removePerson(self):

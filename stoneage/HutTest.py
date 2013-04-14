@@ -26,6 +26,13 @@ class HutTest(unittest.TestCase):
         self.assertTrue(hut.isOccupied())
         self.assertEqual("r", hut.isOccupiedBy())
 
+    def testPlacePersonTwice(self):
+        hut = SimpleHut(3,3,4)
+        hut.placePerson("r")
+        from Board import PlacementError
+        with self.assertRaisesRegex(PlacementError, "hut is already occupied"):
+            hut.placePerson("g")
+        
     def testHutNotPayable2(self):
         hut = SimpleHut(3,3,4)
         resources = [2,2,3,5,5]
