@@ -20,18 +20,18 @@ class BoardTest(unittest.TestCase):
     def testPlaceOnHut(self):
         ahs = self.board.availableHuts()
         targetHut = ahs[0]
-        self.board.placeOnHut(targetHut, "r")
+        self.board.placeOnHutIndex(1, "r")
         ahs = self.board.availableHuts()
         self.assertEqual(3, len(ahs), "should only be 3 huts left")
         self.assertNotIn(targetHut, ahs, "hut should not be available")
 
     def testPersonCountAfterPlacingOnHut(self):
         self.assertEqual(0, self.board.personCount("r"))
-        self.board.placeOnHut(self.board.availableHuts()[0], "r")
+        self.board.placeOnHutIndex(0, "r")
         self.assertEqual(1, self.board.personCount("r"))
         
         self.assertEqual(0, self.board.personCount("b"))
-        self.board.placeOnHut(self.board.availableHuts()[1], "b")
+        self.board.placeOnHutIndex(1, "b")
         self.assertEqual(1, self.board.personCount("b"))
         
     def testPlacePersonsWithoutResources(self):
@@ -64,12 +64,13 @@ class BoardTest(unittest.TestCase):
     def testReapResources(self):
         hutForRed = SimpleHut(3, 3, 4)
         hutForBlue = SimpleHut(3, 4, 4)
-        self.board = Board([hutForRed, hutForBlue, SimpleHut(3,3,4), SimpleHut(3,3,4)])
+        self.board = Board([hutForRed, hutForBlue, SimpleHut(3,4,5), SimpleHut(4,5,6)])
         self.board.placeOnHut(hutForRed, "r")
         self.board.placeOnHut(hutForBlue, "b")
         
         resources, huts = self.board.reapResources("r")
         self.assertEqual([], resources)
+        self.assertEqual(1, len(huts))
         self.assertEqual([hutForRed], huts)
         
         resources, huts = self.board.reapResources("b")

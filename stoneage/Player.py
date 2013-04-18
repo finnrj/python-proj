@@ -11,7 +11,6 @@ class Player():
 
     def __init__(self, color, strategy):
         self.resources = 12 * [2]
-        self.plannedCosts = {}
         self.huts = []
         self.personCount = 5
         self.score = 0
@@ -28,15 +27,6 @@ class Player():
         for person in range(self.personCount - self.foodMissing()): 
             self.resources.remove(2)
 
-    def isPayable(self, hut):
-        return hut.missing(self.usableResources()) == []
-
-    def fetchPayableHut(self, availableHuts):
-        for hut in availableHuts:
-            if self.isPayable(hut):
-                return hut
-        return None
-    
     def getNonFood(self):
         return sorted([resource for resource in self.resources if resource != 2])
     
@@ -47,9 +37,6 @@ class Player():
         for resource in resourcesToRemove:
             self.resources.remove(resource)
         
-    def adjustResources(self, hut):
-        self.plannedCosts[hut] = hut.costs(self.usableResources())
-        
     def buyHuts(self, huts):
         return self.strategy.buyHuts(self, huts)
 
@@ -57,18 +44,13 @@ class Player():
         self.huts.append(hut)
         self.executeHutPayment(payment)
 
+    def isPayable(self, hut):
+        return self.strategy.isPayable(hut, self.resources)
+
     def executeHutPayment(self, payment):
         self.removeResources(payment)
         self.score += sum(payment)
 
-    def usableResources(self):
-        usableResources = self.resources[:]
-        plannedResources = [cost for costs in self.plannedCosts.values() for cost in costs]
-        
-        for resource in plannedResources:
-            usableResources.remove(resource)
-        return sorted(usableResources)
-    
     def personsLeft(self, board):
         return self.personCount - board.personCount(self.playerAbr)
 

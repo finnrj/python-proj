@@ -19,36 +19,60 @@ class Strategy:
     
 class StupidBot(Strategy):
     
+    def __init__(self):
+        self.plannedCosts = {}
+    
     def placePersons(self, player, board):
         if player.isNewRound(board):
-            player.plannedCosts = {}
+            self.plannedCosts = {}
         
-       
         # check huts
-        payableHut = player.fetchPayableHut(board.availableHuts())
+        payableHut = self.fetchPayableHut(board.availableHuts(), player.resources[:])
         if payableHut is not None:
-            board.placeOnHut(payableHut, player.playerAbr)
-            player.adjustResources(payableHut)
+            board.placeOnHut(payableHut, player.getAbr())
+            self.adjustResources(payableHut, player.resources[:])
             return
         # place on resources
         if player.resources.count(3) < 2 and board.freeForestSlots() > 0:
-            board.addLumberjacks(min(player.personsLeft(board), board.freeForestSlots()) , player.playerAbr)
+            board.addLumberjacks(min(player.personsLeft(board), board.freeForestSlots()) , player.getAbr())
         elif player.resources.count(4) < 2 and board.freeClayPitSlots() > 0:
-            board.addClayDiggers(min(player.personsLeft(board), board.freeClayPitSlots()), player.playerAbr)
+            board.addClayDiggers(min(player.personsLeft(board), board.freeClayPitSlots()), player.getAbr())
         elif player.resources.count(5) < 2 and board.freeQuarrySlots() > 0:
-            board.addStoneDiggers(min(player.personsLeft(board), board.freeQuarrySlots()), player.playerAbr)
+            board.addStoneDiggers(min(player.personsLeft(board), board.freeQuarrySlots()), player.getAbr())
         elif board.freeRiverSlots() > 0:
-            board.addGoldDiggers(min(player.personsLeft(board), board.freeRiverSlots()), player.playerAbr)
+            board.addGoldDiggers(min(player.personsLeft(board), board.freeRiverSlots()), player.getAbr())
         else:
-            board.addHunters(player.personsLeft(board), player.playerAbr)
+            board.addHunters(player.personsLeft(board), player.getAbr())
         
-    def buyHuts(self, player,huts):
-        plannedResources = [cost for costs in player.plannedCosts.values() for cost in costs]
+    def buyHuts(self, player, huts):
+        plannedResources = [cost for costs in self.plannedCosts.values() for cost in costs]
         for resource in plannedResources:
             player.resources.remove(resource)
         player.huts.extend(huts)
         player.score += sum([hut.value() for hut in huts])
         return huts
+
+    def isPayable(self, hut, resources):
+        return hut.missing(self.usableResources(resources)) == []
+
+    def fetchPayableHut(self, availableHuts, resources):
+        for hut in availableHuts:
+            if self.isPayable(hut, resources):
+                return hut
+        return None
+    
+    def adjustResources(self, hut, resources):
+        self.plannedCosts[hut] = hut.costs(self.usableResources(resources))
+        
+    def usableResources(self, resources):
+        usableResources = resources[:]
+        plannedResources = [cost for costs in self.plannedCosts.values() for cost in costs]
+        
+        for resource in plannedResources:
+            usableResources.remove(resource)
+        return sorted(usableResources)
+    
+
 
 class Human(Strategy):
     """Class for a human player"""
@@ -88,7 +112,7 @@ and %d person%s available. Please place person%s!
     
     def fetchPlacePersonsInput(self, resources, personsLeft):
         return fetchConvertedInput(self.prompt % (suffix(resources), str(resources), personsLeft, suffix(personsLeft), suffix(personsLeft)),
-                                   lambda v: printfString("'%s' does not seem to be of format <resource><number>!", v), 
+                                   lambda v: printfString("'%s' does not seem to be of format <resource><number>!", v),
                                    stringAndNumber)
         
     def processPlacePersonsInput(self, resource, number, playerAbr, board):
@@ -97,16 +121,15 @@ and %d person%s available. Please place person%s!
         elif resource == "c": board.addClayDiggers(number, playerAbr)
         elif resource == "s": board.addStoneDiggers(number, playerAbr)
         elif resource == "g": board.addGoldDiggers(number, playerAbr)
-        elif resource == "h": board.placeOnHut(board.upperHuts()[number-1], playerAbr)
+        elif resource == "h": board.placeOnHutIndex(number - 1, playerAbr)
 
     def printResourceStatus(self, player):
         nonFood = player.getNonFood()
         print("available resource%s: %s " % (suffix(nonFood), str(nonFood)))
 
     def buyHuts(self, player, huts):
-        if not huts: 
-            return
-        print("You have placed on following hut%s: " % suffix(huts) + " ".join(hut.asString() for hut in huts))
+        if huts:
+            print("You have placed on following hut%s: " % suffix(huts) + " ".join(hut.asString() for hut in huts))
         return self.doBuyHuts(player, self.filterOutPayableHuts(player, huts), [])
     
     def doBuyHuts(self, player, payableHuts, boughtHuts):
@@ -121,20 +144,23 @@ and %d person%s available. Please place person%s!
             return self.doBuyHuts(player, self.filterOutPayableHuts(player, payableHuts), boughtHuts)
         
     def wantsToBuy(self, hut):
-        return fetchConvertedInput("do you want to buy this hut: %s ? (y|n) " % hut.asString(), 
+        return fetchConvertedInput("do you want to buy this hut: %s ? (y|n) " % hut.asString(),
                                    lambda v: printfString("please answer y(es) or n(o) - not: '%s'", v),
-                                   lambda s: s.lower()[0] if s.lower()[0] in ["y", "n"] else int(s.lower())) 
+                                   yesNo) 
         
     def filterOutPayableHuts(self, player, huts):
         notPayable, payable = [hut for hut in huts if not player.isPayable(hut)], [hut for hut in huts if player.isPayable(hut)]
         if notPayable:
-            print("you can't afford the following hut%s: %s" % (suffix(notPayable), ", ".join([hut.asString() for hut in notPayable])))
+            print("you can't afford the following hut%s: %s" % (suffix(notPayable), " ".join([hut.asString() for hut in notPayable])))
         return payable
+
+    def isPayable(self, hut, resources):
+        return hut.missing(resources) == []
     
     def buyHut(self, player, hut):
         if isinstance(hut, SimpleHut):
             player.buyHut(hut, hut.costs([]))
-        else: # CountHut or AnyHut
+        else:  # CountHut or AnyHut
             player.buyHut(hut, self.chooseResourecestoPay(player.getNonFood(), hut))
             
     def chooseResourecestoPay(self, nonFoodResources, hut):
@@ -178,10 +204,16 @@ and %d person%s available. Please place person%s!
             print("Given resource count:" + str(len(payment)) + ", required count: " + str(hut.getResourceCount()))
         return len(hut.missing(payment)) == 0 and len(payment) == hut.getResourceCount()
 
+
+# output helper methods 
 def suffix(numberOrList):
     size = numberOrList if isinstance(numberOrList, type(1)) else len(numberOrList)
     return "s" if size > 1 else ""
 
+def yesNo(inputString):
+    yesNoDict = {"y" : True, "n" : True}
+    return yesNoDict[inputString.lower()[0]]
+    
 def stringAndNumber(inputString):
     return (inputString[:1], abs(int(inputString[1:])))
 

@@ -7,9 +7,8 @@ import unittest
 from Strategy import Strategy, StrategyNotImplemented, Human
 from Player import Player
 from Board import Board
-from Hut import SimpleHut
 
-class StrategyTest(unittest.TestCase):
+class HumanStrategyTest(unittest.TestCase):
 
     def setUp(self):
         self.board = Board()
@@ -54,5 +53,5 @@ class StrategyTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    suite = unittest.TestLoader().loadTestsFromTestCase(StrategyTest)
+    suite = unittest.TestLoader().loadTestsFromTestCase(HumanStrategyTest)
     unittest.TextTestRunner(verbosity=2).run(suite)

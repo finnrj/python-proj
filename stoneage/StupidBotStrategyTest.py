@@ -9,7 +9,7 @@ from Board import Board
 from Hut import SimpleHut, CountHut
 from Strategy import StupidBot
 
-class PlayerTest(unittest.TestCase):
+class StupidBotStrategyTest(unittest.TestCase):
 
     def setUp(self):
         self.player = Player("Red", StupidBot())
@@ -76,29 +76,25 @@ class PlayerTest(unittest.TestCase):
     def testIsPayableBug(self):
         self.player.addResources([3, 3, 3, 3, 3, 4, 4, 5, 6,])
         firstHut = CountHut(4, 2)
-        self.assertTrue(self.player.isPayable(firstHut))
-        self.player.adjustResources(firstHut)
+
+        self.player.strategy.adjustResources(firstHut, self.player.resources)
         
-        self.assertDictEqual({firstHut : [3,4,3,3]}, self.player.plannedCosts)
+        self.assertDictEqual({firstHut : [3,4,3,3]}, self.player.strategy.plannedCosts)
         
         secondHut = CountHut(4, 3)
         self.assertTrue(self.player.isPayable(secondHut))
-        self.player.adjustResources(secondHut)
+        self.player.strategy.adjustResources(secondHut, self.player.resources)
 
-        self.assertDictEqual({firstHut : [3,4,3,3], secondHut : [3,4,5,3]}, self.player.plannedCosts)
+        self.assertDictEqual({firstHut : [3,4,3,3], secondHut : [3,4,5,3]}, self.player.strategy.plannedCosts)
         
         thirdHut = SimpleHut(5, 5, 6)
         self.assertFalse(self.player.isPayable(thirdHut))
         
         fourthHut = CountHut(5, 2)
         self.assertFalse(self.player.isPayable(fourthHut))
-        
-        
-        
-        
 
 if __name__ == "__main__":
-    suite = unittest.TestLoader().loadTestsFromTestCase(PlayerTest)
+    suite = unittest.TestLoader().loadTestsFromTestCase(StupidBotStrategyTest)
     unittest.TextTestRunner(verbosity=2).run(suite)
     
     # import sys;sys.argv = ['', 'Test.testName']

@@ -127,9 +127,12 @@ class Board:
         for hut in huts:
             [stack.pop() for stack in self.hutStacks if len(stack) > 0 and stack[-1] == hut]
         
+    def placeOnHutIndex(self, stackIndex, color):
+        self.upperHuts()[stackIndex].placePerson(color)
+
     def placeOnHut(self, hut, color):
         hut.placePerson(color)
-        
+
     def isFinished(self):
         return [len(stack) for stack in self.hutStacks].count(0) > 0
     
