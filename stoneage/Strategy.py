@@ -45,11 +45,8 @@ class StupidBot(Strategy):
             board.addHunters(player.personsLeft(board), player.getAbr())
         
     def buyHuts(self, player, huts):
-        plannedResources = [cost for costs in self.plannedCosts.values() for cost in costs]
-        for resource in plannedResources:
-            player.resources.remove(resource)
-        player.huts.extend(huts)
-        player.score += sum([hut.value() for hut in huts])
+        for hut, payment in self.plannedCosts.items():
+            player.buyHut(hut, payment)
         return huts
 
     def isPayable(self, hut, resources):

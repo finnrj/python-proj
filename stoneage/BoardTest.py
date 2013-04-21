@@ -20,7 +20,7 @@ class BoardTest(unittest.TestCase):
     def testPlaceOnHut(self):
         ahs = self.board.availableHuts()
         targetHut = ahs[0]
-        self.board.placeOnHutIndex(1, "r")
+        self.board.placeOnHutIndex(0, "r")
         ahs = self.board.availableHuts()
         self.assertEqual(3, len(ahs), "should only be 3 huts left")
         self.assertNotIn(targetHut, ahs, "hut should not be available")

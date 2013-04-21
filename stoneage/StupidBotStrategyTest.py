@@ -92,6 +92,18 @@ class StupidBotStrategyTest(unittest.TestCase):
         
         fourthHut = CountHut(5, 2)
         self.assertFalse(self.player.isPayable(fourthHut))
+        
+    def testBuyingHutsChangesScore(self):
+        self.player.addResources([3, 3, 4, 3, 4, 5])
+        hut1 = SimpleHut(3, 3, 4)
+        hut2 = SimpleHut(3, 4, 5)
+        self.player.strategy.plannedCosts = {hut1 : [3,3,4], 
+                                             hut2 : [3,4,5]}
+        
+        self.assertEqual(0, self.player.score)
+        self.player.buyHuts([hut1, hut2])
+        self.assertEqual(22, self.player.score)
+
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(StupidBotStrategyTest)
