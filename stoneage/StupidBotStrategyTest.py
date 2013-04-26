@@ -73,6 +73,14 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.player.feed()
         self.assertEqual(3, self.player.foodMissing())
         
+    
+    def testFeedingWithFoodStack(self):
+        self.player.feed()
+        self.player.feed()
+        self.assertEqual(3, self.player.foodMissing())
+        self.player.addResources([7,7])
+        self.assertEqual(1, self.player.foodMissing())
+    
     def testIsPayableBug(self):
         self.player.addResources([3, 3, 3, 3, 3, 4, 4, 5, 6,])
         firstHut = CountHut(4, 2)
@@ -103,7 +111,29 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.assertEqual(0, self.player.score)
         self.player.buyHuts([hut1, hut2])
         self.assertEqual(22, self.player.score)
+        
+    def testFoodTrack(self):
+        self.assertEqual(0, self.player.getFoodTrack())
+        self.player.addResources([7])
+        self.assertEqual(1, self.player.getFoodTrack())
+        
+        self.player.addResources([3,3,7])
+        self.assertEqual(2, self.player.getFoodTrack())
+        self.assertEqual([3,3], self.player.getNonFood())
+        
+        self.player.addResources([4,7,7,3])
+        self.assertEqual(4, self.player.getFoodTrack())
+        self.assertListEqual(sorted([3,3,4,3]), self.player.getNonFood())
+        
+        
+    def testFoodTrackMaximum(self):
+        self.assertEqual(0, self.player.getFoodTrack())
+        self.player.addResources(10 * [7])
+        self.assertEqual(10, self.player.getFoodTrack())
 
+        self.player.addResources([7])
+        self.assertEqual(10, self.player.getFoodTrack())
+        
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(StupidBotStrategyTest)

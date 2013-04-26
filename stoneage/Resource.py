@@ -4,10 +4,9 @@ from random import randint
 
 class Resource():
     """Class to represent a resource field on the board. """
-
-    maxPersons = 7
     
     def __init__(self):
+        self.maxPersons = 7
         self.persons = ""
 
     def addPerson(self, n, playerAbr):
@@ -32,7 +31,7 @@ class Resource():
         return [self.resourceValue for resource in  range(0, count)]
 
     def toString(self):
-        return ("%-19s" % self.name) + ": " + " ".join(ch for ch in self.persons + "O" * (7 - len(self.persons)))
+        return ("%-19s" % self.name) + ": " + " ".join(ch for ch in self.persons + "O" * (self.maxPersons - len(self.persons)))
         
 class HuntingGrounds(Resource):
     """Class to represent a food resource field on the board."""
@@ -81,6 +80,23 @@ class River(Resource):
         self.resourceValue = 6
         self.name = "River (g)"
     
+class Farm(Resource):
+    """Class to represent the farm in the village part of the board"""
+    
+    def __init__(self):
+        Resource.__init__(self)        
+        self.name = "Farm (a)"
+        self.resourceValue = 7
+        self.maxPersons = 1
+        
+    def addPerson(self, abr):
+        Resource.addPerson(self, 1, abr)
+        
+    def reapResources(self, playerAbr):
+        if playerAbr == self.persons:
+            self.persons = ""
+            return [7]
+        return []
 
 if __name__ == '__main__':
     print("hallo")

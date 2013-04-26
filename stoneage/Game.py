@@ -58,6 +58,11 @@ class Game(object):
     def finished(self):
         return self.board.isFinished()
     
+    def printPlayers(self):
+        print("Players:")
+        for player in self.players:
+            print("%-7s" % player.getColor(), ":", player.getStrategy())
+    
     def position(self):
         return """Available huts: %s
          
@@ -70,6 +75,7 @@ def main():
     game.addPlayer(Player("Blue",  StupidBot()))
     game.addPlayer(Player("Yellow",  Human()))
     shuffle(game.players)
+    game.printPlayers()
     round = 1
     try:
         while not game.finished():

@@ -1,7 +1,9 @@
 #! /usr/bin/env python3
 
 import unittest
-from Resource import Resource, HuntingGrounds, Forest, River, Quarry
+from Resource import Resource, HuntingGrounds, Forest, River, Quarry, Farm
+from Board import PlacementError
+
 
 class ResourceTest(unittest.TestCase):
     
@@ -11,7 +13,6 @@ class ResourceTest(unittest.TestCase):
         rs.addPerson(1, "r")
         self.assertEqual(1, rs.count("r"))
         
-        from Board import PlacementError
         with self.assertRaisesRegex(PlacementError, "Player r already added person to the River"):
             rs.addPerson(1, "r")
         self.assertEqual(1, rs.count("r"))
@@ -77,7 +78,25 @@ class ResourceTest(unittest.TestCase):
         with self.assertRaisesRegex(AttributeError, "object has no attribute 'resourceValue'"):
             rs.reapResources("r")
 
-    
+    def testPlaceOnFarm(self):
+        rs = Farm()
+        
+        self.assertEqual(1, rs.freeSlots())
+        rs.addPerson("r")
+        self.assertEqual(0, rs.freeSlots())
+
+        with self.assertRaises(PlacementError):
+            rs.addPerson("b")
+            
+    def testPlayerNotOnFarm(self):
+        rs = Farm()        
+        rs.addPerson("r")
+        farmPoint = rs.reapResources("b")
+        self.assertEqual([], farmPoint)
+        
+        farmPoint = rs.reapResources("r")
+        self.assertEqual([7], farmPoint)
+        
 
 
 def main():

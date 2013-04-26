@@ -77,6 +77,13 @@ class BoardTest(unittest.TestCase):
         self.assertEqual([], resources)
         self.assertEqual([hutForBlue], huts)
 
+    def testReapResourcesWithFarm(self):
+        self.board.placeOnFarm("r")
+        self.board.addClayDiggers(4, "r")
+        resources, huts = self.board.reapResources("r")
+        
+        self.assertIn(7, resources)
+
 def main():
 #    suite = unittest.TestLoader().loadTestsFromTestCase(BoardTest)
 #    unittest.TextTestRunner(verbosity=2).run(suite)

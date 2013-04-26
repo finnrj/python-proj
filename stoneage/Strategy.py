@@ -17,6 +17,9 @@ class Strategy:
     def buyHuts(self, player, huts):
         raise StrategyNotImplemented("The buyHuts() method should be implemented")
     
+    def toString(self):
+        return ""
+    
 class StupidBot(Strategy):
     
     def __init__(self):
@@ -69,8 +72,9 @@ class StupidBot(Strategy):
             usableResources.remove(resource)
         return sorted(usableResources)
     
-
-
+    def toString(self):
+        return "Stupid Bot"
+    
 class Human(Strategy):
     """Class for a human player"""
     
@@ -85,6 +89,7 @@ and %d person%s available. Please place person%s!
                 Clay:    c
                 Quarry:  s
                 River:   g
+                Farm:    a
             and 'number' the number of persons to
             place in the chosen ground. 
 
@@ -97,7 +102,9 @@ and %d person%s available. Please place person%s!
         personsLeft = player.personsLeft(board)
         try:
             resource, number = self.fetchPlacePersonsInput(sorted(player.resources), personsLeft)
-            if resource != "h" and number > player.personsLeft(board):
+            if not resource in "hfwcsga":
+                raise PlacementError("illegal character:"+resource)
+            elif resource != "h" and number > player.personsLeft(board):
                 raise PlacementError("cannot place %d persons with only %d left" % (number, personsLeft))
             elif resource == "h" and  number > 4:
                 raise PlacementError("hut index has be between 1 - 4, not %d" % (number))
@@ -118,6 +125,7 @@ and %d person%s available. Please place person%s!
         elif resource == "c": board.addClayDiggers(number, playerAbr)
         elif resource == "s": board.addStoneDiggers(number, playerAbr)
         elif resource == "g": board.addGoldDiggers(number, playerAbr)
+        elif resource == "a": board.placeOnFarm(playerAbr)
         elif resource == "h": board.placeOnHutIndex(number - 1, playerAbr)
 
     def printResourceStatus(self, player):
@@ -200,6 +208,10 @@ and %d person%s available. Please place person%s!
         if len(payment) != hut.getResourceCount():
             print("Given resource count:" + str(len(payment)) + ", required count: " + str(hut.getResourceCount()))
         return len(hut.missing(payment)) == 0 and len(payment) == hut.getResourceCount()
+    
+    def toString(self):
+        return "Human"
+
 
 
 # output helper methods 

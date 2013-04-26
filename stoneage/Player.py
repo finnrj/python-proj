@@ -8,6 +8,9 @@ class Player():
     '''
     classdocs
     '''
+    
+    maxFoodTrack = 10
+    hungerPenalty = -10
 
     def __init__(self, color, strategy):
         self.resources = 12 * [2]
@@ -17,13 +20,17 @@ class Player():
         self.color = color
         self.playerAbr = color[:1].lower()
         self.strategy = strategy
+        self.foodTrack = 0
+
+    def getFoodTrack(self):
+        return self.foodTrack
 
     def foodMissing(self):
-        return max(0, self.personCount - self.resources.count(2))
+        return max(0, self.personCount - (self.resources.count(2) + self.foodTrack))
     
     def feed(self):
         if self.foodMissing() > 0 :
-            self.score -= 10
+            self.score += self.hungerPenalty
         for person in range(self.personCount - self.foodMissing()): 
             self.resources.remove(2)
 
@@ -31,6 +38,9 @@ class Player():
         return sorted([resource for resource in self.resources if resource != 2])
     
     def addResources(self, additionalResources):
+        while 7 in additionalResources: 
+            self.foodTrack = min(self.maxFoodTrack, self.foodTrack + 1)
+            additionalResources.remove(7)
         self.resources.extend(additionalResources)
         
     def removeResources(self, resourcesToRemove):
@@ -68,6 +78,9 @@ class Player():
 
     def getAbr(self):
         return self.playerAbr
+    
+    def getStrategy(self):
+        return self.strategy.toString()
     
     def toString(self):
         return """Resources: %s

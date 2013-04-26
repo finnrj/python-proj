@@ -48,8 +48,12 @@ class HumanStrategyTest(unittest.TestCase):
         self.human.processPlacePersonsInput("h", 2, self.player.getAbr(), self.board)
         self.assertEqual(3, len(self.board.availableHuts()))
         
-    def testIllegalPaymentForCountHut(self):
-        self.player.addResources([3,3,4,4,5,5])
+    def testHumanInputfarm(self):
+        self.assertFalse(self.board.farmOccupied())
+        self.human.processPlacePersonsInput("a", 1, self.player.getAbr(), self.board)
+        self.assertEqual(1, self.board.personsOnGrounds(self.human.player.getAbr()))
+        self.assertTrue(self.board.farmOccupied())
+        
 
 
 if __name__ == "__main__":
