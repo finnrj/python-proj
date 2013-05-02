@@ -98,6 +98,24 @@ class Farm(Resource):
             return [7]
         return []
 
+class BreedingHut(Resource):
+    """Class to represent the farm in the village part of the board"""
+    
+    def __init__(self):
+        Resource.__init__(self)        
+        self.name = "Breeding hut (b)"
+        self.maxPersons = 2
+        
+    def addPerson(self, abr):
+        Resource.addPerson(self, 2, abr)
+        
+    def reapResources(self, playerAbr):
+        if self.persons and playerAbr == self.persons[0]:
+            self.persons = ""
+            return [8]
+        return []
+
+
 if __name__ == '__main__':
     print("hallo")
           

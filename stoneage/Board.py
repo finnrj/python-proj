@@ -2,7 +2,8 @@
 
 from Hut import SimpleHut, AnyHut, CountHut
 from random import shuffle
-from Resource import HuntingGrounds, Forest, ClayPit, Quarry, River, Farm
+from Resource import HuntingGrounds, Forest, ClayPit, Quarry, River, Farm,\
+    BreedingHut
 
 class PlacementError(Exception):
     """Exception class for illegal placements"""
@@ -21,7 +22,8 @@ class Board:
         self.quarry = Quarry()
         self.river = River()
         self.farm = Farm()
-        self.grounds = [self.huntingGrounds, self.forest, self.clayPit, self.quarry, self.river, self.farm]
+        self.breedingHut = BreedingHut()
+        self.grounds = [self.huntingGrounds, self.forest, self.clayPit, self.quarry, self.river, self.farm, self.breedingHut]
         
         if not huts:
             huts = self._defaultHuts()
@@ -109,6 +111,12 @@ class Board:
  
     def farmOccupied(self):
         return self.farm.freeSlots() == 0
+    
+    def placeOnBreedingHut(self, playerAbr):
+        self.breedingHut.addPerson(playerAbr)
+        
+    def breedingHutOccupied(self):
+        return self.breedingHut.freeSlots() == 0
         
     def personsOnHuts(self, playerAbr):
         return [stack[-1].isOccupiedBy() for stack in self.hutStacks].count(playerAbr)

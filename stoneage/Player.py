@@ -9,8 +9,9 @@ class Player():
     classdocs
     '''
     
-    maxFoodTrack = 10
-    hungerPenalty = -10
+    maxFoodTrack   = 10
+    maxPersonCount = 10
+    hungerPenalty  = -10
 
     def __init__(self, color, strategy):
         self.resources = 12 * [2]
@@ -25,13 +26,16 @@ class Player():
     def getFoodTrack(self):
         return self.foodTrack
 
+    def getPersonCount(self):
+        return self.personCount
+
     def foodMissing(self):
-        return max(0, self.personCount - (self.resources.count(2) + self.foodTrack))
+        return max(0, (self.personCount - self.foodTrack) - self.resources.count(2))
     
     def feed(self):
         if self.foodMissing() > 0 :
             self.score += self.hungerPenalty
-        for person in range(self.personCount - self.foodMissing()): 
+        for person in range((self.personCount - self.foodTrack) - self.foodMissing()): 
             self.resources.remove(2)
 
     def getNonFood(self):
@@ -41,6 +45,9 @@ class Player():
         while 7 in additionalResources: 
             self.foodTrack = min(self.maxFoodTrack, self.foodTrack + 1)
             additionalResources.remove(7)
+        while 8 in additionalResources: 
+            self.personCount = min(self.maxPersonCount, self.personCount + 1)
+            additionalResources.remove(8)
         self.resources.extend(additionalResources)
         
     def removeResources(self, resourcesToRemove):
@@ -83,8 +90,10 @@ class Player():
         return self.strategy.toString()
     
     def toString(self):
-        return """Resources: %s
+        return """People: %d, Foodtrack: %d, Food: %d
+Resources: %s
 huts: %s    
-score: %d\n""" % (str(sorted(self.resources)), ",". join([hut.toString() for hut in self.huts]), self.score)
+score: %d\n""" % (self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), str(sorted(self.getNonFood())), 
+                  ",". join([hut.toString() for hut in self.huts]), self.score)
 
 

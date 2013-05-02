@@ -84,6 +84,8 @@ class BoardTest(unittest.TestCase):
         
         self.assertIn(7, resources)
 
+
+
 def main():
 #    suite = unittest.TestLoader().loadTestsFromTestCase(BoardTest)
 #    unittest.TextTestRunner(verbosity=2).run(suite)

@@ -125,7 +125,6 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.assertEqual(4, self.player.getFoodTrack())
         self.assertListEqual(sorted([3,3,4,3]), self.player.getNonFood())
         
-        
     def testFoodTrackMaximum(self):
         self.assertEqual(0, self.player.getFoodTrack())
         self.player.addResources(10 * [7])
@@ -133,7 +132,23 @@ class StupidBotStrategyTest(unittest.TestCase):
 
         self.player.addResources([7])
         self.assertEqual(10, self.player.getFoodTrack())
-        
+
+    def testBreeding(self):
+        self.assertEqual(5, self.player.getPersonCount())
+        self.player.addResources([8])
+        self.assertEqual(6, self.player.getPersonCount())
+
+    def testBreedingMaximum(self):
+        self.assertEqual(5, self.player.getPersonCount())
+        self.player.personCount = 10
+
+        self.player.addResources([8])
+        self.assertEqual(10, self.player.getPersonCount())
+
+    def testPlaceOnBreedingHut(self):
+        self.assertEqual(5, self.player.personsLeft(self.board))
+        self.board.placeOnBreedingHut(self.player.getAbr())
+        self.assertEqual(3, self.player.personsLeft(self.board)) 
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(StupidBotStrategyTest)

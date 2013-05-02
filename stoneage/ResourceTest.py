@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
 
 import unittest
-from Resource import Resource, HuntingGrounds, Forest, River, Quarry, Farm
+from Resource import Resource, HuntingGrounds, Forest, River, Quarry, Farm,\
+    BreedingHut
 from Board import PlacementError
 
 
@@ -79,25 +80,33 @@ class ResourceTest(unittest.TestCase):
             rs.reapResources("r")
 
     def testPlaceOnFarm(self):
-        rs = Farm()
+        farm = Farm()
         
-        self.assertEqual(1, rs.freeSlots())
-        rs.addPerson("r")
-        self.assertEqual(0, rs.freeSlots())
+        self.assertEqual(1, farm.freeSlots())
+        farm.addPerson("r")
+        self.assertEqual(0, farm.freeSlots())
 
         with self.assertRaises(PlacementError):
-            rs.addPerson("b")
+            farm.addPerson("b")
             
-    def testPlayerNotOnFarm(self):
-        rs = Farm()        
-        rs.addPerson("r")
-        farmPoint = rs.reapResources("b")
-        self.assertEqual([], farmPoint)
+    def testFarmResource(self):
+        farm = Farm()        
+        farm.addPerson("r")
         
-        farmPoint = rs.reapResources("r")
-        self.assertEqual([7], farmPoint)
+        farmResource = farm.reapResources("b")
+        self.assertEqual([], farmResource)
         
+        farmResource = farm.reapResources("r")
+        self.assertEqual([7], farmResource)
+        
+    def testBreedingHut(self):
+        breedingHut = BreedingHut()
+        self.assertEqual(2, breedingHut.freeSlots())
+        breedingHut.addPerson("r")
+        self.assertEqual(0, breedingHut.freeSlots())
 
+        breedingResource = breedingHut.reapResources("r")
+        self.assertEqual([8], breedingResource)
 
 def main():
     suite = unittest.TestLoader().loadTestsFromTestCase(ResourceTest)

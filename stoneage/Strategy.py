@@ -29,6 +29,14 @@ class StupidBot(Strategy):
         if player.isNewRound(board):
             self.plannedCosts = {}
         
+        # check village 
+        if not board.farmOccupied():
+            board.placeOnFarm(player.getAbr())
+            return
+        if not board.breedingHutOccupied() and player.personsLeft(board) > 1:
+            board.placeOnBreedingHut(player.getAbr())
+            return
+    
         # check huts
         payableHut = self.fetchPayableHut(board.availableHuts(), player.resources[:])
         if payableHut is not None:
@@ -78,18 +86,20 @@ class StupidBot(Strategy):
 class Human(Strategy):
     """Class for a human player"""
     
-    prompt = """You have following resource%s: %s 
-and %d person%s available. Please place person%s!
+    prompt = """You have %d people, foodtrack: %d, food: %d 
+and the following resource%s: %s 
+%d person%s available. Please place person%s!
      
         Input format: <resource> <number>, where
 
             Grounds:                
-                Hunting: f
-                Forest : w
-                Clay:    c
-                Quarry:  s
-                River:   g
-                Farm:    a
+                Hunting:  f
+                Forest :  w
+                Clay:     c
+                Quarry:   s
+                River:    g
+                Farm:     a
+                Breeding: b
             and 'number' the number of persons to
             place in the chosen ground. 
 
@@ -101,10 +111,13 @@ and %d person%s available. Please place person%s!
     def placePersons(self, player, board):
         personsLeft = player.personsLeft(board)
         try:
-            resource, number = self.fetchPlacePersonsInput(sorted(player.resources), personsLeft)
-            if not resource in "hfwcsga":
+            resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.resources.count(2),
+                                                           player.getNonFood(), personsLeft)
+            if not resource in "hfwcsgab":
                 raise PlacementError("illegal character:"+resource)
-            elif resource != "h" and number > player.personsLeft(board):
+            elif resource == "b" and personsLeft < 2:
+                raise PlacementError("cannot breed with only %d person left" % (personsLeft))
+            elif resource != "h" and number > personsLeft:
                 raise PlacementError("cannot place %d persons with only %d left" % (number, personsLeft))
             elif resource == "h" and  number > 4:
                 raise PlacementError("hut index has be between 1 - 4, not %d" % (number))
@@ -114,8 +127,9 @@ and %d person%s available. Please place person%s!
             print (board.toString())
             self.placePersons(player, board)
     
-    def fetchPlacePersonsInput(self, resources, personsLeft):
-        return fetchConvertedInput(self.prompt % (suffix(resources), str(resources), personsLeft, suffix(personsLeft), suffix(personsLeft)),
+    def fetchPlacePersonsInput(self, people, foodtrack, food, resources, personsLeft):
+        return fetchConvertedInput(self.prompt % (people, foodtrack, food, suffix(resources), str(resources), personsLeft, suffix(personsLeft), 
+                                   suffix(personsLeft)),
                                    lambda v: printfString("'%s' does not seem to be of format <resource><number>!", v),
                                    stringAndNumber)
         
@@ -126,6 +140,7 @@ and %d person%s available. Please place person%s!
         elif resource == "s": board.addStoneDiggers(number, playerAbr)
         elif resource == "g": board.addGoldDiggers(number, playerAbr)
         elif resource == "a": board.placeOnFarm(playerAbr)
+        elif resource == "b": board.placeOnBreedingHut(playerAbr)
         elif resource == "h": board.placeOnHutIndex(number - 1, playerAbr)
 
     def printResourceStatus(self, player):
@@ -217,7 +232,7 @@ and %d person%s available. Please place person%s!
 # output helper methods 
 def suffix(numberOrList):
     size = numberOrList if isinstance(numberOrList, type(1)) else len(numberOrList)
-    return "s" if size > 1 else ""
+    return "s" if size > 1 or size == 0 else ""
 
 def yesNo(inputString):
     yesNoDict = {"y" : True, "n" : True}
