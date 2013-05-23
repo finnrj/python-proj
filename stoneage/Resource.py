@@ -99,7 +99,7 @@ class Farm(Resource):
         return []
 
 class BreedingHut(Resource):
-    """Class to represent the farm in the village part of the board"""
+    """Class to represent the breeding hut in the village part of the board"""
     
     def __init__(self):
         Resource.__init__(self)        
@@ -115,6 +115,22 @@ class BreedingHut(Resource):
             return [8]
         return []
 
+class ToolSmith(Resource):
+    """Class to represent the tool-smith in the village part of the board"""
+    def __init__(self):
+        Resource.__init__(self)        
+        self.name = "Toolsmith (t)"
+        self.resourceValue = 9
+        self.maxPersons = 1
+        
+    def addPerson(self, abr):
+        Resource.addPerson(self, 1, abr)
+        
+    def reapResources(self, playerAbr):
+        if playerAbr == self.persons:
+            self.persons = ""
+            return [9]
+        return []
 
 if __name__ == '__main__':
     print("hallo")

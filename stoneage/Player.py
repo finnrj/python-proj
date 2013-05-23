@@ -3,6 +3,7 @@ Created on Nov 22, 2012
 
 @author: finn
 '''
+from Toolbox import Toolbox
 
 class Player():
     '''
@@ -22,9 +23,13 @@ class Player():
         self.playerAbr = color[:1].lower()
         self.strategy = strategy
         self.foodTrack = 0
+        self.toolbox = Toolbox()
 
     def getFoodTrack(self):
         return self.foodTrack
+
+    def getTools(self):
+        return self.toolbox.getTools()
 
     def getPersonCount(self):
         return self.personCount
@@ -48,6 +53,9 @@ class Player():
         while 8 in additionalResources: 
             self.personCount = min(self.maxPersonCount, self.personCount + 1)
             additionalResources.remove(8)
+        while 9 in additionalResources: 
+            self.toolbox.upgrade()
+            additionalResources.remove(9)
         self.resources.extend(additionalResources)
         
     def removeResources(self, resourcesToRemove):
@@ -90,10 +98,15 @@ class Player():
         return self.strategy.toString()
     
     def toString(self):
-        return """People: %d, Foodtrack: %d, Food: %d
+        return """People: %d, Foodtrack: %d, Food: %d, Tools: %s
 Resources: %s
 huts: %s    
-score: %d\n""" % (self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), str(sorted(self.getNonFood())), 
+score: %d\n""" % (self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox.toString(), 
+                  str(sorted(self.getNonFood())), 
                   ",". join([hut.toString() for hut in self.huts]), self.score)
+
+    
+    
+    
 
 

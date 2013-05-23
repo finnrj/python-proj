@@ -36,6 +36,9 @@ class StupidBot(Strategy):
         if not board.breedingHutOccupied() and player.personsLeft(board) > 1:
             board.placeOnBreedingHut(player.getAbr())
             return
+        if not board.toolSmithOccupied():
+            board.placeOnToolSmith(player.getAbr())
+            return
     
         # check huts
         payableHut = self.fetchPayableHut(board.availableHuts(), player.resources[:])
@@ -93,13 +96,14 @@ and the following resource%s: %s
         Input format: <resource> <number>, where
 
             Grounds:                
-                Hunting:  f
-                Forest :  w
-                Clay:     c
-                Quarry:   s
-                River:    g
-                Farm:     a
-                Breeding: b
+                Hunting:   f
+                Forest :   w
+                Clay:      c
+                Quarry:    s
+                River:     g
+                Farm:      a
+                Breeding:  b
+                Toolsmith: t
             and 'number' the number of persons to
             place in the chosen ground. 
 
@@ -113,7 +117,7 @@ and the following resource%s: %s
         try:
             resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.resources.count(2),
                                                            player.getNonFood(), personsLeft)
-            if not resource in "hfwcsgab":
+            if not resource in "hfwcsgabt":
                 raise PlacementError("illegal character:"+resource)
             elif resource == "b" and personsLeft < 2:
                 raise PlacementError("cannot breed with only %d person left" % (personsLeft))
@@ -141,6 +145,7 @@ and the following resource%s: %s
         elif resource == "g": board.addGoldDiggers(number, playerAbr)
         elif resource == "a": board.placeOnFarm(playerAbr)
         elif resource == "b": board.placeOnBreedingHut(playerAbr)
+        elif resource == "t": board.placeOnToolSmith(playerAbr)
         elif resource == "h": board.placeOnHutIndex(number - 1, playerAbr)
 
     def printResourceStatus(self, player):

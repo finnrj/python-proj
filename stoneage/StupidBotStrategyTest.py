@@ -140,6 +140,12 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.board.placeOnBreedingHut(self.player.getAbr())
         self.assertEqual(3, self.player.personsLeft(self.board)) 
 
+    def testTools(self):
+        self.assertEqual([0, 0, 0], self.player.getTools())
+        self.player.addResources([9])
+        self.assertEqual([1, 0, 0], self.player.getTools())
+
+
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(StupidBotStrategyTest)
     unittest.TextTestRunner(verbosity=2).run(suite)

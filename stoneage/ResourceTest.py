@@ -2,7 +2,7 @@
 
 import unittest
 from Resource import Resource, HuntingGrounds, Forest, River, Quarry, Farm,\
-    BreedingHut
+    BreedingHut, ToolSmith
 from Board import PlacementError
 
 
@@ -107,6 +107,21 @@ class ResourceTest(unittest.TestCase):
 
         breedingResource = breedingHut.reapResources("r")
         self.assertEqual([8], breedingResource)
+
+    def testToolSmith(self):
+        toolSmith = ToolSmith()
+        self.assertEqual(1, toolSmith.freeSlots())
+        toolSmith.addPerson("r")
+        self.assertEqual(0, toolSmith.freeSlots())
+
+        with self.assertRaises(PlacementError):
+            toolSmith.addPerson("b")
+        
+        toolResource = toolSmith.reapResources("y")
+        self.assertEqual([], toolResource)
+
+        toolResource = toolSmith.reapResources("r")
+        self.assertEqual([9], toolResource)
 
 def main():
     suite = unittest.TestLoader().loadTestsFromTestCase(ResourceTest)
