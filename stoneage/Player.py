@@ -94,6 +94,10 @@ class Player():
     def getAbr(self):
         return self.playerAbr
     
+    def toolsToUse(self, resourceValue, eyes):
+        print(type(self.toolbox))
+        return self.strategy.toolsToUse(resourceValue, eyes, self.toolbox)
+    
     def getStrategy(self):
         return self.strategy.toString()
     
@@ -104,6 +108,10 @@ huts: %s
 score: %d\n""" % (self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox.toString(), 
                   str(sorted(self.getNonFood())), 
                   ",". join([hut.toString() for hut in self.huts]), self.score)
+
+    
+    
+    
 
     
     

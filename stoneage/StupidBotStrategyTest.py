@@ -32,6 +32,8 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.player.placePersons(self.board)
         self.assertEqual(3, self.board.personCount("r"))
         self.assertTrue(self.board.breedingHutOccupied())
+        
+        self.board.placeOnToolSmith("b")
 
         self.player.placePersons(self.board)
         self.assertEqual(4, self.board.personCount("r"))
@@ -53,6 +55,10 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.assertEqual(3, self.board.personCount("r"))
         self.assertTrue(self.board.breedingHutOccupied())
         
+        self.player.placePersons(self.board)
+        self.assertEqual(4, self.board.personCount("r"))
+        self.assertTrue(self.board.toolSmithOccupied())
+
         self.player.placePersons(self.board)
         self.assertEqual(5, self.board.personCount("r"))
 
@@ -144,6 +150,17 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.assertEqual([0, 0, 0], self.player.getTools())
         self.player.addResources([9])
         self.assertEqual([1, 0, 0], self.player.getTools())
+
+    def testToolsToUse(self):
+        self.player.toolbox = [1, 0, 0]
+        resourceValue = 3
+        eyes = 5
+        self.assertEqual(1, self.player.toolsToUse(resourceValue, eyes))
+
+        resourceValue = 3
+        eyes = 4
+        self.assertEqual(0, self.player.toolsToUse(resourceValue, eyes))
+
 
 
 if __name__ == "__main__":

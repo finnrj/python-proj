@@ -25,9 +25,9 @@ class Resource():
     def freeSlots(self):
         return self.maxPersons - len(self.persons)
 
-    def reapResources(self, playerAbr):
-        count = int(sum([randint(1, 6) for dice in range(0, self.count(playerAbr))])/self.resourceValue)
-        self.persons = "".join([ch for ch in self.persons if ch != playerAbr])
+    def reapResources(self, player):
+        count = int(sum([randint(1, 6) for dice in range(0, self.count(player.getAbr()))])/self.resourceValue)
+        self.persons = "".join([ch for ch in self.persons if ch != player.getAbr()])
         return [self.resourceValue for resource in  range(0, count)]
 
     def toString(self):
@@ -92,8 +92,8 @@ class Farm(Resource):
     def addPerson(self, abr):
         Resource.addPerson(self, 1, abr)
         
-    def reapResources(self, playerAbr):
-        if playerAbr == self.persons:
+    def reapResources(self, player):
+        if player.getAbr() == self.persons:
             self.persons = ""
             return [7]
         return []
@@ -109,8 +109,8 @@ class BreedingHut(Resource):
     def addPerson(self, abr):
         Resource.addPerson(self, 2, abr)
         
-    def reapResources(self, playerAbr):
-        if self.persons and playerAbr == self.persons[0]:
+    def reapResources(self, player):
+        if self.persons and player.getAbr() == self.persons[0]:
             self.persons = ""
             return [8]
         return []
@@ -126,8 +126,8 @@ class ToolSmith(Resource):
     def addPerson(self, abr):
         Resource.addPerson(self, 1, abr)
         
-    def reapResources(self, playerAbr):
-        if playerAbr == self.persons:
+    def reapResources(self, player):
+        if player.getAbr() == self.persons:
             self.persons = ""
             return [9]
         return []

@@ -1,5 +1,6 @@
 from Hut import AnyHut, CountHut, SimpleHut
 from Board import PlacementError
+from Toolbox import Toolbox
 
 class StrategyNotImplemented(Exception):
     """Exception class for not inheriting the Strategy class"""
@@ -83,11 +84,19 @@ class StupidBot(Strategy):
             usableResources.remove(resource)
         return sorted(usableResources)
     
+    def toolsToUse(self, resourceValue, eyes, toolbox):
+        div, mod = divmod(eyes, resourceValue)
+        if toolbox.getUnused().count(resourceValue-mod) > 0:
+            toolbox.use(resourceValue-mod)
+            return resourceValue-mod
+        else:
+            return 0
+
     def toString(self):
         return "Stupid Bot"
     
 class Human(Strategy):
-    """Class for a human player"""
+    """Class for a human redPlayer"""
     
     prompt = """You have %d people, foodtrack: %d, food: %d 
 and the following resource%s: %s 

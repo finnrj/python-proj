@@ -3,11 +3,15 @@
 import unittest
 from Board import Board
 from Hut import Hut, SimpleHut
+from Player import Player
+from Strategy import StupidBot
 
 class BoardTest(unittest.TestCase):
 
     def setUp(self):
         self.board = Board()
+        self.redPlayer = Player("Red", StupidBot)
+        self.bluePlayer = Player("Blue", StupidBot)
 
     def testBoardInitialization(self):
         self.assertListEqual([7,7,7,7], self.board.numberOfHutsLeft())
@@ -68,19 +72,19 @@ class BoardTest(unittest.TestCase):
         self.board.placeOnHut(hutForRed, "r")
         self.board.placeOnHut(hutForBlue, "b")
         
-        resources, huts = self.board.reapResources("r")
+        resources, huts = self.board.reapResources(self.redPlayer)
         self.assertEqual([], resources)
         self.assertEqual(1, len(huts))
         self.assertEqual([hutForRed], huts)
         
-        resources, huts = self.board.reapResources("b")
+        resources, huts = self.board.reapResources(self.bluePlayer)
         self.assertEqual([], resources)
         self.assertEqual([hutForBlue], huts)
 
     def testReapResourcesWithFarm(self):
         self.board.placeOnFarm("r")
         self.board.addClayDiggers(4, "r")
-        resources, huts = self.board.reapResources("r")
+        resources, huts = self.board.reapResources(self.redPlayer)
         
         self.assertIn(7, resources)
 
