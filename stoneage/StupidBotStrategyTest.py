@@ -151,8 +151,8 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.player.addResources([9])
         self.assertEqual([1, 0, 0], self.player.getTools())
 
-    def testToolsToUse(self):
-        self.player.toolbox = [1, 0, 0]
+    def testToolsToUseWith_100(self):
+        self.player.toolbox.upgrade()
         resourceValue = 3
         eyes = 5
         self.assertEqual(1, self.player.toolsToUse(resourceValue, eyes))
@@ -161,7 +161,65 @@ class StupidBotStrategyTest(unittest.TestCase):
         eyes = 4
         self.assertEqual(0, self.player.toolsToUse(resourceValue, eyes))
 
+    def testToolsToUseWith_110(self):
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        
+        resourceValue = 3
+        eyes = 4
+        self.assertEqual(2, self.player.toolsToUse(resourceValue, eyes))
+        
+    def testToolsToUseWith_111(self):
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+                
+        resourceValue = 3
+        eyes = 4
+        self.assertEqual(2, self.player.toolsToUse(resourceValue, eyes))
 
+
+    def testToolsToUseWith_221_rv4(self):
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+                
+        resourceValue = 4
+        eyes = 1
+        self.assertEqual(3, self.player.toolsToUse(resourceValue, eyes))
+
+    def testToolsToUseWith_221(self):
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+                
+        resourceValue = 3
+        eyes = 5
+        self.assertEqual(4, self.player.toolsToUse(resourceValue, eyes))
+
+    def testToolsToUseWith_222(self):
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        
+        resourceValue = 6
+        eyes = 3
+        self.assertEqual(4, self.player.toolsToUse(resourceValue, eyes))
+
+    def testToolsToUseWith_444(self):
+        for index in range(1,13):
+            self.player.toolbox.upgrade()
+        
+        resourceValue = 3
+        eyes = 4
+        self.assertEqual(12, self.player.toolsToUse(resourceValue, eyes))
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(StupidBotStrategyTest)

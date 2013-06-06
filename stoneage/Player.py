@@ -95,7 +95,6 @@ class Player():
         return self.playerAbr
     
     def toolsToUse(self, resourceValue, eyes):
-        print(type(self.toolbox))
         return self.strategy.toolsToUse(resourceValue, eyes, self.toolbox)
     
     def getStrategy(self):

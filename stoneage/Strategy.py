@@ -85,10 +85,38 @@ class StupidBot(Strategy):
         return sorted(usableResources)
     
     def toolsToUse(self, resourceValue, eyes, toolbox):
-        div, mod = divmod(eyes, resourceValue)
-        if toolbox.getUnused().count(resourceValue-mod) > 0:
-            toolbox.use(resourceValue-mod)
-            return resourceValue-mod
+        mod = eyes % resourceValue
+        diffToWholeNumber = resourceValue - mod
+        
+        if sum(toolbox.getUnused()) >= diffToWholeNumber + resourceValue:
+            diffToWholeNumber += resourceValue
+            if sum(toolbox.getUnused()) >= diffToWholeNumber + resourceValue:
+                diffToWholeNumber += resourceValue
+                if sum(toolbox.getUnused()) >= diffToWholeNumber + resourceValue:
+                    diffToWholeNumber += resourceValue
+        
+        if toolbox.getUnused().count(diffToWholeNumber) > 0:
+            toolbox.use(diffToWholeNumber)
+            return diffToWholeNumber
+        elif sum(toolbox.getUnused()) == diffToWholeNumber:
+            for tool in toolbox.getUnused():
+                toolbox.use(tool)
+            return diffToWholeNumber
+        elif sum(toolbox.getUnused()) > diffToWholeNumber:
+            toolsToKeep = []
+            sumToReduce = sum(toolbox.getUnused())
+            for tool in toolbox.getUnused():
+                if sumToReduce - tool >= diffToWholeNumber:
+                    toolsToKeep.append(tool)
+                    sumToReduce -= tool
+            sumToUse = 0
+            for tool in toolbox.getUnused():
+                if tool in toolsToKeep:
+                    toolsToKeep.remove(tool)
+                else:
+                    toolbox.use(tool)
+                    sumToUse += tool
+            return sumToUse          
         else:
             return 0
 
