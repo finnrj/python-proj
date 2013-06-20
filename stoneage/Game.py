@@ -35,12 +35,12 @@ class Game(object):
         while not self.allPersonsPlaced():
             for player in [p for p in self.players if not self.board.personCount(p.playerAbr) == p.personCount]:
                 print("Player: %s to place persons" % (player.getColor()))                
-                print (self.board.toString())
+                print (self.board)
                 player.placePersons(self.board)
 
         for player in self.players: # reap resources and buy building tiles
             print("Player: %s evaluates" % (player.getColor()))
-            print (self.board.toString())
+            print (self.board)
             resources, huts = self.board.reapResources(player)
             player.addResources(resources)
             
@@ -48,7 +48,7 @@ class Game(object):
             self.board.popHuts(boughtHuts)
                 
             #player.addHuts(huts)
-            print(player.toString())
+            print(player)
         
         for player in self.players: # feed and adjust score
             player.feed()
@@ -66,7 +66,7 @@ class Game(object):
     def position(self):
         return """Available huts: %s
          
-%s""" % (" ".join([hut.asString() for hut in self.board.availableHuts()]), "\n\n".join([player.asString() for player in self.players]))
+%s""" % (" ".join([str(hut) for hut in self.board.availableHuts()]), "\n\n".join([player.asString() for player in self.players]))
 
 
 def main():

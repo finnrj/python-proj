@@ -30,7 +30,7 @@ class Resource():
         self.persons = "".join([ch for ch in self.persons if ch != player.getAbr()])
         return [self.resourceValue for resource in  range(0, count)]
 
-    def toString(self):
+    def __str__(self):
         return ("%-19s" % self.name) + ": " + " ".join(ch for ch in self.persons + "O" * (self.maxPersons - len(self.persons)))
         
 class HuntingGrounds(Resource):
@@ -44,7 +44,7 @@ class HuntingGrounds(Resource):
     def freeSlots(self):
         return 10
 
-    def toString(self):
+    def __str__(self):
         return self.name + ": " + " ".join([ch for ch in self.persons])
 
 

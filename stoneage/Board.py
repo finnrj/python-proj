@@ -158,10 +158,10 @@ class Board:
     def isFinished(self):
         return [len(stack) for stack in self.hutStacks].count(0) > 0
     
-    def toString(self):
-        stackstrings = ["[" * (len(stack)-1) + stack[-1].toString() for stack in self.hutStacks if len(stack) > 0]
+    def __str__(self):
+        stackstrings = ["[" * (len(stack)-1) + str(stack[-1]) for stack in self.hutStacks if len(stack) > 0]
         return "Hut Stacks:\n%s" % "  ".join(stackstrings) + "\n" +\
-             "\n".join(ground.toString() for ground in self.grounds) + "\n"
+             "\n".join(str(ground) for ground in self.grounds) + "\n"
 
 def main():
     pass

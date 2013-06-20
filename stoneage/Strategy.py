@@ -18,9 +18,6 @@ class Strategy:
     def buyHuts(self, player, huts):
         raise StrategyNotImplemented("The buyHuts() method should be implemented")
     
-    def toString(self):
-        return ""
-    
 class StupidBot(Strategy):
     
     def __init__(self):
@@ -84,43 +81,45 @@ class StupidBot(Strategy):
             usableResources.remove(resource)
         return sorted(usableResources)
     
+
+    def findToolsToKeep(self, toolbox, greedyToolvalue, sumToReduce):
+        toolsToKeep = []
+        for tool in toolbox.getUnused():
+            if sumToReduce - tool >= greedyToolvalue:
+                toolsToKeep.append(tool)
+                sumToReduce -= tool
+        return toolsToKeep
+
+
+    def useTools(self, toolbox, toolsToKeep):
+        sumToUse = 0
+        for tool in toolbox.getUnused():
+            if tool in toolsToKeep:
+                toolsToKeep.remove(tool)
+            else:
+                toolbox.use(tool)
+                sumToUse += tool
+        return sumToUse
+
     def toolsToUse(self, resourceValue, eyes, toolbox):
         mod = eyes % resourceValue
-        diffToWholeNumber = resourceValue - mod
-        
-        if sum(toolbox.getUnused()) >= diffToWholeNumber + resourceValue:
-            diffToWholeNumber += resourceValue
-            if sum(toolbox.getUnused()) >= diffToWholeNumber + resourceValue:
-                diffToWholeNumber += resourceValue
-                if sum(toolbox.getUnused()) >= diffToWholeNumber + resourceValue:
-                    diffToWholeNumber += resourceValue
-        
-        if toolbox.getUnused().count(diffToWholeNumber) > 0:
-            toolbox.use(diffToWholeNumber)
-            return diffToWholeNumber
-        elif sum(toolbox.getUnused()) == diffToWholeNumber:
-            for tool in toolbox.getUnused():
-                toolbox.use(tool)
-            return diffToWholeNumber
-        elif sum(toolbox.getUnused()) > diffToWholeNumber:
-            toolsToKeep = []
-            sumToReduce = sum(toolbox.getUnused())
-            for tool in toolbox.getUnused():
-                if sumToReduce - tool >= diffToWholeNumber:
-                    toolsToKeep.append(tool)
-                    sumToReduce -= tool
-            sumToUse = 0
-            for tool in toolbox.getUnused():
-                if tool in toolsToKeep:
-                    toolsToKeep.remove(tool)
-                else:
-                    toolbox.use(tool)
-                    sumToUse += tool
-            return sumToUse          
-        else:
-            return 0
+        greedyToolvalue = resourceValue - mod
 
-    def toString(self):
+        # if tools can't help: quit
+        if sum(toolbox.getUnused()) < greedyToolvalue:
+            return 0
+        
+        while sum(toolbox.getUnused()) >= greedyToolvalue + resourceValue:
+            greedyToolvalue += resourceValue
+
+        # looking for tools that can be kept
+        # precondition: Tools are sorted descending 
+        sumToReduce = sum(toolbox.getUnused())
+        toolsToKeep = self.findToolsToKeep(toolbox, greedyToolvalue, sumToReduce)
+                
+        return self.useTools(toolbox, toolsToKeep)          
+
+    def __str__(self):
         return "Stupid Bot"
     
 class Human(Strategy):
@@ -165,7 +164,7 @@ and the following resource%s: %s
             self.processPlacePersonsInput(resource, number, player.getAbr(), board)
         except PlacementError as e:
             print("ERROR: " + str(e) + "\n")
-            print (board.toString())
+            print (board)
             self.placePersons(player, board)
     
     def fetchPlacePersonsInput(self, people, foodtrack, food, resources, personsLeft):
@@ -191,7 +190,7 @@ and the following resource%s: %s
 
     def buyHuts(self, player, huts):
         if huts:
-            print("You have placed on following hut%s: " % suffix(huts) + " ".join(hut.asString() for hut in huts))
+            print("You have placed on following hut%s: " % suffix(huts) + " ".join(str(hut) for hut in huts))
         return self.doBuyHuts(player, self.filterOutPayableHuts(player, huts), [])
     
     def doBuyHuts(self, player, payableHuts, boughtHuts):
@@ -206,14 +205,14 @@ and the following resource%s: %s
             return self.doBuyHuts(player, self.filterOutPayableHuts(player, payableHuts), boughtHuts)
         
     def wantsToBuy(self, hut):
-        return fetchConvertedInput("do you want to buy this hut: %s ? (y|n) " % hut.asString(),
+        return fetchConvertedInput("do you want to buy this hut: %s ? (y|n) " % str(hut),
                                    lambda v: printfString("please answer y(es) or n(o) - not: '%s'", v),
                                    yesNo) 
         
     def filterOutPayableHuts(self, player, huts):
         notPayable, payable = [hut for hut in huts if not player.isPayable(hut)], [hut for hut in huts if player.isPayable(hut)]
         if notPayable:
-            print("you can't afford the following hut%s: %s" % (suffix(notPayable), " ".join([hut.asString() for hut in notPayable])))
+            print("you can't afford the following hut%s: %s" % (suffix(notPayable), " ".join([str(hut) for hut in notPayable])))
         return payable
 
     def isPayable(self, hut, resources):
@@ -226,7 +225,7 @@ and the following resource%s: %s
             player.buyHut(hut, self.chooseResourecestoPay(player.getNonFood(), hut))
             
     def chooseResourecestoPay(self, nonFoodResources, hut):
-        promptString = "\nchoose resources (format='445...') to pay the hut: %s\n available resources: %s " % (hut.asString(), str(nonFoodResources))
+        promptString = "\nchoose resources (format='445...') to pay the hut: %s\n available resources: %s " % (str(hut), str(nonFoodResources))
 
         finished = False
         while not finished:
@@ -266,7 +265,7 @@ and the following resource%s: %s
             print("Given resource count:" + str(len(payment)) + ", required count: " + str(hut.getResourceCount()))
         return len(hut.missing(payment)) == 0 and len(payment) == hut.getResourceCount()
     
-    def toString(self):
+    def __str__(self):
         return "Human"
 
 

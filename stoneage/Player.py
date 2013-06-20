@@ -98,15 +98,15 @@ class Player():
         return self.strategy.toolsToUse(resourceValue, eyes, self.toolbox)
     
     def getStrategy(self):
-        return self.strategy.toString()
+        return self.strategy
     
-    def toString(self):
+    def __str__(self):
         return """People: %d, Foodtrack: %d, Food: %d, Tools: %s
 Resources: %s
 huts: %s    
-score: %d\n""" % (self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox.toString(), 
+score: %d\n""" % (self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox, 
                   str(sorted(self.getNonFood())), 
-                  ",". join([hut.toString() for hut in self.huts]), self.score)
+                  ",". join([hut for hut in self.huts]), self.score)
 
     
     
