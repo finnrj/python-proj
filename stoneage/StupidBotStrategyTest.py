@@ -221,6 +221,19 @@ class StupidBotStrategyTest(unittest.TestCase):
         eyes = 4
         self.assertEqual(12, self.player.toolsToUse(resourceValue, eyes))
 
+    def testToolsToUseWith_322(self):
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+        self.player.toolbox.upgrade()
+                
+        resourceValue = 6
+        eyes = 3
+        self.assertEqual(3, self.player.toolsToUse(resourceValue, eyes))
+
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(StupidBotStrategyTest)
     unittest.TextTestRunner(verbosity=2).run(suite)

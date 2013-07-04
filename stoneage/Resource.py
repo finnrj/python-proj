@@ -3,7 +3,7 @@
 from random import randint
 
 class Resource():
-    """Class to represent a resource field on the board. """
+    """Base Class to represent a resource field on the board. """
     
     def __init__(self):
         self.maxPersons = 7
@@ -26,7 +26,12 @@ class Resource():
         return self.maxPersons - len(self.persons)
 
     def reapResources(self, player):
-        count = int(sum([randint(1, 6) for dice in range(0, self.count(player.getAbr()))])/self.resourceValue)
+        eyes = sum([randint(1, 6) for dice in range(0, self.count(player.getAbr()))])
+        toolValueToAdd = player.toolsToUse(self.resourceValue, eyes)
+        if toolValueToAdd:
+            print("player: " + player.getAbr() + " uses toolvalue: " + str(toolValueToAdd))
+        eyesAndTools = eyes + toolValueToAdd
+        count = int(eyesAndTools/self.resourceValue)
         self.persons = "".join([ch for ch in self.persons if ch != player.getAbr()])
         return [self.resourceValue for resource in  range(0, count)]
 

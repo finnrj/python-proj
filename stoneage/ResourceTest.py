@@ -78,6 +78,18 @@ class ResourceTest(unittest.TestCase):
         self.assertIsInstance(wood[0], int)
         self.assertEqual(len(wood), wood.count(3))
 
+    def testReapFoodWith3PersonsAndTools_211(self):
+        rs = HuntingGrounds()
+        self.redPlayer.toolbox.upgrade()
+        self.redPlayer.toolbox.upgrade()
+        self.redPlayer.toolbox.upgrade()
+        self.redPlayer.toolbox.upgrade()
+        
+        rs.addPerson(3, "r")
+        food = rs.reapResources(self.redPlayer)
+
+        self.assertIn(len(food), range(3,12))
+
     def testPureResource(self):
         rs = Resource()
 

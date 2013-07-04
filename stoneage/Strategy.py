@@ -82,9 +82,13 @@ class StupidBot(Strategy):
         return sorted(usableResources)
     
 
-    def findToolsToKeep(self, toolbox, greedyToolvalue, sumToReduce):
+    def findToolsToKeep(self, unusedTools, greedyToolvalue):
+        if unusedTools[0] == greedyToolvalue:
+            return unusedTools[1:]
+        
+        sumToReduce = sum(unusedTools)
         toolsToKeep = []
-        for tool in toolbox.getUnused():
+        for tool in unusedTools:
             if sumToReduce - tool >= greedyToolvalue:
                 toolsToKeep.append(tool)
                 sumToReduce -= tool
@@ -114,9 +118,7 @@ class StupidBot(Strategy):
 
         # looking for tools that can be kept
         # precondition: Tools are sorted descending 
-        sumToReduce = sum(toolbox.getUnused())
-        toolsToKeep = self.findToolsToKeep(toolbox, greedyToolvalue, sumToReduce)
-                
+        toolsToKeep = self.findToolsToKeep(toolbox.getUnused(), greedyToolvalue)
         return self.useTools(toolbox, toolsToKeep)          
 
     def __str__(self):
@@ -128,25 +130,26 @@ class Human(Strategy):
     prompt = """You have %d people, foodtrack: %d, food: %d 
 and the following resource%s: %s 
 %d person%s available. Please place person%s!
+"""
      
-        Input format: <resource> <number>, where
-
-            Grounds:                
-                Hunting:   f
-                Forest :   w
-                Clay:      c
-                Quarry:    s
-                River:     g
-                Farm:      a
-                Breeding:  b
-                Toolsmith: t
-            and 'number' the number of persons to
-            place in the chosen ground. 
-
-            Hut: h
-            and 'number' is the index of the hut (1-4)
-            
-    """
+#        Input format: <resource> <number>, where
+#
+#            Grounds:                
+#                Hunting:   f
+#                Forest :   w
+#                Clay:      c
+#                Quarry:    s
+#                River:     g
+#                Farm:      a
+#                Breeding:  b
+#                Toolsmith: t
+#            and 'number' the number of persons to
+#            place in the chosen ground. 
+#
+#            Hut: h
+#            and 'number' is the index of the hut (1-4)
+#            
+#    """
    
     def placePersons(self, player, board):
         personsLeft = player.personsLeft(board)
@@ -264,6 +267,9 @@ and the following resource%s: %s
         if len(payment) != hut.getResourceCount():
             print("Given resource count:" + str(len(payment)) + ", required count: " + str(hut.getResourceCount()))
         return len(hut.missing(payment)) == 0 and len(payment) == hut.getResourceCount()
+    
+    def toolsToUse(self, resourceValue, eyes, toolbox):
+        return 0
     
     def __str__(self):
         return "Human"

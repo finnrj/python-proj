@@ -94,8 +94,11 @@ class Player():
     def getAbr(self):
         return self.playerAbr
     
-    def toolsToUse(self, resourceValue, eyes):
+    def toolsToUse(self, resourceValue, eyes): 
         return self.strategy.toolsToUse(resourceValue, eyes, self.toolbox)
+    
+    def newRound(self):
+        self.toolbox.reset()
     
     def getStrategy(self):
         return self.strategy
@@ -106,7 +109,7 @@ Resources: %s
 huts: %s    
 score: %d\n""" % (self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox, 
                   str(sorted(self.getNonFood())), 
-                  ",". join([hut for hut in self.huts]), self.score)
+                  ",".join([str(hut) for hut in self.huts]), self.score)
 
     
     

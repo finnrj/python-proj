@@ -136,7 +136,7 @@ class Board:
     
     def reapResources(self, player):
         reapedResources = []
-        for ground in self.grounds:
+        for ground in reversed(self.grounds):
             reapedResources.extend(ground.reapResources(player))
         
         occupiedHuts = [stack[-1] for stack in self.hutStacks if len(stack) > 0 and stack[-1].isOccupiedBy() == player.getAbr()]

@@ -31,6 +31,8 @@ class Game(object):
         return sum([player.personsLeft(self.board) for player in self.players]) == 0
     
     def processRound(self, round):
+        for player in self.players:
+            player.newRound()
         print("\nRound: %d" % (round))
         while not self.allPersonsPlaced():
             for player in [p for p in self.players if not self.board.personCount(p.playerAbr) == p.personCount]:

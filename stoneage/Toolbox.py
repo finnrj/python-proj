@@ -36,7 +36,7 @@ class Toolbox():
         raise ToolError("No unused tool of value %d" % value)
     
     def __str__(self):
-        return "%s used: %s" % (str(self.getUnused()), str(self.getUsed())) 
+        return "unused: %s used: %s" % (str(self.getUnused()), str(self.getUsed())) 
     
 class ToolError(Exception):
     """Exception class for unavailable tool value"""
