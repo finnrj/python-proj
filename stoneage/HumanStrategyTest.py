@@ -7,6 +7,7 @@ import unittest
 from Strategy import Strategy, StrategyNotImplemented, Human
 from Player import Player
 from Board import Board
+from Toolbox import Toolbox
 
 class HumanStrategyTest(unittest.TestCase):
 
@@ -54,8 +55,13 @@ class HumanStrategyTest(unittest.TestCase):
         self.assertEqual(1, self.board.personsOnGrounds(self.human.player.getAbr()))
         self.assertTrue(self.board.farmOccupied())
         
-
-
+    def testHumanToolToUse(self):
+        toolbox = Toolbox()
+        self.assertEqual(0, self.human.toolsToUse(3, 2, toolbox))
+        toolbox.upgrade()
+        self.assertEqual(1, self.human.toolsToUse(3, 2, toolbox))
+        
+    
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(HumanStrategyTest)
     unittest.TextTestRunner(verbosity=2).run(suite)

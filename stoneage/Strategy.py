@@ -268,7 +268,10 @@ and the following resource%s: %s
         return len(hut.missing(payment)) == 0 and len(payment) == hut.getResourceCount()
     
     def toolsToUse(self, resourceValue, eyes, toolbox):
-        return 0
+        if toolbox.getUnused():
+            print("usable tools: ", toolbox.getUnused())
+        else:
+            return 0
     
     def __str__(self):
         return "Human"
