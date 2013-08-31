@@ -1,6 +1,5 @@
 from Hut import AnyHut, CountHut, SimpleHut
 from Board import PlacementError
-from Toolbox import Toolbox
 
 class StrategyNotImplemented(Exception):
     """Exception class for not inheriting the Strategy class"""

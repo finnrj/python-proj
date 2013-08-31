@@ -10,8 +10,8 @@ class BoardTest(unittest.TestCase):
 
     def setUp(self):
         self.board = Board()
-        self.redPlayer = Player("Red", StupidBot)
-        self.bluePlayer = Player("Blue", StupidBot)
+        self.redPlayer = Player("Red", StupidBot())
+        self.bluePlayer = Player("Blue", StupidBot())
 
     def testBoardInitialization(self):
         self.assertListEqual([7,7,7,7], self.board.numberOfHutsLeft())

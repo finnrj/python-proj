@@ -11,8 +11,8 @@ from Player import Player
 class ResourceTest(unittest.TestCase):
     
     def setUp(self):
-        self.redPlayer = Player("Red", StupidBot)
-        self.bluePlayer = Player("Blue", StupidBot)
+        self.redPlayer = Player("Red", StupidBot())
+        self.bluePlayer = Player("Blue", StupidBot())
             
     def testCount(self):
         rs = River()
