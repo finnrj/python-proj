@@ -234,19 +234,19 @@ and the following resource%s: %s
             chosenResources = fetchConvertedInput(promptString,
                                                  lambda v: printfString("the input '%s' does not consist of only numbers!", v),
                                                  mapToNumbers)
-            finished = all([self.chosenResourcesAvailable(nonFoodResources, chosenResources),
+            finished = all([self.chosenItemsAvailable(nonFoodResources, chosenResources),
                             self.validPaymentIfAnyHut(hut, chosenResources),
                             self.validPaymentIfCountHut(hut, chosenResources)])
         return chosenResources
 
-    def chosenResourcesAvailable(self, available, chosen):
+    def chosenItemsAvailable(self, available, chosen):
         try:
             clone = available[:]
             for r in chosen:
                 clone.remove(r)
             return True
         except ValueError:
-            print("Resources %s not available in %s\n" % (str(chosen), str(available)))
+            print("Items %s not available in %s\n" % (str(chosen), str(available)))
             return False
         
     def validPaymentIfAnyHut(self, hut, payment):
@@ -268,11 +268,27 @@ and the following resource%s: %s
         return len(hut.missing(payment)) == 0 and len(payment) == hut.getResourceCount()
     
     def toolsToUse(self, resourceValue, eyes, toolbox):
-        if toolbox.getUnused():
-            print("usable tools: ", toolbox.getUnused())
-        else:
+        d,rest = divmod(eyes, resourceValue)
+        unusedTools = toolbox.getUnused()
+        if rest + sum(unusedTools) < resourceValue:
             return 0
+        else:
+            promptString = """\nResourcevalue: %d, eyes: %d, your available tools: %s
+            choose tools to use (format='2', '21', '221')""" % (resourceValue, eyes, str(unusedTools))
+            finished = False
+            while not finished:
+                chosenTools = fetchConvertedInput(promptString,
+                                                 lambda v: printfString("the input '%s' does not consist of only numbers!", v),
+                                                 mapToNumbers)
+                finished = self.chosenItemsAvailable(unusedTools, chosenTools)
+            self.useTools(toolbox, chosenTools)
+            return sum(chosenTools)
     
+    def useTools(self, toolbox, toolsToUse):
+        for tool in toolbox.getUnused():
+            if tool in toolsToUse:
+                toolbox.use(tool)
+
     def __str__(self):
         return "Human"
 

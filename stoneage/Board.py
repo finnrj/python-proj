@@ -24,7 +24,7 @@ class Board:
         self.farm = Farm()
         self.breedingHut = BreedingHut()
         self.toolSmith = ToolSmith()
-        self.grounds = [self.huntingGrounds, self.forest, self.clayPit, self.quarry, self.river, self.farm, self.breedingHut, self.toolSmith]
+        self.grounds = [self.farm, self.breedingHut, self.toolSmith, self.huntingGrounds, self.forest, self.clayPit, self.quarry, self.river]
         
         if not huts:
             huts = self._defaultHuts()

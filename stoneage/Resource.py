@@ -26,7 +26,10 @@ class Resource():
         return self.maxPersons - len(self.persons)
 
     def reapResources(self, player):
-        eyes = sum([randint(1, 6) for dice in range(0, self.count(player.getAbr()))])
+        numberOfPersons = self.count(player.getAbr())
+        if numberOfPersons == 0:
+            return []
+        eyes = sum([randint(1, 6) for dice in range(0, numberOfPersons)])
         toolValueToAdd = player.toolsToUse(self.resourceValue, eyes)
         if toolValueToAdd:
             print("player: " + player.getAbr() + " uses toolvalue: " + str(toolValueToAdd))

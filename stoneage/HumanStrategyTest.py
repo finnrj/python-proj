@@ -59,8 +59,9 @@ class HumanStrategyTest(unittest.TestCase):
         toolbox = Toolbox()
         self.assertEqual(0, self.human.toolsToUse(3, 2, toolbox))
         toolbox.upgrade()
-        self.assertEqual(1, self.human.toolsToUse(3, 2, toolbox))
-        
+        self.assertEqual(0, self.human.toolsToUse(3, 7, toolbox))
+        toolbox.upgrade()
+        self.assertEqual(0, self.human.toolsToUse(3, 9, toolbox))
     
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(HumanStrategyTest)
