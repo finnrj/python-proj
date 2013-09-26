@@ -43,13 +43,10 @@ class Game(object):
         for player in self.players: # reap resources and buy building tiles
             print("Player: %s evaluates" % (player.getColor()))
             print (self.board)
-            resources, huts = self.board.reapResources(player)
-            player.addResources(resources)
+            huts = self.board.reapResources(player)
             
             boughtHuts = player.buyHuts(huts)
             self.board.popHuts(boughtHuts)
-                
-            #player.addHuts(huts)
             print(player)
         
         for player in self.players: # feed and adjust score

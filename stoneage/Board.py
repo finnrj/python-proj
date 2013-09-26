@@ -24,7 +24,7 @@ class Board:
         self.farm = Farm()
         self.breedingHut = BreedingHut()
         self.toolSmith = ToolSmith()
-        self.grounds = [self.farm, self.breedingHut, self.toolSmith, self.huntingGrounds, self.forest, self.clayPit, self.quarry, self.river]
+        self.grounds = [self.huntingGrounds, self.forest, self.clayPit, self.quarry, self.river, self.farm, self.breedingHut, self.toolSmith]
         
         if not huts:
             huts = self._defaultHuts()
@@ -137,13 +137,13 @@ class Board:
     def reapResources(self, player):
         reapedResources = []
         for ground in reversed(self.grounds):
-            reapedResources.extend(ground.reapResources(player))
+            player.addResources(ground.reapResources(player))
         
         occupiedHuts = [stack[-1] for stack in self.hutStacks if len(stack) > 0 and stack[-1].isOccupiedBy() == player.getAbr()]
         
         for hut in occupiedHuts:
             hut.removePerson()
-        return (reapedResources, occupiedHuts)
+        return occupiedHuts
     
     def popHuts(self, huts):
         for hut in huts:
