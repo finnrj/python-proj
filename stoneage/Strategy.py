@@ -120,6 +120,9 @@ class StupidBot(Strategy):
         toolsToKeep = self.findToolsToKeep(toolbox.getUnused(), greedyToolvalue)
         return self.useTools(toolbox, toolsToKeep)          
 
+    def chooseReapingResource(self, occupiedResources):
+        return occupiedResources[-1]
+
     def __str__(self):
         return "Stupid Bot"
     
@@ -268,9 +271,9 @@ and the following resource%s: %s
         return len(hut.missing(payment)) == 0 and len(payment) == hut.getResourceCount()
     
     def toolsToUse(self, resourceValue, eyes, toolbox):
-        d,rest = divmod(eyes, resourceValue)
+        mod = eyes % resourceValue
         unusedTools = toolbox.getUnused()
-        if rest + sum(unusedTools) < resourceValue:
+        if mod + sum(unusedTools) < resourceValue:
             return 0
         else:
             promptString = """\nResourcevalue: %d, eyes: %d, your available tools: %s
@@ -289,6 +292,16 @@ and the following resource%s: %s
             if tool in toolsToUse:
                 toolbox.use(tool)
                 toolsToUse.remove(tool)
+
+    def chooseReapingResource(self, occupiedResources):
+        promptString = """\nWhich Resource to Reap? (%s) """ % (occupiedResources)
+        finished = False
+        while not finished:
+            chosenResource = input(promptString).lower()
+            finished = chosenResource in occupiedResources
+            if not finished:
+                print("'%s' not in '%s'" % (chosenResource, occupiedResources))
+        return chosenResource
 
     def __str__(self):
         return "Human"

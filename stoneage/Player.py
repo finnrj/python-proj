@@ -103,6 +103,9 @@ class Player():
     def getStrategy(self):
         return self.strategy
     
+    def chooseReapingResource(self, occupiedResources):
+        return self.strategy.chooseReapingResource(occupiedResources)
+    
     def __str__(self):
         return """People: %d, Foodtrack: %d, Food: %d, Tools: %s
 Resources: %s

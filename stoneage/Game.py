@@ -36,13 +36,15 @@ class Game(object):
         print("\nRound: %d" % (round))
         while not self.allPersonsPlaced():
             for player in [p for p in self.players if not self.board.personCount(p.playerAbr) == p.personCount]:
-                print("Player: %s to place persons" % (player.getColor()))                
-                print (self.board)
+                print("Player: %s to place persons" % (player.getColor()))
+                if isinstance(player.strategy, Human):                
+                    print (self.board)  
                 player.placePersons(self.board)
 
         for player in self.players: # reap resources and buy building tiles
             print("Player: %s evaluates" % (player.getColor()))
-            print (self.board)
+            if isinstance(player.strategy, Human):
+                print (self.board)
             huts = self.board.reapResources(player)
             
             boughtHuts = player.buyHuts(huts)

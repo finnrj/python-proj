@@ -75,6 +75,9 @@ class HumanStrategyTest(unittest.TestCase):
         self.human.useTools(toolbox, toolsToUse)
         self.assertEquals([2,1], toolbox.getUnused())
     
+#    def testHumanReeapingOrder(self):
+#        self.player.chooseReapingResource ("fws")
+        
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(HumanStrategyTest)
     unittest.TextTestRunner(verbosity=2).run(suite)

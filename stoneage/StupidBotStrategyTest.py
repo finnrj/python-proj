@@ -232,7 +232,15 @@ class StupidBotStrategyTest(unittest.TestCase):
                 
         resourceValue = 6
         eyes = 3
-        self.assertEqual(3, self.player.toolsToUse(resourceValue, eyes))
+        self.assertEqual(3, self.player.toolsToUse(resourceValue, eyes))        
+        
+    def testReapingOrder(self):
+        self.assertEqual("g", self.player.chooseReapingResource("fsg"))
+        self.assertEqual("s", self.player.chooseReapingResource("fs"))
+        self.assertEqual("s", self.player.chooseReapingResource("fwcs"))
+        self.assertEqual("c", self.player.chooseReapingResource("fwc"))
+
+
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(StupidBotStrategyTest)

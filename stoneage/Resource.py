@@ -48,6 +48,7 @@ class HuntingGrounds(Resource):
         Resource.__init__(self)
         self.resourceValue = 2
         self.name = "Hunting grounds (f)"
+        self.abreviation = 'f'
 
     def freeSlots(self):
         return 10
@@ -63,6 +64,7 @@ class Forest(Resource):
         Resource.__init__(self)
         self.resourceValue = 3
         self.name = "Forest (w)"
+        self.abreviation = 'w'
 
 class ClayPit(Resource):
     """Class to represent a clay resource field on the board."""
@@ -71,6 +73,7 @@ class ClayPit(Resource):
         Resource.__init__(self)        
         self.resourceValue = 4
         self.name = "Clay pit (c)"
+        self.abreviation = 'c'
         
 class Quarry(Resource):
     """Class to represent a stone resource field on the board."""
@@ -79,6 +82,7 @@ class Quarry(Resource):
         Resource.__init__(self)
         self.resourceValue = 5
         self.name = "Quarry (s)"
+        self.abreviation = 's'
 
 class River(Resource):
     """Class to represent a gold resource field on the board."""
@@ -87,6 +91,7 @@ class River(Resource):
         Resource.__init__(self)        
         self.resourceValue = 6
         self.name = "River (g)"
+        self.abreviation = 'g'
     
 class Farm(Resource):
     """Class to represent the farm in the village part of the board"""
@@ -94,6 +99,7 @@ class Farm(Resource):
     def __init__(self):
         Resource.__init__(self)        
         self.name = "Farm (a)"
+        self.abreviation = 'a'
         self.resourceValue = 7
         self.maxPersons = 1
         
@@ -112,6 +118,7 @@ class BreedingHut(Resource):
     def __init__(self):
         Resource.__init__(self)        
         self.name = "Breeding hut (b)"
+        self.abreviation = 'b'
         self.maxPersons = 2
         
     def addPerson(self, abr):
@@ -128,6 +135,7 @@ class ToolSmith(Resource):
     def __init__(self):
         Resource.__init__(self)        
         self.name = "Toolsmith (t)"
+        self.abreviation = 't'
         self.resourceValue = 9
         self.maxPersons = 1
         

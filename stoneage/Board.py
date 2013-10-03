@@ -136,9 +136,18 @@ class Board:
     
     def reapResources(self, player):
         reapedResources = []
-        for ground in reversed(self.grounds):
+        for ground in self.grounds[5:]:
             player.addResources(ground.reapResources(player))
-        
+
+#       get occupied grounds
+        occupiedGrounds = {} 
+        for ground in self.grounds[:5]:
+            if ground.count(player.getAbr()):
+                occupiedGrounds[ground.abreviation] = ground
+        while len(occupiedGrounds):
+            resourceAbr = player.chooseReapingResource("".join(occupiedGrounds.keys()))
+            player.addResources(occupiedGrounds.pop(resourceAbr).reapResources(player))
+                   
         occupiedHuts = [stack[-1] for stack in self.hutStacks if len(stack) > 0 and stack[-1].isOccupiedBy() == player.getAbr()]
         
         for hut in occupiedHuts:
