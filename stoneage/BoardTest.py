@@ -72,24 +72,18 @@ class BoardTest(unittest.TestCase):
         self.board.placeOnHut(hutForRed, "r")
         self.board.placeOnHut(hutForBlue, "b")
         
-        resources, huts = self.board.reapResources(self.redPlayer)
-        self.assertEqual([], resources)
+        huts = self.board.reapResources(self.redPlayer)
         self.assertEqual(1, len(huts))
         self.assertEqual([hutForRed], huts)
         
-        resources, huts = self.board.reapResources(self.bluePlayer)
-        self.assertEqual([], resources)
+        huts = self.board.reapResources(self.bluePlayer)
         self.assertEqual([hutForBlue], huts)
 
     def testReapResourcesWithFarm(self):
         self.board.placeOnFarm("r")
         self.board.addClayDiggers(4, "r")
-        resources, huts = self.board.reapResources(self.redPlayer)
-        
-        self.assertIn(7, resources)
-
-
-
+        huts = self.board.reapResources(self.redPlayer)
+ 
 def main():
 #    suite = unittest.TestLoader().loadTestsFromTestCase(BoardTest)
 #    unittest.TextTestRunner(verbosity=2).run(suite)

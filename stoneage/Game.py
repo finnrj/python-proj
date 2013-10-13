@@ -36,12 +36,12 @@ class Game(object):
         print("\nRound: %d" % (round))
         while not self.allPersonsPlaced():
             for player in [p for p in self.players if not self.board.personCount(p.playerAbr) == p.personCount]:
-                print("Player: %s to place persons" % (player.getColor()))                
+                print("Player: %s to place persons" % (player.getColorForOutput()))                
                 print (self.board)
                 player.placePersons(self.board)
 
         for player in self.players: # reap resources and buy building tiles
-            print("Player: %s evaluates" % (player.getColor()))
+            print("Player: %s evaluates" % (player.getColorForOutput()))
             print (self.board)
             huts = self.board.reapResources(player)
             
@@ -60,7 +60,7 @@ class Game(object):
     def printPlayers(self):
         print("Players:")
         for player in self.players:
-            print("%-7s" % player.getColor(), ":", player.getStrategy())
+            print("%-7s" % player.getColorForOutput(), ":", player.getStrategy())
     
     def position(self):
         return """Available huts: %s
@@ -72,7 +72,7 @@ def main():
     game = Game()
     game.addPlayer(Player("Red", StupidBot()))
     game.addPlayer(Player("Blue",  StupidBot()))
-    game.addPlayer(Player("Yellow",  Human()))
+    game.addPlayer(Player("Green",  Human()))
     shuffle(game.players)
     game.printPlayers()
     round = 1
