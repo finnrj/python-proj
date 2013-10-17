@@ -83,10 +83,7 @@ class BoardTest(unittest.TestCase):
         self.board.placeOnFarm("r")
         self.board.addClayDiggers(4, "r")
         huts = self.board.reapResources(self.redPlayer)
-        
         self.assertEqual(1, self.redPlayer.getFoodTrack())
-
-
 
 def main():
 #    suite = unittest.TestLoader().loadTestsFromTestCase(BoardTest)

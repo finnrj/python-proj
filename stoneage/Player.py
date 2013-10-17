@@ -13,6 +13,7 @@ class Player():
     maxFoodTrack   = 10
     maxPersonCount = 10
     hungerPenalty  = -10
+    colorOSnormal  = '\033[0m'
 
     def __init__(self, color, strategy):
         self.resources = 12 * [2]
@@ -21,6 +22,16 @@ class Player():
         self.score = 0
         self.color = color
         self.playerAbr = color[:1].lower()
+        if color == 'Red':
+            self.colorOS = '\033[91m'
+        elif color == 'Green':
+            self.colorOS = '\033[92m'
+        elif color == 'Blue':
+            self.colorOS = '\033[94m'
+        elif color == 'Yellow':
+            self.colorOS = '\033[93m'
+        else:
+            self.colorOS = self.colorOSnormal
         self.strategy = strategy
         self.foodTrack = 0
         self.toolbox = Toolbox()
@@ -91,6 +102,9 @@ class Player():
     def getColor(self):
         return self.color
 
+    def getColorForOutput(self):
+        return self.colorOS + self.color + self.colorOSnormal
+
     def getAbr(self):
         return self.playerAbr
     
@@ -107,12 +121,12 @@ class Player():
         return self.strategy.chooseReapingResource(occupiedResources)
     
     def __str__(self):
-        return """People: %d, Foodtrack: %d, Food: %d, Tools: %s
+        return """%sPeople: %d, Foodtrack: %d, Food: %d, Tools: %s
 Resources: %s
 huts: %s    
-score: %d\n""" % (self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox, 
+score: %d%s\n""" % (self.colorOS, self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox, 
                   str(sorted(self.getNonFood())), 
-                  ",".join([str(hut) for hut in self.huts]), self.score)
+                  ",".join([str(hut) for hut in self.huts]), self.score, self.colorOSnormal)
 
     
     

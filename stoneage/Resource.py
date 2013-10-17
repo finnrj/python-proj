@@ -38,8 +38,15 @@ class Resource():
         self.persons = "".join([ch for ch in self.persons if ch != player.getAbr()])
         return [self.resourceValue for resource in  range(0, count)]
 
-    def __str__(self):
-        return ("%-19s" % self.name) + ": " + " ".join(ch for ch in self.persons + "O" * (self.maxPersons - len(self.persons)))
+    def colorAbreviations(self, groundString):
+        groundString = groundString.replace("r","\033[91mr\033[0m")
+        groundString = groundString.replace("g","\033[92mg\033[0m")
+        groundString = groundString.replace("b","\033[94mb\033[0m")
+        groundString = groundString.replace("y","\033[93my\033[0m")
+        return groundString
+    
+    def __str__(self):        
+        return ("%-19s" % self.name) + self.colorAbreviations(": " + " ".join(ch for ch in self.persons + "O" * (self.maxPersons - len(self.persons))))
         
 class HuntingGrounds(Resource):
     """Class to represent a food resource field on the board."""
@@ -54,7 +61,7 @@ class HuntingGrounds(Resource):
         return 10
 
     def __str__(self):
-        return self.name + ": " + " ".join([ch for ch in self.persons])
+        return self.name + ": " + self.colorAbreviations(" ".join([ch for ch in self.persons]))
 
 
 class Forest(Resource):
