@@ -295,10 +295,12 @@ and the following resource%s: %s
 
     def chooseReapingResource(self, occupiedResources):
         promptString = """\nWhich Resource to Reap? (%s) """ % (occupiedResources)
-        finished = False
+        if len(occupiedResources) == 1:
+            return occupiedResources[0]
+        finished = False 
         while not finished:
             chosenResource = input(promptString).lower()
-            finished = chosenResource in occupiedResources
+            finished = chosenResource and chosenResource in occupiedResources
             if not finished:
                 print("'%s' not in '%s'" % (chosenResource, occupiedResources))
         return chosenResource
