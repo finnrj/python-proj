@@ -18,6 +18,7 @@ class Player():
     def __init__(self, color, strategy):
         self.resources = 12 * [2]
         self.huts = []
+        self.cards = []
         self.personCount = 5
         self.score = 0
         self.color = color
@@ -54,9 +55,12 @@ class Player():
         for person in range((self.personCount - self.foodTrack) - self.foodMissing()): 
             self.resources.remove(2)
 
+    def getFood(self):
+        return [resource for resource in self.resources if resource == 2]
+    
     def getNonFood(self):
         return sorted([resource for resource in self.resources if resource != 2])
-    
+
     def addResources(self, additionalResources):
         while 7 in additionalResources: 
             self.foodTrack = min(self.maxFoodTrack, self.foodTrack + 1)
@@ -87,6 +91,27 @@ class Player():
         self.removeResources(payment)
         self.score += sum(payment)
 
+    def addCard(self, card):
+        self.cards.append(card)
+        card.execute(self)
+   
+    def getCardScore(self):
+        symbolList = {}
+        for card in self.cards:
+            if not card.getSymbol() in symbolList.keys():
+                symbolList[card.getSymbol()] = []
+            symbolList[card.getSymbol()].append(card)
+        
+        points1 = pow(len(symbolList.keys()), 2)
+        points2 = pow(len([lst for lst in symbolList.values() if len(lst) == 2]), 2)
+        return points1 + points2
+       
+    def addScore(self, score):
+        self.score += score
+
+    def getScore(self):
+        return self.score
+    
     def personsLeft(self, board):
         return self.personCount - board.personCount(self.playerAbr)
 
@@ -127,6 +152,14 @@ huts: %s
 score: %d%s\n""" % (self.colorOS, self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox, 
                   str(sorted(self.getNonFood())), 
                   ",".join([str(hut) for hut in self.huts]), self.score, self.colorOSnormal)
+
+    
+    
+    
+
+    
+    
+    
 
     
     
