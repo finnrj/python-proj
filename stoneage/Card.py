@@ -19,7 +19,6 @@ class Card(object):
         elif self.actionType == "joker":
             player.addResources(self.number *  [10])
             
-
     def execute(self, player):
         self.action(player)
         

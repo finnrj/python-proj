@@ -9,15 +9,22 @@ class CardTest(unittest.TestCase):
     
     def setUp(self):
         self.player = Player("Red", StupidBot())
+        
         self.potCard = Card("pottery", "food", 7)
+        
         self.weaveCard3 = Card("weaving", "food", 3)
         self.weaveCard1 = Card("weaving", "food", 1)
+        
         self.timeCardc = Card("time", "christmas", 0)
         self.timeCardft = Card("time", "foodTrack", 1)
+        
         self.healCard5 = Card("healing", "food", 5)
         self.healCard2 = Card("healing", "joker", 2)
+        
         self.transCard2 = Card("transport", "stone", 2)
+        
         self.musicCard = Card("music", "score", 3)
+        
         self.artCard = Card("art", "tool", 1)
     
     def testCardGetSymbol(self):

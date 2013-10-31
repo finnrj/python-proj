@@ -122,6 +122,12 @@ class StupidBot(Strategy):
 
     def chooseReapingResource(self, occupiedResources):
         return occupiedResources[-1]
+    
+    def chooseChristmas(self, player, presents):
+        target = 7 if (presents.count(7) > 0) else max(presents)
+        presents.remove(target)
+        player.addResources([target])
+        return presents
 
     def __str__(self):
         return "Stupid Bot"
@@ -304,6 +310,18 @@ and the following resource%s: %s
             if not finished:
                 print("'%s' not in '%s'" % (chosenResource, occupiedResources))
         return chosenResource
+
+    def chooseChristmas(self, player, presents):
+        promptString = """\nChoose resource for Christmas from (%s) """ % (presents)
+        finished = False
+        while not finished:
+            chosenResource = mapToNumbers(input(promptString).lower())[0]
+            finished = chosenResource and chosenResource in presents
+            if not finished:
+                print("'%s' not in '%s'" % (chosenResource, presents))
+        presents.remove(chosenResource)
+        player.addResources([chosenResource])
+        return presents
 
     def __str__(self):
         return "Human"

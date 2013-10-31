@@ -120,6 +120,9 @@ class Player():
 
     def placePersons(self, board):
         self.strategy.placePersons(self, board)
+        
+    def chooseChristmas(self, presents):
+        return self.strategy.chooseChristmas(self, presents)
     
     def finalScore(self):
         return self.score + len(self.resources)

@@ -239,8 +239,19 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.assertEqual("s", self.player.chooseReapingResource("fs"))
         self.assertEqual("s", self.player.chooseReapingResource("fwcs"))
         self.assertEqual("c", self.player.chooseReapingResource("fwc"))
-
-
+        
+    def testChooseChristmas(self):
+        self.assertEqual(0, self.player.getFoodTrack())
+        self.assertListEqual([3,4,9], self.player.chooseChristmas([3,4,7,9]))
+        self.assertEqual(1, self.player.getFoodTrack())
+        
+        self.assertEqual([0,0,0], self.player.getTools())
+        self.assertListEqual([3,4], self.player.chooseChristmas([3,4,9]))
+        self.assertEqual([1,0,0], self.player.getTools())
+        
+        self.assertEqual([], self.player.getNonFood())
+        self.assertListEqual([3], self.player.chooseChristmas([3,4]))
+        self.assertEqual([4], self.player.getNonFood())
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(StupidBotStrategyTest)
