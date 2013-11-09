@@ -24,7 +24,7 @@ class Board:
         self.farm = Farm()
         self.breedingHut = BreedingHut()
         self.toolSmith = ToolSmith()
-        self.grounds = [self.huntingGrounds, self.forest, self.clayPit, self.quarry, self.river, self.farm, self.breedingHut, self.toolSmith]
+        self.grounds = [self.huntingGrounds, self.forest, self.clayPit, self.quarry, self.river, self.toolSmith, self.farm, self.breedingHut]
         
         if not huts:
             huts = self._defaultHuts()
@@ -136,12 +136,12 @@ class Board:
     
     def reapResources(self, player):
         reapedResources = []
-        for ground in self.grounds[5:]:
+        for ground in self.grounds[-3:]:
             player.addResources(ground.reapResources(player))
 
 #       get occupied grounds
         occupiedGrounds = {} 
-        for ground in self.grounds[:5]:
+        for ground in self.grounds[:-3]:
             if ground.count(player.getAbr()):
                 occupiedGrounds[ground.abreviation] = ground
         while len(occupiedGrounds):

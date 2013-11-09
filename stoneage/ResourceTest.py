@@ -115,7 +115,7 @@ class ResourceTest(unittest.TestCase):
         self.assertEqual([], farmResource)
         
         farmResource = farm.reapResources(self.redPlayer)
-        self.assertEqual([7], farmResource)
+        self.assertEqual([8], farmResource)
         
     def testBreedingHut(self):
         breedingHut = BreedingHut()
@@ -124,7 +124,7 @@ class ResourceTest(unittest.TestCase):
         self.assertEqual(0, breedingHut.freeSlots())
 
         breedingResource = breedingHut.reapResources(self.redPlayer)
-        self.assertEqual([8], breedingResource)
+        self.assertEqual([9], breedingResource)
 
     def testToolSmith(self):
         toolSmith = ToolSmith()
@@ -139,7 +139,7 @@ class ResourceTest(unittest.TestCase):
         self.assertEqual([], toolResource)
 
         toolResource = toolSmith.reapResources(self.redPlayer)
-        self.assertEqual([9], toolResource)
+        self.assertEqual([7], toolResource)
 
 def main():
     suite = unittest.TestLoader().loadTestsFromTestCase(ResourceTest)

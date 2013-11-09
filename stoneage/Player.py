@@ -63,13 +63,13 @@ class Player():
 
     def addResources(self, additionalResources):
         while 7 in additionalResources: 
-            self.foodTrack = min(self.maxFoodTrack, self.foodTrack + 1)
+            self.toolbox.upgrade()
             additionalResources.remove(7)
         while 8 in additionalResources: 
-            self.personCount = min(self.maxPersonCount, self.personCount + 1)
+            self.foodTrack = min(self.maxFoodTrack, self.foodTrack + 1)
             additionalResources.remove(8)
         while 9 in additionalResources: 
-            self.toolbox.upgrade()
+            self.personCount = min(self.maxPersonCount, self.personCount + 1)
             additionalResources.remove(9)
         self.resources.extend(additionalResources)
         
@@ -91,9 +91,9 @@ class Player():
         self.removeResources(payment)
         self.score += sum(payment)
 
-    def addCard(self, card):
+    def addCard(self, card, players):
         self.cards.append(card)
-        card.execute(self)
+        card.execute(players)
    
     def getCardScore(self):
         symbolList = {}

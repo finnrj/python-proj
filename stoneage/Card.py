@@ -1,3 +1,5 @@
+from random import randint
+
 class Card(object):
     
     def __init__(self, symbol,action,number):
@@ -5,19 +7,23 @@ class Card(object):
         self.actionType = action
         self.number = number
 
-    def action(self, player):
+    def action(self, players):
         if self.actionType == "food":
-            player.addResources(self.number * [2])
+            players[0].addResources(self.number * [2])
         elif self.actionType == "foodTrack":
-            player.addResources([7])
+            players[0].addResources([8])
         elif self.actionType == "stone":
-            player.addResources([5,5])
+            players[0].addResources([5,5])
         elif self.actionType == "score":
-            player.addScore (self.number)
+            players[0].addScore (self.number)
         elif self.actionType == "tool":
-            player.addResources([9])
+            players[0].addResources([7])
         elif self.actionType == "joker":
-            player.addResources(self.number *  [10])
+            players[0].addResources(self.number *  [10])
+        elif self.actionType == "christmas":
+            presents = [randint(3, 8) for dice in range(0, len(players))]
+            for player in players:
+                player.chooseChristmas(presents)
             
     def execute(self, player):
         self.action(player)

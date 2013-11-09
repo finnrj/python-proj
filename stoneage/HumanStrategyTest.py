@@ -76,8 +76,8 @@ class HumanStrategyTest(unittest.TestCase):
         self.assertEquals([2,1], toolbox.getUnused())
     
     def testChooseChristmas(self):
-        reducedList = self.player.chooseChristmas([3,4,7,9])
-        self.assertTrue(set(reducedList).issubset(set([3,4,7,9])))
+        reducedList = self.player.chooseChristmas([3,4,7,8])
+        self.assertTrue(set(reducedList).issubset(set([3,4,7,8])))
         self.assertEqual(3, len(reducedList))
     
 #    def testHumanReeapingOrder(self):

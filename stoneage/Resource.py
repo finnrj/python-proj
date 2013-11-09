@@ -99,14 +99,13 @@ class River(Resource):
         self.resourceValue = 6
         self.name = "River (g)"
         self.abreviation = 'g'
-    
-class Farm(Resource):
-    """Class to represent the farm in the village part of the board"""
-    
+        
+class ToolSmith(Resource):
+    """Class to represent the tool-smith in the village part of the board"""
     def __init__(self):
         Resource.__init__(self)        
-        self.name = "Farm (a)"
-        self.abreviation = 'a'
+        self.name = "Toolsmith (t)"
+        self.abreviation = 't'
         self.resourceValue = 7
         self.maxPersons = 1
         
@@ -117,6 +116,25 @@ class Farm(Resource):
         if player.getAbr() == self.persons:
             self.persons = ""
             return [7]
+        return []
+    
+class Farm(Resource):
+    """Class to represent the farm in the village part of the board"""
+    
+    def __init__(self):
+        Resource.__init__(self)        
+        self.name = "Farm (a)"
+        self.abreviation = 'a'
+        self.resourceValue = 8
+        self.maxPersons = 1
+        
+    def addPerson(self, abr):
+        Resource.addPerson(self, 1, abr)
+        
+    def reapResources(self, player):
+        if player.getAbr() == self.persons:
+            self.persons = ""
+            return [8]
         return []
 
 class BreedingHut(Resource):
@@ -134,26 +152,9 @@ class BreedingHut(Resource):
     def reapResources(self, player):
         if self.persons and player.getAbr() == self.persons[0]:
             self.persons = ""
-            return [8]
-        return []
-
-class ToolSmith(Resource):
-    """Class to represent the tool-smith in the village part of the board"""
-    def __init__(self):
-        Resource.__init__(self)        
-        self.name = "Toolsmith (t)"
-        self.abreviation = 't'
-        self.resourceValue = 9
-        self.maxPersons = 1
-        
-    def addPerson(self, abr):
-        Resource.addPerson(self, 1, abr)
-        
-    def reapResources(self, player):
-        if player.getAbr() == self.persons:
-            self.persons = ""
             return [9]
         return []
+
 
 if __name__ == '__main__':
     print("hallo")

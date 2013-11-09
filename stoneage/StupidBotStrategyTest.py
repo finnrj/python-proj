@@ -74,7 +74,7 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.player.feed()
         self.player.feed()
         self.assertEqual(3, self.player.foodMissing())
-        self.player.addResources([7,7])
+        self.player.addResources([8,8])
         self.assertEqual(1, self.player.foodMissing())
     
     def testIsPayableBug(self):
@@ -110,28 +110,28 @@ class StupidBotStrategyTest(unittest.TestCase):
         
     def testFoodTrack(self):
         self.assertEqual(0, self.player.getFoodTrack())
-        self.player.addResources([7])
+        self.player.addResources([8])
         self.assertEqual(1, self.player.getFoodTrack())
         
-        self.player.addResources([3,3,7])
+        self.player.addResources([3,3,8])
         self.assertEqual(2, self.player.getFoodTrack())
         self.assertEqual([3,3], self.player.getNonFood())
         
-        self.player.addResources([4,7,7,3])
+        self.player.addResources([4,8,8,3])
         self.assertEqual(4, self.player.getFoodTrack())
         self.assertListEqual(sorted([3,3,4,3]), self.player.getNonFood())
         
     def testFoodTrackMaximum(self):
         self.assertEqual(0, self.player.getFoodTrack())
-        self.player.addResources(10 * [7])
+        self.player.addResources(10 * [8])
         self.assertEqual(10, self.player.getFoodTrack())
 
-        self.player.addResources([7])
+        self.player.addResources([8])
         self.assertEqual(10, self.player.getFoodTrack())
 
     def testBreeding(self):
         self.assertEqual(5, self.player.getPersonCount())
-        self.player.addResources([8])
+        self.player.addResources([9])
         self.assertEqual(6, self.player.getPersonCount())
 
     def testBreedingMaximum(self):
@@ -148,7 +148,7 @@ class StupidBotStrategyTest(unittest.TestCase):
 
     def testTools(self):
         self.assertEqual([0, 0, 0], self.player.getTools())
-        self.player.addResources([9])
+        self.player.addResources([7])
         self.assertEqual([1, 0, 0], self.player.getTools())
 
     def testToolsToUseWith_100(self):
@@ -242,11 +242,11 @@ class StupidBotStrategyTest(unittest.TestCase):
         
     def testChooseChristmas(self):
         self.assertEqual(0, self.player.getFoodTrack())
-        self.assertListEqual([3,4,9], self.player.chooseChristmas([3,4,7,9]))
+        self.assertListEqual([3,4,7], self.player.chooseChristmas([3,4,7,8]))
         self.assertEqual(1, self.player.getFoodTrack())
         
         self.assertEqual([0,0,0], self.player.getTools())
-        self.assertListEqual([3,4], self.player.chooseChristmas([3,4,9]))
+        self.assertListEqual([3,4], self.player.chooseChristmas([3,4,7]))
         self.assertEqual([1,0,0], self.player.getTools())
         
         self.assertEqual([], self.player.getNonFood())

@@ -124,7 +124,7 @@ class StupidBot(Strategy):
         return occupiedResources[-1]
     
     def chooseChristmas(self, player, presents):
-        target = 7 if (presents.count(7) > 0) else max(presents)
+        target = max(presents)
         presents.remove(target)
         player.addResources([target])
         return presents
@@ -148,9 +148,9 @@ and the following resource%s: %s
 #                Clay:      c
 #                Quarry:    s
 #                River:     g
+#                Toolsmith: t
 #                Farm:      a
 #                Breeding:  b
-#                Toolsmith: t
 #            and 'number' the number of persons to
 #            place in the chosen ground. 
 #
@@ -164,7 +164,7 @@ and the following resource%s: %s
         try:
             resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.resources.count(2),
                                                            player.getNonFood(), personsLeft)
-            if not resource in "hfwcsgabt":
+            if not resource in "hfwcsgtab":
                 raise PlacementError("illegal character:"+resource)
             elif resource == "b" and personsLeft < 2:
                 raise PlacementError("cannot breed with only %d person left" % (personsLeft))
@@ -190,9 +190,9 @@ and the following resource%s: %s
         elif resource == "c": board.addClayDiggers(number, playerAbr)
         elif resource == "s": board.addStoneDiggers(number, playerAbr)
         elif resource == "g": board.addGoldDiggers(number, playerAbr)
+        elif resource == "t": board.placeOnToolSmith(playerAbr)
         elif resource == "a": board.placeOnFarm(playerAbr)
         elif resource == "b": board.placeOnBreedingHut(playerAbr)
-        elif resource == "t": board.placeOnToolSmith(playerAbr)
         elif resource == "h": board.placeOnHutIndex(number - 1, playerAbr)
 
     def printResourceStatus(self, player):
@@ -312,13 +312,32 @@ and the following resource%s: %s
         return chosenResource
 
     def chooseChristmas(self, player, presents):
-        promptString = """\nChoose resource for Christmas from (%s) """ % (presents)
+        stringPresents = "%s" % (presents)  
+        stringPresents = stringPresents.replace("7", "(t)ool")
+        stringPresents = stringPresents.replace("8", "(f)arm track")
+        promptString = """\nChoose resource for Christmas from (%s) """ % (stringPresents)
         finished = False
         while not finished:
-            chosenResource = mapToNumbers(input(promptString).lower())[0]
-            finished = chosenResource and chosenResource in presents
+            inputString = input(promptString).lower()
+            if not inputString:
+                inputChar = "" 
+            else: 
+                inputChar = inputString[0]
+                 
+            if inputChar == "t":
+                chosenResource = 7                
+            elif inputChar == "f":
+                chosenResource = 8
+            else:
+                try:               
+                    chosenResource = int(inputChar)
+                    if not chosenResource in presents or chosenResource in [7,8]:
+                        chosenResource = 0
+                except:
+                    chosenResource = 0
+            finished = inputChar and chosenResource in presents
             if not finished:
-                print("'%s' not in '%s'" % (chosenResource, presents))
+                print("'%s' not in '%s'" % (inputChar, stringPresents))
         presents.remove(chosenResource)
         player.addResources([chosenResource])
         return presents

@@ -8,7 +8,11 @@ from Strategy import StupidBot
 class CardTest(unittest.TestCase):
     
     def setUp(self):
-        self.player = Player("Red", StupidBot())
+        self.activePlayer = Player("Red", StupidBot())
+        self.opponentBlue = Player("Blue", StupidBot())
+        self.opponentGreen = Player("Green", StupidBot())
+        
+        self.players = [self.activePlayer, self.opponentBlue, self.opponentGreen]
         
         self.potCard = Card("pottery", "food", 7)
         
@@ -26,74 +30,95 @@ class CardTest(unittest.TestCase):
         self.musicCard = Card("music", "score", 3)
         
         self.artCard = Card("art", "tool", 1)
+        
     
     def testCardGetSymbol(self):
         self.assertEqual("pottery", self.potCard.getSymbol())
             
     def testPotCardAction(self):
-        self.assertEqual(12 * [2], self.player.getFood())
-        self.player.addCard(self.potCard)
-        self.assertEqual(19 * [2], self.player.getFood())
+        self.assertEqual(12 * [2], self.activePlayer.getFood())
+        self.activePlayer.addCard(self.potCard, self.players)
+        self.assertEqual(19 * [2], self.activePlayer.getFood())
 
     def testArtCardAction(self):
-        self.assertEqual([0,0,0], self.player.getTools())
-        self.player.addCard(self.artCard)
-        self.assertEqual([1,0,0], self.player.getTools())
+        self.assertEqual([0,0,0], self.activePlayer.getTools())
+        self.activePlayer.addCard(self.artCard, self.players)
+        self.assertEqual([1,0,0], self.activePlayer.getTools())
 
     def testHealCardAction(self):
-        self.assertEqual(12 * [2], self.player.getFood())
-        self.player.addCard(self.healCard5)
-        self.assertEqual(17 * [2], self.player.getFood())
+        self.assertEqual(12 * [2], self.activePlayer.getFood())
+        self.activePlayer.addCard(self.healCard5, self.players)
+        self.assertEqual(17 * [2], self.activePlayer.getFood())
        
-        self.assertEqual([], self.player.getNonFood())
-        self.player.addCard(self.healCard2)
-        self.assertEqual(2 * [10], self.player.getNonFood())
+        self.assertEqual([], self.activePlayer.getNonFood())
+        self.activePlayer.addCard(self.healCard2, self.players)
+        self.assertEqual(2 * [10], self.activePlayer.getNonFood())
         
     def testWeaveCardAction(self):
-        self.assertEqual(12 * [2], self.player.getFood())
-        self.player.addCard(self.weaveCard3)
-        self.assertEqual((12 + 3) * [2], self.player.getFood())
-        self.player.addCard(self.weaveCard1)
-        self.assertEqual((12 + 4) * [2], self.player.getFood())
+        self.assertEqual(12 * [2], self.activePlayer.getFood())
+        self.activePlayer.addCard(self.weaveCard3, self.players)
+        self.assertEqual((12 + 3) * [2], self.activePlayer.getFood())
+        self.activePlayer.addCard(self.weaveCard1, self.players)
+        self.assertEqual((12 + 4) * [2], self.activePlayer.getFood())
  
     def testTimeCardAction(self):
-        self.assertEqual(0, self.player.getFoodTrack())
-        self.player.addCard(self.timeCardft)
-        self.assertEqual(1, self.player.getFoodTrack())
+        self.assertEqual(0, self.activePlayer.getFoodTrack())
+        self.activePlayer.addCard(self.timeCardft, self.players)
+        self.assertEqual(1, self.activePlayer.getFoodTrack())
 
     def testTransCardAction(self):
-        self.assertEqual([], self.player.getNonFood())
-        self.player.addCard(self.transCard2)
-        self.assertEqual([5,5], self.player.getNonFood())
+        self.assertEqual([], self.activePlayer.getNonFood())
+        self.activePlayer.addCard(self.transCard2, self.players)
+        self.assertEqual([5,5], self.activePlayer.getNonFood())
     
     def testMusicCardAction(self):
-        self.assertEqual(0, self.player.getScore())
-        self.player.addCard(self.musicCard)
-        self.assertEqual(3, self.player.getScore())
-    
-    def testCardPoints(self):
-        self.assertEqual(0, self.player.getCardScore())
-        self.player.addCard(self.potCard)
-        self.assertEqual(1, self.player.getCardScore())
-        self.player.addCard(self.weaveCard3)
-        self.assertEqual(4, self.player.getCardScore())
-        self.player.addCard(self.weaveCard1)
-        self.assertEqual(4 + 1, self.player.getCardScore())
-        self.player.addCard(self.timeCardc)
-        self.assertEqual(9 + 1, self.player.getCardScore())
-        self.player.addCard(self.timeCardft)
-        self.assertEqual(9 + 4, self.player.getCardScore())
-        self.player.addCard(self.healCard5)
-        self.assertEqual(16 + 4, self.player.getCardScore())
-        self.player.addCard(self.healCard2)
-        self.assertEqual(16 + 9, self.player.getCardScore())
-        self.player.addCard(self.transCard2)
-        self.assertEqual(25 + 9, self.player.getCardScore())
-        self.player.addCard(self.musicCard)
-        self.assertEqual(36 + 9, self.player.getCardScore())
-        self.player.addCard(self.artCard)
-        self.assertEqual(49 + 9, self.player.getCardScore())
+        self.assertEqual(0, self.activePlayer.getScore())
+        self.activePlayer.addCard(self.musicCard, self.players)
+        self.assertEqual(3, self.activePlayer.getScore())
         
+    def testCardWithChristmas(self):
+        for player in self.players:
+            self.assertEqual([], player.getNonFood())
+            self.assertEqual(0, player.getFoodTrack())
+            self.assertEqual([0,0,0], player.getTools())
+
+        self.activePlayer.addCard(self.timeCardc, self.players)
+        
+        for player in self.players:
+            if player.getNonFood():
+                self.assertEqual(0, player.getFoodTrack())
+                self.assertEqual([0,0,0], player.getTools())
+            elif [1,0,0] == player.getTools(): 
+                self.assertEqual([], player.getNonFood())
+                self.assertEqual(0, player.getFoodTrack())
+            else: # got a food-track
+                self.assertEqual(1, player.getFoodTrack())
+                self.assertEqual([], player.getNonFood())
+                self.assertEqual([0,0,0], player.getTools())
+        
+        
+    def testCardPoints(self):
+        self.assertEqual(0, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.potCard, self.players)
+        self.assertEqual(1, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.weaveCard3, self.players)
+        self.assertEqual(4, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.weaveCard1, self.players)
+        self.assertEqual(4 + 1, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.timeCardc, self.players)
+        self.assertEqual(9 + 1, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.timeCardft, self.players)
+        self.assertEqual(9 + 4, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.healCard5, self.players)
+        self.assertEqual(16 + 4, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.healCard2, self.players)
+        self.assertEqual(16 + 9, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.transCard2, self.players)
+        self.assertEqual(25 + 9, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.musicCard, self.players)
+        self.assertEqual(36 + 9, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.artCard, self.players)
+        self.assertEqual(49 + 9, self.activePlayer.getCardScore())
         
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(CardTest)
