@@ -46,9 +46,9 @@ class Game(object):
             if isinstance(player.strategy, Human):
                 print (self.board)
 
-        for player in self.players: # reap resources and buy building tiles
+        for idx, player in enumerate(self.players): # reap resources and buy building tiles
             print (self.board)
-            huts = self.board.reapResources(player)
+            huts = self.board.reapResources(self.players[idx:] + self.players[:idx])
             
             boughtHuts = player.buyHuts(huts)
             self.board.popHuts(boughtHuts)

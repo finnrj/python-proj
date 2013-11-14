@@ -134,14 +134,27 @@ class Board:
     def personCount(self, playerAbr):
         return self.personsOnGrounds(playerAbr) + self.personsOnHuts(playerAbr)
     
-    def reapResources(self, player):
+    def resourceGrounds(self):
+        return self.grounds[:-3]
+    
+    def villageGrounds(self):
+        return self.grounds[-3:]
+    
+    def occupiedCards(self, player):
+        return []
+    
+    def reapResources(self, players):
+        player = players[0]
         reapedResources = []
-        for ground in self.grounds[-3:]:
+        for ground in self.villageGrounds:
             player.addResources(ground.reapResources(player))
+
+        for card in self.occupiedCards(player):
+            player.addCard(players)
 
 #       get occupied grounds
         occupiedGrounds = {} 
-        for ground in self.grounds[:-3]:
+        for ground in self.resourceGrounds:
             if ground.count(player.getAbr()):
                 occupiedGrounds[ground.abreviation] = ground
         while len(occupiedGrounds):
@@ -153,6 +166,7 @@ class Board:
         for hut in occupiedHuts:
             hut.removePerson()
         return occupiedHuts
+    
     
     def popHuts(self, huts):
         for hut in huts:

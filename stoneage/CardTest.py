@@ -30,7 +30,9 @@ class CardTest(unittest.TestCase):
         self.musicCard = Card("music", "score", 3)
         
         self.artCard = Card("art", "tool", 1)
+        self.artCardg = Card("art", "roll", 6)
         
+        self.writingCard = Card("writing", "extracard", 1)
     
     def testCardGetSymbol(self):
         self.assertEqual("pottery", self.potCard.getSymbol())
@@ -95,7 +97,17 @@ class CardTest(unittest.TestCase):
                 self.assertEqual(1, player.getFoodTrack())
                 self.assertEqual([], player.getNonFood())
                 self.assertEqual([0,0,0], player.getTools())
-        
+
+    def testArtGoldCard(self):
+        self.activePlayer.toolbox.upgrade()
+        self.activePlayer.toolbox.upgrade()
+        self.activePlayer.toolbox.upgrade()
+        self.activePlayer.toolbox.upgrade()
+        self.assertEqual([], self.activePlayer.getNonFood())
+        self.activePlayer.addCard(self.artCardg, self.players)
+        self.assertTrue(len(self.activePlayer.getNonFood()) > 0)
+        self.assertTrue(len(self.activePlayer.getNonFood()) < 3)
+        self.assertTrue(6 in self.activePlayer.getNonFood())
         
     def testCardPoints(self):
         self.assertEqual(0, self.activePlayer.getCardScore())

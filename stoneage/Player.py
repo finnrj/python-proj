@@ -27,10 +27,10 @@ class Player():
             self.colorOS = '\033[91m'
         elif color == 'Green':
             self.colorOS = '\033[92m'
-        elif color == 'Blue':
-            self.colorOS = '\033[94m'
         elif color == 'Yellow':
             self.colorOS = '\033[93m'
+        elif color == 'Blue':
+            self.colorOS = '\033[94m'
         else:
             self.colorOS = self.colorOSnormal
         self.strategy = strategy
@@ -131,7 +131,7 @@ class Player():
         return self.color
 
     def getColorForOutput(self):
-        return self.colorOS + self.color + self.colorOSnormal
+        return "%s%-5s%s" %  (self.colorOS, self.color, self.colorOSnormal)
 
     def getAbr(self):
         return self.playerAbr
