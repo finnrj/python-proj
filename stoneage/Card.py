@@ -1,13 +1,13 @@
 from random import randint
 
-class Card(object):
+class Card:
     
-    def __init__(self, symbol,action,number):
+    def __init__(self, symbol, action, number):
         self.symbol = symbol
         self.actionType = action
         self.number = number
 
-    def action(self, players):
+    def action(self, players, cardPile):
         activePlayer = players[0]
         if self.actionType == "food":
             activePlayer.addResources(self.number * [2])
@@ -29,9 +29,26 @@ class Card(object):
             eyes = sum([randint(1, self.number) for dice in [1,2]])
             numberOfResources = int((eyes + activePlayer.toolsToUse(self.number, eyes))/self.number)
             activePlayer.addResources(numberOfResources * [self.number])
+        elif self.actionType == 'extracard':
+            activePlayer.cards.append(cardPile.pop())
             
-    def execute(self, player):
-        self.action(player)
+    def execute(self, players, cardPile):
+        self.action(players, cardPile)
         
     def getSymbol(self):
         return self.symbol
+    
+class SymbolCard(Card):
+    def __init__(self, symbol, action, number):
+        Card.__init__(self, symbol, action, number)
+    
+class MultiplierCard(Card):
+    def __init__(self, symbol, multiplier, action, number):
+        Card.__init__(self, symbol, action, number)
+        self.multiplier = multiplier
+        
+    def getMultiplier(self):
+        return self.multiplier
+    
+    
+    

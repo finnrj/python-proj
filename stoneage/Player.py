@@ -4,6 +4,7 @@ Created on Nov 22, 2012
 @author: finn
 '''
 from Toolbox import Toolbox
+from Card import SymbolCard, MultiplierCard
 
 class Player():
     '''
@@ -91,20 +92,26 @@ class Player():
         self.removeResources(payment)
         self.score += sum(payment)
 
-    def addCard(self, card, players):
+    def addCard(self, card, players, cardPile):
         self.cards.append(card)
-        card.execute(players)
+        card.execute(players, cardPile)
    
     def getCardScore(self):
         symbolList = {}
-        for card in self.cards:
+        for card in [c for c in self.cards if isinstance(c, SymbolCard)]:
             if not card.getSymbol() in symbolList.keys():
                 symbolList[card.getSymbol()] = []
             symbolList[card.getSymbol()].append(card)
         
         points1 = pow(len(symbolList.keys()), 2)
         points2 = pow(len([lst for lst in symbolList.values() if len(lst) == 2]), 2)
-        return points1 + points2
+        
+        mulitplierPoints = 0
+        for card in [c for c in self.cards if isinstance(c, MultiplierCard)]:
+            if card.getSymbol() == "hutBuilder":
+                mulitplierPoints += card.getMultiplier() * len(self.huts)
+                  
+        return points1 + points2 + mulitplierPoints
        
     def addScore(self, score):
         self.score += score

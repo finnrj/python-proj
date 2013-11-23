@@ -12,9 +12,11 @@ class BoardTest(unittest.TestCase):
         self.board = Board()
         self.redPlayer = Player("Red", StupidBot())
         self.bluePlayer = Player("Blue", StupidBot())
+        self.players = [self.redPlayer, self.bluePlayer]
 
     def testBoardInitialization(self):
         self.assertListEqual([7,7,7,7], self.board.numberOfHutsLeft())
+        self.assertEqual(21, self.board.numberOfCardsLeft())
 
     def testAvailableHuts(self):
         ahs = self.board.availableHuts()
@@ -72,17 +74,18 @@ class BoardTest(unittest.TestCase):
         self.board.placeOnHut(hutForRed, "r")
         self.board.placeOnHut(hutForBlue, "b")
         
-        huts = self.board.reapResources(self.redPlayer)
+        huts = self.board.reapResources(self.players)
         self.assertEqual(1, len(huts))
         self.assertEqual([hutForRed], huts)
+        self.players.reverse()
         
-        huts = self.board.reapResources(self.bluePlayer)
+        huts = self.board.reapResources(self.players)
         self.assertEqual([hutForBlue], huts)
 
     def testReapResourcesWithFarm(self):
         self.board.placeOnFarm("r")
         self.board.addClayDiggers(4, "r")
-        huts = self.board.reapResources(self.redPlayer)
+        huts = self.board.reapResources(self.players)
         self.assertEqual(1, self.redPlayer.getFoodTrack())
 
 def main():

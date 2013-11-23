@@ -4,6 +4,7 @@ from Hut import SimpleHut, AnyHut, CountHut
 from random import shuffle
 from Resource import HuntingGrounds, Forest, ClayPit, Quarry, River, Farm,\
     BreedingHut, ToolSmith
+from Card import Card, MultiplierCard, SymbolCard
 
 class PlacementError(Exception):
     """Exception class for illegal placements"""
@@ -13,8 +14,6 @@ class PlacementError(Exception):
 class Board:
     """Class representing the gameboard """
 
-    players = []
-    
     def __init__(self, huts=None):
         self.huntingGrounds = HuntingGrounds()
         self.forest = Forest()
@@ -39,6 +38,22 @@ class Board:
                           huts[end1:end2],
                           huts[end2:end3],
                           huts[end3:    ]]
+        
+        self.cardPile = [SymbolCard("weaving", "food", 3), SymbolCard("weaving", "food", 1),
+                         SymbolCard("time", "christmas", 0), SymbolCard("time", "foodTrack", 1),
+                         SymbolCard("healing", "food", 5), SymbolCard("healing", "joker", 2),
+                         SymbolCard("art", "tool", 1), SymbolCard("art", "roll", 6),
+                         SymbolCard("pottery", "food", 7), SymbolCard("pottery", "christmas", 0), 
+                         SymbolCard("transport", "stone", 2), SymbolCard("transport", "christmas", 0),
+                         SymbolCard("music", "score", 3), SymbolCard("music", "score", 3),
+                         SymbolCard("writing", "extraCard", 1), SymbolCard("writing", "christmas", 0),
+                         MultiplierCard("hutBuilder", 1, "christmas", 0),
+                         MultiplierCard("hutBuilder", 1, "food", 4),
+                         MultiplierCard("hutBuilder", 2, "christmas", 0),
+                         MultiplierCard("hutBuilder", 2, "food", 2),
+                         MultiplierCard("hutBuilder", 3, "score", 3),
+                         ]
+        shuffle(self.cardPile)
 
     def _defaultHuts(self):
         return [SimpleHut(3, 3, 4),
@@ -143,10 +158,13 @@ class Board:
     def occupiedCards(self, player):
         return []
     
+    def numberOfCardsLeft(self):
+        return len(self.cardPile)
+    
     def reapResources(self, players):
         player = players[0]
         reapedResources = []
-        for ground in self.villageGrounds:
+        for ground in self.villageGrounds():
             player.addResources(ground.reapResources(player))
 
         for card in self.occupiedCards(player):
@@ -154,7 +172,7 @@ class Board:
 
 #       get occupied grounds
         occupiedGrounds = {} 
-        for ground in self.resourceGrounds:
+        for ground in self.resourceGrounds():
             if ground.count(player.getAbr()):
                 occupiedGrounds[ground.abreviation] = ground
         while len(occupiedGrounds):
