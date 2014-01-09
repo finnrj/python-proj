@@ -37,6 +37,7 @@ class Player():
         self.strategy = strategy
         self.foodTrack = 0
         self.toolbox = Toolbox()
+        self.oneTimeTools = []
 
     def getFoodTrack(self):
         return self.foodTrack
@@ -74,6 +75,9 @@ class Player():
             additionalResources.remove(9)
         self.resources.extend(additionalResources)
         
+    def addOneTimeTool(self, value):
+        self.oneTimeTools.append(value)
+        
     def removeResources(self, resourcesToRemove):
         for resource in resourcesToRemove:
             self.resources.remove(resource)
@@ -110,7 +114,13 @@ class Player():
         for card in [c for c in self.cards if isinstance(c, MultiplierCard)]:
             if card.getSymbol() == "hutBuilder":
                 mulitplierPoints += card.getMultiplier() * len(self.huts)
-                  
+            elif card.getSymbol() == "farmer":
+                mulitplierPoints += card.getMultiplier() * self.foodTrack
+            elif card.getSymbol() == "toolMaker":
+                mulitplierPoints += card.getMultiplier() * sum(self.toolbox.getTools())
+            elif card.getSymbol() == "shaman":
+                mulitplierPoints += card.getMultiplier() * self.personCount
+
         return points1 + points2 + mulitplierPoints
        
     def addScore(self, score):

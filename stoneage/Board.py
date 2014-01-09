@@ -52,6 +52,21 @@ class Board:
                          MultiplierCard("hutBuilder", 2, "christmas", 0),
                          MultiplierCard("hutBuilder", 2, "food", 2),
                          MultiplierCard("hutBuilder", 3, "score", 3),
+                         MultiplierCard("farmer", 1, "christmas", 0),
+                         MultiplierCard("farmer", 1, "foodTrack", 1),
+                         MultiplierCard("farmer", 1, "stone", 1),
+                         MultiplierCard("farmer", 2, "food", 3),
+                         MultiplierCard("farmer", 2, "christmas", 0),
+                         MultiplierCard("toolMaker", 2, "christmas", 0),
+                         MultiplierCard("toolMaker", 2, "christmas", 0),   
+                         MultiplierCard("toolMaker", 1, "oneTimeTool", 3),
+                         MultiplierCard("toolMaker", 1, "oneTimeTool", 4),
+                         MultiplierCard("toolMaker", 2, "oneTimeTool", 2),
+                         MultiplierCard("shaman", 1, "stone", 1),
+                         MultiplierCard("shaman", 1, "gold", 1),
+                         MultiplierCard("shaman", 2, "clay", 1),                                                                                      
+                         MultiplierCard("shaman", 2, "roll", 3),
+                         MultiplierCard("shaman", 1, "roll", 5),
                          ]
         shuffle(self.cardPile)
 

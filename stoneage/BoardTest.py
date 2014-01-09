@@ -16,7 +16,7 @@ class BoardTest(unittest.TestCase):
 
     def testBoardInitialization(self):
         self.assertListEqual([7,7,7,7], self.board.numberOfHutsLeft())
-        self.assertEqual(21, self.board.numberOfCardsLeft())
+        self.assertEqual(36, self.board.numberOfCardsLeft())
 
     def testAvailableHuts(self):
         ahs = self.board.availableHuts()

@@ -39,7 +39,19 @@ class CardTest(unittest.TestCase):
         self.hutBuilderCard = MultiplierCard("hutBuilder", 1, "christmas", 0)
         self.hutBuilderCard2 = MultiplierCard("hutBuilder", 2, "christmas", 0)
         self.hutBuilderCard3 = MultiplierCard("hutBuilder", 3, "score", 3)
+
+        self.farmerCard = MultiplierCard("farmer", 1, "stone", 1)
+        self.farmerCard2 = MultiplierCard("farmer", 1, "foodTrack", 1)
+        self.farmerCard3 = MultiplierCard("farmer", 2, "food", 3)        
+
+        self.toolMakerCard = MultiplierCard("toolMaker", 1, "oneTimeTool", 3)        
+        self.toolMakerCard2 = MultiplierCard("toolMaker", 1, "oneTimeTool", 4)
+        self.toolMakerCard3= MultiplierCard("toolMaker", 2, "oneTimeTool", 2)
     
+        self.shamanCard = MultiplierCard("shaman", 1, "stone", 1)
+        self.shamanCard2 = MultiplierCard("shaman", 1, "gold", 1)
+        self.shamanCard3 = MultiplierCard("shaman", 2, "roll", 3)
+            
     def testCardGetSymbol(self):
         self.assertEqual("pottery", self.potCard.getSymbol())
             
@@ -131,7 +143,38 @@ class CardTest(unittest.TestCase):
         
         self.activePlayer.addCard(self.hutBuilderCard3, self.players, self.cardPile)
         self.assertEqual(6, self.activePlayer.getCardScore())
-    
+        
+        self.activePlayer.huts.append(SimpleHut(3,3,4))
+        self.assertEqual(12, self.activePlayer.getCardScore())
+
+    def testFarmerCards(self):
+        self.activePlayer.addResources([8, 8])
+        self.assertEqual(0, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.farmerCard, self.players, self.cardPile)
+        self.assertEqual(2, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.farmerCard2, self.players, self.cardPile)
+        self.assertEqual(6, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.farmerCard3, self.players, self.cardPile)
+        self.assertEqual(12, self.activePlayer.getCardScore())
+
+    def testToolMakerCards(self):
+        self.activePlayer.addResources([7, 7])
+        self.assertEqual(0, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.toolMakerCard, self.players, self.cardPile)
+        self.assertEqual(2, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.toolMakerCard2, self.players, self.cardPile)
+        self.assertEqual(4, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.toolMakerCard3, self.players, self.cardPile)
+        self.assertEqual(8, self.activePlayer.getCardScore())
+        
+    def testShamanCards(self):
+        self.assertEqual(0, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.shamanCard, self.players, self.cardPile)
+        self.assertEqual(5, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.shamanCard2, self.players, self.cardPile)
+        self.assertEqual(10, self.activePlayer.getCardScore())
+        self.activePlayer.addCard(self.shamanCard3, self.players, self.cardPile)
+        self.assertEqual(20, self.activePlayer.getCardScore())
         
     def testCardPoints(self):
         self.assertEqual(0, self.activePlayer.getCardScore())

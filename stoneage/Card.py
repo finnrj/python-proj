@@ -26,7 +26,7 @@ class Card:
             for player in players:
                 player.chooseChristmas(presents)
         elif self.actionType == "roll":
-            eyes = sum([randint(1, self.number) for dice in [1,2]])
+            eyes = sum([randint(1, 6) for dice in [1,2]])
             numberOfResources = int((eyes + activePlayer.toolsToUse(self.number, eyes))/self.number)
             activePlayer.addResources(numberOfResources * [self.number])
         elif self.actionType == 'extracard':
