@@ -137,8 +137,8 @@ class Board:
     def freeRiverSlots(self):
         return self.river.freeSlots()
  
-    def placeOnFarm(self, playerAbr):
-        self.farm.addPerson(playerAbr)
+    def placeOnFarm(self, player):
+        self.farm.addPerson(player)
  
     def farmOccupied(self):
         return self.farm.freeSlots() == 0
@@ -155,14 +155,14 @@ class Board:
     def toolSmithOccupied(self):
         return self.toolSmith.freeSlots() == 0
 
-    def personsOnHuts(self, playerAbr):
-        return [stack[-1].isOccupiedBy() for stack in self.hutStacks].count(playerAbr)
+    def personsOnHuts(self, player):
+        return [stack[-1].isOccupiedBy() for stack in self.hutStacks].count(player.getAbr())
 
-    def personsOnGrounds(self, playerAbr):
-        return sum([ground.count(playerAbr) for ground in self.grounds])
+    def personsOnGrounds(self, player):
+        return sum([ground.count(player) for ground in self.grounds])
 
-    def personCount(self, playerAbr):
-        return self.personsOnGrounds(playerAbr) + self.personsOnHuts(playerAbr)
+    def personCount(self, player):
+        return self.personsOnGrounds(player) + self.personsOnHuts(player)
     
     def resourceGrounds(self):
         return self.grounds[:-3]
@@ -188,7 +188,7 @@ class Board:
 #       get occupied grounds
         occupiedGrounds = {} 
         for ground in self.resourceGrounds():
-            if ground.count(player.getAbr()):
+            if ground.count(player):
                 occupiedGrounds[ground.abreviation] = ground
         while len(occupiedGrounds):
             resourceAbr = player.chooseReapingResource("".join(occupiedGrounds.keys()))

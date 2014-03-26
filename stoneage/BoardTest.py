@@ -26,40 +26,44 @@ class BoardTest(unittest.TestCase):
     def testPlaceOnHut(self):
         ahs = self.board.availableHuts()
         targetHut = ahs[0]
-        self.board.placeOnHutIndex(0, "r")
+        self.board.placeOnHutIndex(0, self.redPlayer)
         ahs = self.board.availableHuts()
         self.assertEqual(3, len(ahs), "should only be 3 huts left")
         self.assertNotIn(targetHut, ahs, "hut should not be available")
 
     def testPersonCountAfterPlacingOnHut(self):
-        self.assertEqual(0, self.board.personCount("r"))
-        self.board.placeOnHutIndex(0, "r")
-        self.assertEqual(1, self.board.personCount("r"))
-        
-        self.assertEqual(0, self.board.personCount("b"))
-        self.board.placeOnHutIndex(1, "b")
-        self.assertEqual(1, self.board.personCount("b"))
+        self.assertEqual(0, self.board.personCount(self.redPlayer))
+        self.assertEqual(0, self.board.personsOnHuts(self.redPlayer))
+        self.board.placeOnHutIndex(0, self.redPlayer)
+        self.assertEqual(1, self.board.personCount(self.redPlayer))
+        self.assertEqual(1, self.board.personsOnHuts(self.redPlayer))
+
+        self.assertEqual(0, self.board.personCount(self.bluePlayer))
+        self.assertEqual(0, self.board.personsOnHuts(self.bluePlayer))        
+        self.board.placeOnHutIndex(1, self.bluePlayer)
+        self.assertEqual(1, self.board.personCount(self.bluePlayer))
+        self.assertEqual(1, self.board.personsOnHuts(self.bluePlayer))  
         
     def testPlacePersonsWithoutResources(self):
-        self.assertEqual(0, self.board.personCount("r"))
-        self.board.addHunters(2, "r")
-        self.board.addLumberjacks(2, "r")
+        self.assertEqual(0, self.board.personCount(self.redPlayer))
+        self.board.addHunters(2, self.redPlayer)
+        self.board.addLumberjacks(2, self.redPlayer)
 
-        self.assertEqual(4, self.board.personCount("r"))
+        self.assertEqual(4, self.board.personCount(self.redPlayer))
 
-        self.board.addClayDiggers(1, "r")
+        self.board.addClayDiggers(1, self.redPlayer)
         
-        self.assertEqual(5, self.board.personCount("r"))
+        self.assertEqual(5, self.board.personCount(self.redPlayer))
        
     def testIllegalPlacement(self):
-        self.board.addStoneDiggers(2, "r")
+        self.board.addStoneDiggers(2, self.redPlayer)
         
-        self.assertEqual(2, self.board.personCount("r"))
+        self.assertEqual(2, self.board.personCount(self.redPlayer))
         from Board import PlacementError
         with self.assertRaises(PlacementError):
-            self.board.addStoneDiggers(1, "r")
+            self.board.addStoneDiggers(1, self.redPlayer)
         
-        self.assertEqual(2, self.board.personCount("r"))
+        self.assertEqual(2, self.board.personCount(self.redPlayer))
         
     def testIsFinished(self):
         self.board = Board([SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4)])
@@ -71,8 +75,8 @@ class BoardTest(unittest.TestCase):
         hutForRed = SimpleHut(3, 3, 4)
         hutForBlue = SimpleHut(3, 4, 4)
         self.board = Board([hutForRed, hutForBlue, SimpleHut(3,4,5), SimpleHut(4,5,6)])
-        self.board.placeOnHut(hutForRed, "r")
-        self.board.placeOnHut(hutForBlue, "b")
+        self.board.placeOnHut(hutForRed, self.redPlayer)
+        self.board.placeOnHut(hutForBlue, self.bluePlayer)
         
         huts = self.board.reapResources(self.players)
         self.assertEqual(1, len(huts))
@@ -83,8 +87,8 @@ class BoardTest(unittest.TestCase):
         self.assertEqual([hutForBlue], huts)
 
     def testReapResourcesWithFarm(self):
-        self.board.placeOnFarm("r")
-        self.board.addClayDiggers(4, "r")
+        self.board.placeOnFarm(self.redPlayer)
+        self.board.addClayDiggers(4, self.redPlayer)
         huts = self.board.reapResources(self.players)
         self.assertEqual(1, self.redPlayer.getFoodTrack())
 

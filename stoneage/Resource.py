@@ -9,24 +9,25 @@ class Resource():
         self.maxPersons = 7
         self.persons = ""
 
-    def addPerson(self, n, playerAbr):
+    def addPerson(self, n, player):
         if n == 0: return
-        if (self.persons.count(playerAbr) > 0):
+        if (self.persons.count(player.getAbr()) > 0):
             from Board import PlacementError
-            raise PlacementError("Player %s already added person to the %s" % (playerAbr, self.name))
+            raise PlacementError("Player %s already added person to the %s" % (player.getAbr(),
+                                                                                self.name))
         if (len(self.persons) + n > self.maxPersons):
             from Board import PlacementError
             raise PlacementError("Not room for %d further persons in the %s" % (n, self.name))
-        self.persons += n * playerAbr
+        self.persons += n * player.getAbr()
     
-    def count(self, playerAbr):
-        return self.persons.count(playerAbr)
+    def count(self, player):
+        return self.persons.count(player.getAbr())
     
     def freeSlots(self):
         return self.maxPersons - len(self.persons)
 
     def reapResources(self, player):
-        numberOfPersons = self.count(player.getAbr())
+        numberOfPersons = self.count(player)
         if numberOfPersons == 0:
             return []
         eyes = sum([randint(1, 6) for dice in range(0, numberOfPersons)])
@@ -128,8 +129,8 @@ class Farm(Resource):
         self.resourceValue = 8
         self.maxPersons = 1
         
-    def addPerson(self, abr):
-        Resource.addPerson(self, 1, abr)
+    def addPerson(self, player):
+        Resource.addPerson(self, 1, player)
         
     def reapResources(self, player):
         if player.getAbr() == self.persons:

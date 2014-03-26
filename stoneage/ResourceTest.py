@@ -17,127 +17,127 @@ class ResourceTest(unittest.TestCase):
     def testCount(self):
         rs = River()
 
-        rs.addPerson(1, "r")
-        self.assertEqual(1, rs.count("r"))
+        rs.addPerson(1, self.redPlayer)
+        self.assertEqual(1, rs.count(self.redPlayer))
         
         with self.assertRaisesRegex(PlacementError, "Player r already added person to the River"):
-            rs.addPerson(1, "r")
-        self.assertEqual(1, rs.count("r"))
+            rs.addPerson(1, self.redPlayer)
+        self.assertEqual(1, rs.count(self.redPlayer))
         
     def testCountTwoPlayers(self):
         rs = River()
-
-        rs.addPerson(1, "r")
-        self.assertEqual(1, rs.count("r"))
+ 
+        rs.addPerson(1, self.redPlayer)
+        self.assertEqual(1, rs.count(self.redPlayer))
         self.assertEqual(6, rs.freeSlots())
-        
-        rs.addPerson(3, "b")
-        self.assertEqual(3, rs.count("b"))
+         
+        rs.addPerson(3, self.bluePlayer)
+        self.assertEqual(3, rs.count(self.bluePlayer))
         self.assertEqual(3, rs.freeSlots())
-
+ 
     def testCountAfterReaping(self):
         rs = Quarry()
-        rs.addPerson(1, "r")
-        self.assertEqual(1, rs.count("r"))        
+        rs.addPerson(1, self.redPlayer)
+        self.assertEqual(1, rs.count(self.redPlayer))        
         rs.reapResources(self.redPlayer)
-        self.assertEqual(0, rs.count("r"))
-
+        self.assertEqual(0, rs.count(self.redPlayer))
+ 
     def testReapFoodWith3Persons(self):
         rs = HuntingGrounds()
-
-        rs.addPerson(3, "r")
+ 
+        rs.addPerson(3, self.redPlayer)
         food = rs.reapResources(self.redPlayer)
-
+ 
         self.assertIn(len(food), range(1,10))
         self.assertIsInstance(food[0], int)
         self.assertEqual(len(food), food.count(2))
-
+ 
     def testReapFoodWith1Person(self):
         rs = HuntingGrounds()
-
-        rs.addPerson(1, "r")
+ 
+        rs.addPerson(1, self.redPlayer)
         food = rs.reapResources(self.redPlayer)
-
+ 
         self.assertIn(len(food), range(0,4))
-
+ 
     def testReapWoodWith2Persons(self):
         rs = Forest()
-
-        rs.addPerson(2, "r")
+ 
+        rs.addPerson(2, self.redPlayer)
         wood = rs.reapResources(self.redPlayer)
-
+ 
         self.assertIn(len(wood), range(0,5))
-        
+         
     def testReapWoodWith5Persons(self):
         rs = Forest()
-
-        rs.addPerson(5, "r")
+ 
+        rs.addPerson(5, self.redPlayer)
         wood = rs.reapResources(self.redPlayer)
-
+ 
         self.assertIn(len(wood), range(1,11))
         self.assertIsInstance(wood[0], int)
         self.assertEqual(len(wood), wood.count(3))
-
+ 
     def testReapFoodWith3PersonsAndTools_211(self):
         rs = HuntingGrounds()
         self.redPlayer.toolbox.upgrade()
         self.redPlayer.toolbox.upgrade()
         self.redPlayer.toolbox.upgrade()
         self.redPlayer.toolbox.upgrade()
-        
-        rs.addPerson(3, "r")
+         
+        rs.addPerson(3, self.redPlayer)
         food = rs.reapResources(self.redPlayer)
-
+ 
         self.assertIn(len(food), range(3,12))
-
+ 
     def testPureResource(self):
         rs = Resource()
-
-        rs.addPerson(1, "r")
+ 
+        rs.addPerson(1, self.redPlayer)
         with self.assertRaisesRegex(AttributeError, "object has no attribute 'resourceValue'"):
             rs.reapResources(self.redPlayer)
-
+ 
     def testPlaceOnFarm(self):
         farm = Farm()
-        
+         
         self.assertEqual(1, farm.freeSlots())
-        farm.addPerson("r")
+        farm.addPerson(self.redPlayer)
         self.assertEqual(0, farm.freeSlots())
-
+ 
         with self.assertRaises(PlacementError):
-            farm.addPerson("b")
-            
+            farm.addPerson(self.bluePlayer)
+             
     def testFarmResource(self):
         farm = Farm()        
-        farm.addPerson("r")
-        
+        farm.addPerson(self.redPlayer)
+         
         farmResource = farm.reapResources(self.bluePlayer)
         self.assertEqual([], farmResource)
-        
+         
         farmResource = farm.reapResources(self.redPlayer)
         self.assertEqual([8], farmResource)
-        
+         
     def testBreedingHut(self):
         breedingHut = BreedingHut()
         self.assertEqual(2, breedingHut.freeSlots())
-        breedingHut.addPerson("r")
+        breedingHut.addPerson(self.redPlayer)
         self.assertEqual(0, breedingHut.freeSlots())
-
+ 
         breedingResource = breedingHut.reapResources(self.redPlayer)
         self.assertEqual([9], breedingResource)
-
+ 
     def testToolSmith(self):
         toolSmith = ToolSmith()
         self.assertEqual(1, toolSmith.freeSlots())
-        toolSmith.addPerson("r")
+        toolSmith.addPerson(self.redPlayer)
         self.assertEqual(0, toolSmith.freeSlots())
-
+ 
         with self.assertRaises(PlacementError):
-            toolSmith.addPerson("b")
-        
+            toolSmith.addPerson(self.bluePlayer)
+         
         toolResource = toolSmith.reapResources(self.bluePlayer)
         self.assertEqual([], toolResource)
-
+ 
         toolResource = toolSmith.reapResources(self.redPlayer)
         self.assertEqual([7], toolResource)
 

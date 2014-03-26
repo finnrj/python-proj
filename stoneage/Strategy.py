@@ -28,32 +28,32 @@ class StupidBot(Strategy):
         
         # check village 
         if not board.farmOccupied():
-            board.placeOnFarm(player.getAbr())
+            board.placeOnFarm(player)
             return
         if not board.breedingHutOccupied() and player.personsLeft(board) > 1:
-            board.placeOnBreedingHut(player.getAbr())
+            board.placeOnBreedingHut(player)
             return
         if not board.toolSmithOccupied():
-            board.placeOnToolSmith(player.getAbr())
+            board.placeOnToolSmith(player)
             return
     
         # check huts
         payableHut = self.fetchPayableHut(board.availableHuts(), player.resources[:])
         if payableHut is not None:
-            board.placeOnHut(payableHut, player.getAbr())
+            board.placeOnHut(payableHut, player)
             self.adjustResources(payableHut, player.resources[:])
             return
         # place on resources
         if player.resources.count(3) < 2 and board.freeForestSlots() > 0:
-            board.addLumberjacks(min(player.personsLeft(board), board.freeForestSlots()) , player.getAbr())
+            board.addLumberjacks(min(player.personsLeft(board), board.freeForestSlots()) , player)
         elif player.resources.count(4) < 2 and board.freeClayPitSlots() > 0:
-            board.addClayDiggers(min(player.personsLeft(board), board.freeClayPitSlots()), player.getAbr())
+            board.addClayDiggers(min(player.personsLeft(board), board.freeClayPitSlots()), player)
         elif player.resources.count(5) < 2 and board.freeQuarrySlots() > 0:
-            board.addStoneDiggers(min(player.personsLeft(board), board.freeQuarrySlots()), player.getAbr())
+            board.addStoneDiggers(min(player.personsLeft(board), board.freeQuarrySlots()), player)
         elif board.freeRiverSlots() > 0:
-            board.addGoldDiggers(min(player.personsLeft(board), board.freeRiverSlots()), player.getAbr())
+            board.addGoldDiggers(min(player.personsLeft(board), board.freeRiverSlots()), player)
         else:
-            board.addHunters(player.personsLeft(board), player.getAbr())
+            board.addHunters(player.personsLeft(board), player)
         
     def buyHuts(self, player, huts):
         for hut, payment in self.plannedCosts.items():
@@ -184,16 +184,16 @@ and the following resource%s: %s
                                    lambda v: printfString("'%s' does not seem to be of format <resource><number>!", v),
                                    stringAndNumber)
         
-    def processPlacePersonsInput(self, resource, number, playerAbr, board):
-        if   resource == "f": board.addHunters(number, playerAbr)
-        elif resource == "w": board.addLumberjacks(number, playerAbr)
-        elif resource == "c": board.addClayDiggers(number, playerAbr)
-        elif resource == "s": board.addStoneDiggers(number, playerAbr)
-        elif resource == "g": board.addGoldDiggers(number, playerAbr)
-        elif resource == "t": board.placeOnToolSmith(playerAbr)
-        elif resource == "a": board.placeOnFarm(playerAbr)
-        elif resource == "b": board.placeOnBreedingHut(playerAbr)
-        elif resource == "h": board.placeOnHutIndex(number - 1, playerAbr)
+    def processPlacePersonsInput(self, resource, number, player, board):
+        if   resource == "f": board.addHunters(number, player)
+        elif resource == "w": board.addLumberjacks(number, player)
+        elif resource == "c": board.addClayDiggers(number, player)
+        elif resource == "s": board.addStoneDiggers(number, player)
+        elif resource == "g": board.addGoldDiggers(number, player)
+        elif resource == "t": board.placeOnToolSmith(player)
+        elif resource == "a": board.placeOnFarm(player)
+        elif resource == "b": board.placeOnBreedingHut(player)
+        elif resource == "h": board.placeOnHutIndex(number - 1, player)
 
     def printResourceStatus(self, player):
         nonFood = player.getNonFood()

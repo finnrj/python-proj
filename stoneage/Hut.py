@@ -7,11 +7,11 @@ class Hut:
     def __init__(self):
         self.player = ""
 
-    def placePerson(self, color):
+    def placePerson(self, player):
         if self.isOccupied():
             from Board import PlacementError
             raise PlacementError("hut is already occupied")
-        self.player = self.colorAbreviations(color)
+        self.player = self.colorAbreviations(player.getAbr())
 
     def colorAbreviations(self, groundString):
         groundString = groundString.replace("r","\033[1;31mr\033[0m")
@@ -27,7 +27,9 @@ class Hut:
         return (self.player != "")
 
     def isOccupiedBy(self):
-        return self.player
+        if self.player.startswith("\033"):
+            return self.player[-5]
+        return self.player 
     
     def value(self):
         return sum(self._costs)

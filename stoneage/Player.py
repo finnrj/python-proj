@@ -130,7 +130,7 @@ class Player():
         return self.score
     
     def personsLeft(self, board):
-        return self.personCount - board.personCount(self.playerAbr)
+        return self.personCount - board.personCount(self)
 
     def isNewRound(self, board):
         return self.personsLeft(board) == self.personCount

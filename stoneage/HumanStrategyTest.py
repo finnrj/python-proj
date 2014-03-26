@@ -24,35 +24,35 @@ class HumanStrategyTest(unittest.TestCase):
 
 #    Hunting grounds
     def testHumanInputH3(self):
-        self.human.processPlacePersonsInput("f", 3,self.player.getAbr(), self.board)
-        self.assertEqual(3, self.board.personsOnGrounds(self.human.player.getAbr()))
+        self.human.processPlacePersonsInput("f", 3,self.player, self.board)
+        self.assertEqual(3, self.board.personsOnGrounds(self.human.player))
 
     def testHumanInputH5(self):
-        self.human.processPlacePersonsInput("f", 5, self.player.getAbr(), self.board)
-        self.assertEqual(5, self.board.personsOnGrounds(self.human.player.getAbr()))
+        self.human.processPlacePersonsInput("f", 5, self.player, self.board)
+        self.assertEqual(5, self.board.personsOnGrounds(self.human.player))
 
 #    Forest
     def testHumanInputF3(self):
         self.assertEqual(0, 7 - self.board.freeForestSlots())
-        self.human.processPlacePersonsInput("w", 3, self.player.getAbr(), self.board)
-        self.assertEqual(3, self.board.personsOnGrounds(self.human.player.getAbr()))
+        self.human.processPlacePersonsInput("w", 3, self.player, self.board)
+        self.assertEqual(3, self.board.personsOnGrounds(self.human.player))
         self.assertEqual(3, 7 - self.board.freeForestSlots())
         
     def testHumanInputF5(self):
         self.assertEqual(0, 7 - self.board.freeForestSlots())
-        self.human.processPlacePersonsInput("w", 5, self.player.getAbr(), self.board)
-        self.assertEqual(5, self.board.personsOnGrounds(self.human.player.getAbr()))
+        self.human.processPlacePersonsInput("w", 5, self.player, self.board)
+        self.assertEqual(5, self.board.personsOnGrounds(self.human.player))
         self.assertEqual(5, 7 - self.board.freeForestSlots())
 
     def testHumanInputBuilding2(self):
         self.assertEqual(4, len(self.board.availableHuts()))
-        self.human.processPlacePersonsInput("h", 2, self.player.getAbr(), self.board)
+        self.human.processPlacePersonsInput("h", 2, self.player, self.board)
         self.assertEqual(3, len(self.board.availableHuts()))
         
     def testHumanInputfarm(self):
         self.assertFalse(self.board.farmOccupied())
-        self.human.processPlacePersonsInput("a", 1, self.player.getAbr(), self.board)
-        self.assertEqual(1, self.board.personsOnGrounds(self.human.player.getAbr()))
+        self.human.processPlacePersonsInput("a", 1, self.player, self.board)
+        self.assertEqual(1, self.board.personsOnGrounds(self.human.player))
         self.assertTrue(self.board.farmOccupied())
         
     def testHumanToolToUse(self):

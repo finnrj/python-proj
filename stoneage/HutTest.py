@@ -1,14 +1,20 @@
 #! /usr/bin/env python3
 
-from Hut import SimpleHut, AnyHut, CountHut
 import unittest
 
+from Hut import SimpleHut, AnyHut, CountHut
+from Player import Player
+from Strategy import StupidBot
+
 class HutTest(unittest.TestCase):
+
+    
+    def setUp(self):
+        self.redPlayer = Player("Red", StupidBot())
 
     def testHutPayable(self):
         hut = SimpleHut(3,3,4)
         resources = [3,3,3,4,4]
-                
         self.assertEqual([], hut.missing(resources))
         self.assertEqual(10, hut.value(), "value should be 10")
 
@@ -22,13 +28,13 @@ class HutTest(unittest.TestCase):
         hut = SimpleHut(3,3,4)
         self.assertFalse(hut.isOccupied())
         self.assertEqual("", hut.isOccupiedBy())
-        hut.placePerson("r")
+        hut.placePerson(self.redPlayer)
         self.assertTrue(hut.isOccupied())
         self.assertEqual("r", hut.isOccupiedBy())
 
     def testPlacePersonTwice(self):
         hut = SimpleHut(3,3,4)
-        hut.placePerson("r")
+        hut.placePerson(self.redPlayer)
         from Board import PlacementError
         with self.assertRaisesRegex(PlacementError, "hut is already occupied"):
             hut.placePerson("g")
