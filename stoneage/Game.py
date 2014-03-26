@@ -78,6 +78,7 @@ def main():
     game.addPlayer(Player("Red", StupidBot()))
     game.addPlayer(Player("Blue",  StupidBot()))
     game.addPlayer(Player("Green",  Human()))
+    game.addPlayer(Player("Yellow",  StupidBot()))
     shuffle(game.players)
     game.printPlayers()
     round = 1

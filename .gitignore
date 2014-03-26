@@ -16,6 +16,7 @@ develop-eggs
 # eclipse files
 .project
 .pydevproject
+.settings
 
 # Installer logs
 pip-log.txt

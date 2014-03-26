@@ -25,13 +25,13 @@ class Player():
         self.color = color
         self.playerAbr = color[:1].lower()
         if color == 'Red':
-            self.colorOS = '\033[91m'
+            self.colorOS = '\033[1;31m'
         elif color == 'Green':
-            self.colorOS = '\033[92m'
+            self.colorOS = '\033[32m'
         elif color == 'Yellow':
-            self.colorOS = '\033[93m'
+            self.colorOS = '\033[33m'
         elif color == 'Blue':
-            self.colorOS = '\033[94m'
+            self.colorOS = '\033[1;34m'
         else:
             self.colorOS = self.colorOSnormal
         self.strategy = strategy

@@ -39,10 +39,10 @@ class Resource():
         return [self.resourceValue for resource in  range(0, count)]
 
     def colorAbreviations(self, groundString):
-        groundString = groundString.replace("r","\033[91mr\033[0m")
-        groundString = groundString.replace("g","\033[92mg\033[0m")
-        groundString = groundString.replace("b","\033[94mb\033[0m")
-        groundString = groundString.replace("y","\033[93my\033[0m")
+        groundString = groundString.replace("r","\033[1;31mr\033[0m")
+        groundString = groundString.replace("g","\033[32mg\033[0m")
+        groundString = groundString.replace("b","\033[1;34mb\033[0m")
+        groundString = groundString.replace("y","\033[33my\033[0m")
         return groundString
     
     def __str__(self):        

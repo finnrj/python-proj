@@ -11,7 +11,14 @@ class Hut:
         if self.isOccupied():
             from Board import PlacementError
             raise PlacementError("hut is already occupied")
-        self.player = color
+        self.player = self.colorAbreviations(color)
+
+    def colorAbreviations(self, groundString):
+        groundString = groundString.replace("r","\033[1;31mr\033[0m")
+        groundString = groundString.replace("g","\033[32mg\033[0m")
+        groundString = groundString.replace("b","\033[1;34mb\033[0m")
+        groundString = groundString.replace("y","\033[33my\033[0m")
+        return groundString
 
     def removePerson(self):
         self.player = ""
