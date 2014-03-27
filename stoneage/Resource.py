@@ -7,27 +7,27 @@ class Resource():
     
     def __init__(self):
         self.maxPersons = 7
-        self.persons = ""
+        self.persons = {}
 
     def addPerson(self, n, player):
         if n == 0: return
-        if (self.persons.count(player.getAbr()) > 0):
+        if (player in self.persons):
             from Board import PlacementError
-            raise PlacementError("Player %s already added person to the %s" % (player.getAbr(),
+            raise PlacementError("Player %s already added person to the %s" % (player.getColor(),
                                                                                 self.name))
-        if (len(self.persons) + n > self.maxPersons):
+        if (sum(self.persons.values()) + n > self.maxPersons):
             from Board import PlacementError
             raise PlacementError("Not room for %d further persons in the %s" % (n, self.name))
-        self.persons += n * player.getAbr()
+        self.persons[player] = n
     
     def count(self, player):
-        return self.persons.count(player.getAbr())
+        return self.persons.get(player, 0)
     
     def freeSlots(self):
-        return self.maxPersons - len(self.persons)
+        return self.maxPersons - sum(self.persons.values())
 
     def reapResources(self, player):
-        numberOfPersons = self.count(player)
+        numberOfPersons = self.persons.pop(player, 0)
         if numberOfPersons == 0:
             return []
         eyes = sum([randint(1, 6) for dice in range(0, numberOfPersons)])
@@ -36,18 +36,13 @@ class Resource():
             print("player: " + player.getAbr() + " uses toolvalue: " + str(toolValueToAdd))
         eyesAndTools = eyes + toolValueToAdd
         count = int(eyesAndTools/self.resourceValue)
-        self.persons = "".join([ch for ch in self.persons if ch != player.getAbr()])
-        return [self.resourceValue for resource in  range(0, count)]
+        return [self.resourceValue for resource in range(count)]
 
-    def colorAbreviations(self, groundString):
-        groundString = groundString.replace("r","\033[1;31mr\033[0m")
-        groundString = groundString.replace("g","\033[32mg\033[0m")
-        groundString = groundString.replace("b","\033[1;34mb\033[0m")
-        groundString = groundString.replace("y","\033[33my\033[0m")
-        return groundString
-    
-    def __str__(self):        
-        return ("%-19s" % self.name) + self.colorAbreviations(": " + " ".join(ch for ch in self.persons + "O" * (self.maxPersons - len(self.persons))))
+    def __str__(self):
+        suffix = ("%-19s: " % self.name)
+        filled = [player.getOutputAbr() for player in self.persons for n in range(self.count(player))]
+        unfilled = (self.maxPersons - len(filled)) * ["0"]
+        return suffix + " ".join(filled + unfilled)
         
 class HuntingGrounds(Resource):
     """Class to represent a food resource field on the board."""
@@ -59,11 +54,12 @@ class HuntingGrounds(Resource):
         self.abreviation = 'f'
 
     def freeSlots(self):
+        # always room for max person count more people         
         return 10
 
     def __str__(self):
-        return self.name + ": " + self.colorAbreviations(" ".join([ch for ch in self.persons]))
-
+        filled = [player.getOutputAbr() for player in self.persons for n in range(self.count(player))]
+        return self.name + ": " +  " ".join(filled)
 
 class Forest(Resource):
     """Class to represent a wood resource field on the board."""
@@ -114,8 +110,7 @@ class ToolSmith(Resource):
         Resource.addPerson(self, 1, abr)
         
     def reapResources(self, player):
-        if player.getAbr() == self.persons:
-            self.persons = ""
+        if self.persons.pop(player, None):
             return [7]
         return []
     
@@ -133,8 +128,7 @@ class Farm(Resource):
         Resource.addPerson(self, 1, player)
         
     def reapResources(self, player):
-        if player.getAbr() == self.persons:
-            self.persons = ""
+        if self.persons.pop(player, None):
             return [8]
         return []
 
@@ -147,12 +141,11 @@ class BreedingHut(Resource):
         self.abreviation = 'b'
         self.maxPersons = 2
         
-    def addPerson(self, abr):
-        Resource.addPerson(self, 2, abr)
+    def addPerson(self, player):
+        Resource.addPerson(self, 2, player)
         
     def reapResources(self, player):
-        if self.persons and player.getAbr() == self.persons[0]:
-            self.persons = ""
+        if self.persons.pop(player, None):
             return [9]
         return []
 

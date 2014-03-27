@@ -20,7 +20,7 @@ class ResourceTest(unittest.TestCase):
         rs.addPerson(1, self.redPlayer)
         self.assertEqual(1, rs.count(self.redPlayer))
         
-        with self.assertRaisesRegex(PlacementError, "Player r already added person to the River"):
+        with self.assertRaisesRegex(PlacementError, "Player %s already added person to the River" % self.redPlayer.getColor()):
             rs.addPerson(1, self.redPlayer)
         self.assertEqual(1, rs.count(self.redPlayer))
         

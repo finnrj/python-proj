@@ -165,14 +165,14 @@ and the following resource%s: %s
             resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.resources.count(2),
                                                            player.getNonFood(), personsLeft)
             if not resource in "hfwcsgtab":
-                raise PlacementError("illegal character:"+resource)
+                raise PlacementError("illegal character: "+resource)
             elif resource == "b" and personsLeft < 2:
                 raise PlacementError("cannot breed with only %d person left" % (personsLeft))
             elif resource != "h" and number > personsLeft:
                 raise PlacementError("cannot place %d persons with only %d left" % (number, personsLeft))
             elif resource == "h" and  number > 4:
-                raise PlacementError("hut index has be between 1 - 4, not %d" % (number))
-            self.processPlacePersonsInput(resource, number, player.getAbr(), board)
+                raise PlacementError("hut index has to be between 1 - 4, not %d" % (number))
+            self.processPlacePersonsInput(resource, number, player, board)
         except PlacementError as e:
             print("ERROR: " + str(e) + "\n")
             print (board)

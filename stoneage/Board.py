@@ -110,29 +110,29 @@ class Board:
     def availableHuts(self):
         return [hut for hut in self.upperHuts() if not hut.isOccupied()]
     
-    def addHunters(self, count, playerAbr):
-        self.huntingGrounds.addPerson(count, playerAbr)
+    def addHunters(self, count, player):
+        self.huntingGrounds.addPerson(count, player)
     
-    def addLumberjacks(self, count, playerAbr):
-        self.forest.addPerson(count, playerAbr)
+    def addLumberjacks(self, count, player):
+        self.forest.addPerson(count, player)
         
     def freeForestSlots(self):
         return self.forest.freeSlots()
     
-    def addClayDiggers(self, count, playerAbr):
-        self.clayPit.addPerson(count, playerAbr)
+    def addClayDiggers(self, count, player):
+        self.clayPit.addPerson(count, player)
         
     def freeClayPitSlots(self):
         return self.clayPit.freeSlots()
     
-    def addStoneDiggers(self, count, playerAbr):
-        self.quarry.addPerson(count, playerAbr)
+    def addStoneDiggers(self, count, player):
+        self.quarry.addPerson(count, player)
         
     def freeQuarrySlots(self):
         return self.quarry.freeSlots()
 
-    def addGoldDiggers(self, count, playerAbr):
-        self.river.addPerson(count, playerAbr)
+    def addGoldDiggers(self, count, player):
+        self.river.addPerson(count, player)
         
     def freeRiverSlots(self):
         return self.river.freeSlots()
@@ -143,20 +143,20 @@ class Board:
     def farmOccupied(self):
         return self.farm.freeSlots() == 0
     
-    def placeOnBreedingHut(self, playerAbr):
-        self.breedingHut.addPerson(playerAbr)
+    def placeOnBreedingHut(self, player):
+        self.breedingHut.addPerson(player)
         
     def breedingHutOccupied(self):
         return self.breedingHut.freeSlots() == 0
         
-    def placeOnToolSmith(self, playerAbr):
-        self.toolSmith.addPerson(playerAbr)
+    def placeOnToolSmith(self, player):
+        self.toolSmith.addPerson(player)
  
     def toolSmithOccupied(self):
         return self.toolSmith.freeSlots() == 0
 
     def personsOnHuts(self, player):
-        return [stack[-1].isOccupiedBy() for stack in self.hutStacks].count(player.getAbr())
+        return [stack[-1].isOccupiedBy() for stack in self.hutStacks].count(player)
 
     def personsOnGrounds(self, player):
         return sum([ground.count(player) for ground in self.grounds])
@@ -194,7 +194,7 @@ class Board:
             resourceAbr = player.chooseReapingResource("".join(occupiedGrounds.keys()))
             player.addResources(occupiedGrounds.pop(resourceAbr).reapResources(player))
                    
-        occupiedHuts = [stack[-1] for stack in self.hutStacks if len(stack) > 0 and stack[-1].isOccupiedBy() == player.getAbr()]
+        occupiedHuts = [stack[-1] for stack in self.hutStacks if len(stack) > 0 and stack[-1].isOccupiedBy() == player]
         
         for hut in occupiedHuts:
             hut.removePerson()

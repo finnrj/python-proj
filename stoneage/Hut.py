@@ -5,31 +5,22 @@ class Hut:
     """Super Class representing a 'hut' building tile"""
     
     def __init__(self):
-        self.player = ""
+        self.player = None
 
     def placePerson(self, player):
         if self.isOccupied():
             from Board import PlacementError
             raise PlacementError("hut is already occupied")
-        self.player = self.colorAbreviations(player.getAbr())
-
-    def colorAbreviations(self, groundString):
-        groundString = groundString.replace("r","\033[1;31mr\033[0m")
-        groundString = groundString.replace("g","\033[32mg\033[0m")
-        groundString = groundString.replace("b","\033[1;34mb\033[0m")
-        groundString = groundString.replace("y","\033[33my\033[0m")
-        return groundString
+        self.player = player
 
     def removePerson(self):
-        self.player = ""
+        self.player = None
 
     def isOccupied(self):
-        return (self.player != "")
+        return self.player != None
 
     def isOccupiedBy(self):
-        if self.player.startswith("\033"):
-            return self.player[-5]
-        return self.player 
+        return self.player
     
     def value(self):
         return sum(self._costs)
@@ -59,7 +50,8 @@ class SimpleHut(Hut):
         return missing
     
     def __str__(self):
-        return str(self._costs) + self.player
+        suffix = self.isOccupied() and self.player.getOutputAbr() or ""
+        return str(self._costs) + suffix
     
 class AnyHut(Hut):
     """ 1-7 Hut """
@@ -78,7 +70,8 @@ class AnyHut(Hut):
         return [] 
     
     def __str__(self):
-        return "[Any]"  + self.player
+        suffix = self.isOccupied() and self.player.getOutputAbr() or ""        
+        return "[any:1-7]"  + suffix
     
 class CountHut(Hut):
     """ Hut with four or five resources of 1 to 5 different types"""
@@ -154,8 +147,8 @@ class CountHut(Hut):
         return count * [3]
         
     def __str__(self):
-        return "[Count:%d,%d]" %(self.resourceCount, self.typesCount)  + self.player
-
+        suffix = self.isOccupied() and self.player.getOutputAbr() or ""        
+        return "[any:%d, types:%d]" %(self.resourceCount, self.typesCount)  + suffix
 
 def main():
     pass

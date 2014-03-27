@@ -14,7 +14,7 @@ class Player():
     maxFoodTrack   = 10
     maxPersonCount = 10
     hungerPenalty  = -10
-    colorOSnormal  = '\033[0m'
+    colorOSnormal  = '\x1b[0m'
 
     def __init__(self, color, strategy):
         self.resources = 12 * [2]
@@ -25,13 +25,13 @@ class Player():
         self.color = color
         self.playerAbr = color[:1].lower()
         if color == 'Red':
-            self.colorOS = '\033[1;31m'
+            self.colorOS = '\x1b[1;31m'
         elif color == 'Green':
-            self.colorOS = '\033[32m'
+            self.colorOS = '\x1b[2;32m'
         elif color == 'Yellow':
-            self.colorOS = '\033[33m'
+            self.colorOS = '\x1b[2;33m'
         elif color == 'Blue':
-            self.colorOS = '\033[1;34m'
+            self.colorOS = '\x1b[1;34m'
         else:
             self.colorOS = self.colorOSnormal
         self.strategy = strategy
@@ -129,6 +129,12 @@ class Player():
     def getScore(self):
         return self.score
     
+    def finalScore(self):
+        return self.score + len(self.getNonFood())
+    
+    def secondPointCriteria(self):
+        return self.foodTrack + sum(self.toolbox.getTools()) + self.personCount
+    
     def personsLeft(self, board):
         return self.personCount - board.personCount(self)
 
@@ -141,17 +147,17 @@ class Player():
     def chooseChristmas(self, presents):
         return self.strategy.chooseChristmas(self, presents)
     
-    def finalScore(self):
-        return self.score + len(self.resources)
-    
     def getColor(self):
         return self.color
 
-    def getColorForOutput(self):
-        return "%s%-5s%s" %  (self.colorOS, self.color, self.colorOSnormal)
+    def getOutputColor(self):
+        return "%s%s%s" %  (self.colorOS, self.color, self.colorOSnormal)
 
     def getAbr(self):
         return self.playerAbr
+
+    def getOutputAbr(self):
+        return "%s%s%s" %  (self.colorOS, self.playerAbr, self.colorOSnormal)
     
     def toolsToUse(self, resourceValue, eyes): 
         return self.strategy.toolsToUse(resourceValue, eyes, self.toolbox)

@@ -27,10 +27,10 @@ class HutTest(unittest.TestCase):
     def testPlacePerson(self):
         hut = SimpleHut(3,3,4)
         self.assertFalse(hut.isOccupied())
-        self.assertEqual("", hut.isOccupiedBy())
+        self.assertIsNone(hut.isOccupiedBy())
         hut.placePerson(self.redPlayer)
         self.assertTrue(hut.isOccupied())
-        self.assertEqual("r", hut.isOccupiedBy())
+        self.assertEqual(self.redPlayer, hut.isOccupiedBy())
 
     def testPlacePersonTwice(self):
         hut = SimpleHut(3,3,4)

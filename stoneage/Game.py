@@ -36,13 +36,13 @@ class Game(object):
         print("\nRound: %d" % (round))
         while not self.allPersonsPlaced():
             for player in [p for p in self.players if p.personsLeft(self.board) > 0]:
-                print("Player: %s to place persons" % (player.getColorForOutput()))                
+                print("Player: %-6s to place persons" % (player.getOutputColor()))                
                 if isinstance(player.strategy, Human):                
                     print (self.board)  
                 player.placePersons(self.board)
 
         for player in self.players: # reap resources and buy building tiles
-            print("Player: %s evaluates" % (player.getColorForOutput()))
+            print("Player: %-6s evaluates" % (player.getOutputColor()))
             if isinstance(player.strategy, Human):
                 print (self.board)
 
@@ -63,14 +63,25 @@ class Game(object):
         return self.board.isFinished()
     
     def printPlayers(self):
+        maximalLength = max(len(player.getOutputColor()) for player in self.players)
         print("Players:")
         for player in self.players:
-            print("%-7s" % player.getColorForOutput(), ":", player.getStrategy())
-    
-    def position(self):
-        return """Available huts: %s
-         
-%s""" % (" ".join([str(hut) for hut in self.board.availableHuts()]), "\n\n".join([player.asString() for player in self.players]))
+            print(("%-" + str(maximalLength) + "s: %s") % (player.getOutputColor(), player.getStrategy()))
+
+    def sortAfterScore(self):
+        return map(sorted([t for p in self.players for t in (p.getScore(), p.secondPointCriteria(), p.getOutputColor())]), lambda t: t[3])
+
+    def printScores(self):
+        maximalLength = max(len(player.getOutputColor()) for player in self.players)
+        print("Scores:")
+        for t in self.sortAfterScore():
+            print(("%-" + str(maximalLength) + "s: %d") % (t[3], t[1]))
+
+    def printFinalScores(self):
+        maximalLength = max(len(player.getOutputColor()) for player in self.players)
+        print("\n\nFinal scores:")
+        for t in self.sortAfterScore():
+            print(("%-" + str(maximalLength) + "s: %d, second criteria: %d") % (t[3], player.finalScore(), player.secondPointCriteria()))
 
 
 def main():
@@ -87,11 +98,11 @@ def main():
             input("Press the return key to proceed to the next round....")
             game.processRound(round)
             round +=1
-        for player in game.players:
-            print("\nPlayer %s final score: %d" % (player.getColor() , player.finalScore()))
+            game.printScores()
+        game.printFinalScores()
     except KeyboardInterrupt:
-        print("bye")
-    
+        game.printFinalScores()     
+        print("\nbye and see you soon!")
 
 if __name__ == '__main__':
     main()
