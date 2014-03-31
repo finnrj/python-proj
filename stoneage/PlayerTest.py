@@ -1,9 +1,10 @@
+#! /usr/bin/env python3
+
 import unittest
 
 from Player import Player
 from Card import SymbolCard
 from Strategy import StupidBot
-
 
 class PlayerTest(unittest.TestCase):
     
@@ -51,9 +52,6 @@ class PlayerTest(unittest.TestCase):
         self.assertEquals(14, self.redPlayer.secondScoreCriteria())
         self.redPlayer.addResources([9])
         self.assertEquals(15, self.redPlayer.secondScoreCriteria())
-        
-        
-        
         
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(PlayerTest)

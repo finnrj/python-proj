@@ -43,9 +43,9 @@ class Player():
         self.oneTimeTools = []
         
     def __lt__(self, other):
-        if self.getScore() < other.getScore():
-            return True
-        return self.getScore() == other.getScore() and self.secondScoreCriteria() < other.secondScoreCriteria()  
+        if self.getScore() != other.getScore():
+            return self.getScore() < other.getScore()
+        return  self.secondScoreCriteria() < other.secondScoreCriteria()  
 
     def __eq__(self, other):
         return self is other

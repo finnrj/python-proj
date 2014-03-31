@@ -1,6 +1,9 @@
 from Hut import AnyHut, CountHut, SimpleHut
 from Board import PlacementError
 
+ERROR_PREFIX = '\x1b[1;33m\x1b[45m'
+ERROR_SUFFIX = '\x1b[0m'
+
 class StrategyNotImplemented(Exception):
     """Exception class for not inheriting the Strategy class"""
     def __init__(self, msg):
@@ -166,6 +169,8 @@ and the following resource%s: %s
                                                            player.getNonFood(), personsLeft)
             if not resource in "hfwcsgtab":
                 raise PlacementError("illegal character: "+resource)
+            elif resource not in "tab" and number == 0:
+                raise PlacementError("please place at least one person")
             elif resource == "b" and personsLeft < 2:
                 raise PlacementError("cannot breed with only %d person left" % (personsLeft))
             elif resource != "h" and number > personsLeft:
@@ -174,7 +179,7 @@ and the following resource%s: %s
                 raise PlacementError("hut index has to be between 1 - 4, not %d" % (number))
             self.processPlacePersonsInput(resource, number, player, board)
         except PlacementError as e:
-            print("ERROR: " + str(e) + "\n")
+            printError("ERROR: " + str(e))
             print (board)
             self.placePersons(player, board)
     
@@ -216,14 +221,14 @@ and the following resource%s: %s
             return self.doBuyHuts(player, self.filterOutPayableHuts(player, payableHuts), boughtHuts)
         
     def wantsToBuy(self, hut):
-        return fetchConvertedInput("do you want to buy this hut: %s ? (y|n) " % str(hut),
+        return fetchConvertedInput("do you want to buy this hut (y|n): %s ? (y) " % str(hut),
                                    lambda v: printfString("please answer y(es) or n(o) - not: '%s'", v),
                                    yesNo) 
         
     def filterOutPayableHuts(self, player, huts):
         notPayable, payable = [hut for hut in huts if not player.isPayable(hut)], [hut for hut in huts if player.isPayable(hut)]
         if notPayable:
-            print("you can't afford the following hut%s: %s" % (suffix(notPayable), " ".join([str(hut) for hut in notPayable])))
+            printError("you can't afford the following hut%s: %s" % (suffix(notPayable), " ".join([str(hut) for hut in notPayable])))
         return payable
 
     def isPayable(self, hut, resources):
@@ -243,6 +248,8 @@ and the following resource%s: %s
             chosenResources = fetchConvertedInput(promptString,
                                                  lambda v: printfString("the input '%s' does not consist of only numbers!", v),
                                                  mapToNumbers)
+            if not chosenResources:
+                chosenResources = nonFoodResources
             finished = all([self.chosenItemsAvailable(nonFoodResources, chosenResources),
                             self.validPaymentIfAnyHut(hut, chosenResources),
                             self.validPaymentIfCountHut(hut, chosenResources)])
@@ -255,7 +262,7 @@ and the following resource%s: %s
                 clone.remove(r)
             return True
         except ValueError:
-            print("Items %s not available in %s\n" % (str(chosen), str(available)))
+            printError("Items %s not available in %s\n" % (str(chosen), str(available)))
             return False
         
     def validPaymentIfAnyHut(self, hut, payment):
@@ -264,16 +271,16 @@ and the following resource%s: %s
         if len(payment) == 0:
             print("please pay something!")
         if len(payment) >= 8:
-            print("too much payment! (%d resources) Maximal 7 resources please" % len(payment))
+            printError("too much payment! (%d resources) Maximal 7 resources please" % len(payment))
         return len(payment) > 0 and len(payment) < 8
 
     def validPaymentIfCountHut(self, hut, payment):
         if not isinstance(hut, CountHut):
             return True
         if len(hut.missing(payment)) != 0:
-            print("missing resources: " + str(hut.missing(payment)))
+            printError("missing resources: " + str(hut.missing(payment)))
         if len(payment) != hut.getResourceCount():
-            print("Given resource count:" + str(len(payment)) + ", required count: " + str(hut.getResourceCount()))
+            printError("Given resource count:" + str(len(payment)) + ", required count: " + str(hut.getResourceCount()))
         return len(hut.missing(payment)) == 0 and len(payment) == hut.getResourceCount()
     
     def toolsToUse(self, resourceValue, eyes, toolbox):
@@ -347,19 +354,26 @@ and the following resource%s: %s
 
 
 
-# output helper methods 
+# output helper methods
+
+def printError(errormessage):
+    print("%s %s %s\n" % (ERROR_PREFIX, errormessage, ERROR_SUFFIX))
+    
 def suffix(numberOrList):
     size = numberOrList if isinstance(numberOrList, type(1)) else len(numberOrList)
     return "s" if size > 1 or size == 0 else ""
 
 def yesNo(inputString):
-    yesNoDict = {"y" : True, "n" : True}
+    if not inputString : return True
+    yesNoDict = {"y" : True, "n" : False}
     return yesNoDict[inputString.lower()[0]]
     
 def stringAndNumber(inputString):
-    return (inputString[:1], abs(int(inputString[1:])))
+    number = abs(int(inputString[1:])) if len(inputString) > 1 else 0
+    return (inputString[:1], number)
 
 def mapToNumbers(inputString):
+    if not inputString : return []
     return [int(ch) for ch in inputString]
 
 def printfString(string, values):
@@ -373,7 +387,7 @@ def fetchConvertedInput(promptMsg, errorMsgFunc, convertFunc):
             result = convertFunc(inputString)
             finished = True
         except:
-            print(errorMsgFunc(inputString))
+            printError(errorMsgFunc(inputString))
             inputString = input(promptMsg).lower()
     return result
     
