@@ -8,18 +8,20 @@ Created on Nov 22, 2012
 
 from Board import Board
 from random import shuffle
+
 from Strategy import StupidBot, Human
 from Player import Player
+
 
 class Game(object):
     '''
     class to represent the game loop
     '''
 
-    players = []
-    
+   
     def __init__(self):
         self.board = Board()
+        self.players = []
         
     def playerCount(self):
         return len(self.players)
@@ -62,26 +64,26 @@ class Game(object):
     def finished(self):
         return self.board.isFinished()
     
+    def getPlayers(self):
+        return sorted(self.players[:], reverse = True)
+    
     def printPlayers(self):
         maximalLength = max(len(player.getOutputColor()) for player in self.players)
         print("Players:")
-        for player in self.players:
+        for player in self.getPlayers():
             print(("%-" + str(maximalLength) + "s: %s") % (player.getOutputColor(), player.getStrategy()))
-
-    def sortAfterScore(self):
-        return map(sorted([t for p in self.players for t in (p.getScore(), p.secondPointCriteria(), p.getOutputColor())]), lambda t: t[3])
 
     def printScores(self):
         maximalLength = max(len(player.getOutputColor()) for player in self.players)
         print("Scores:")
-        for t in self.sortAfterScore():
-            print(("%-" + str(maximalLength) + "s: %d") % (t[3], t[1]))
+        for player in self.getPlayers():
+            print(("%-" + str(maximalLength) + "s: %3d") % (player.getOutputColor(), player.getScore()))
 
     def printFinalScores(self):
         maximalLength = max(len(player.getOutputColor()) for player in self.players)
         print("\n\nFinal scores:")
-        for t in self.sortAfterScore():
-            print(("%-" + str(maximalLength) + "s: %d, second criteria: %d") % (t[3], player.finalScore(), player.secondPointCriteria()))
+        for player in self.getPlayers():
+            print(("%-" + str(maximalLength) + "s: %3d, second criteria: %2d") % (player.getOutputColor(), player.getScore(), player.secondScoreCriteria()))
 
 
 def main():

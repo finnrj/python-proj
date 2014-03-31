@@ -94,7 +94,7 @@ class CardTest(unittest.TestCase):
     def testMusicCardAction(self):
         self.assertEqual(0, self.activePlayer.getScore())
         self.activePlayer.addCard(self.musicCard, self.players, self.cardPile)
-        self.assertEqual(3, self.activePlayer.getScore())
+        self.assertEqual(4, self.activePlayer.getScore())
         
     def testCardWithChristmas(self):
         for player in self.players:

@@ -3,9 +3,12 @@ Created on Nov 22, 2012
 
 @author: finn
 '''
+
+from functools import total_ordering
 from Toolbox import Toolbox
 from Card import SymbolCard, MultiplierCard
 
+@total_ordering
 class Player():
     '''
     classdocs
@@ -38,6 +41,17 @@ class Player():
         self.foodTrack = 0
         self.toolbox = Toolbox()
         self.oneTimeTools = []
+        
+    def __lt__(self, other):
+        if self.getScore() < other.getScore():
+            return True
+        return self.getScore() == other.getScore() and self.secondScoreCriteria() < other.secondScoreCriteria()  
+
+    def __eq__(self, other):
+        return self is other
+    
+    def __hash__(self):
+        return hash(self.getColor() + self.strategy.__str__())
 
     def getFoodTrack(self):
         return self.foodTrack
@@ -127,12 +141,9 @@ class Player():
         self.score += score
 
     def getScore(self):
-        return self.score
+        return self.score + self.getCardScore() + len(self.getNonFood())
     
-    def finalScore(self):
-        return self.score + len(self.getNonFood())
-    
-    def secondPointCriteria(self):
+    def secondScoreCriteria(self):
         return self.foodTrack + sum(self.toolbox.getTools()) + self.personCount
     
     def personsLeft(self, board):
@@ -172,12 +183,13 @@ class Player():
         return self.strategy.chooseReapingResource(occupiedResources)
     
     def __str__(self):
-        return """%sPeople: %d, Foodtrack: %d, Food: %d, Tools: %s
+        return """%s%s
+People: %d, Foodtrack: %d, Food: %d, Tools: %s
 Resources: %s
 huts: %s    
-score: %d%s\n""" % (self.colorOS, self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox, 
+score: %d%s\n""" % (self.colorOS, self.getColor(), self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox, 
                   str(sorted(self.getNonFood())), 
-                  ",".join([str(hut) for hut in self.huts]), self.score, self.colorOSnormal)
+                  ",".join([str(hut) for hut in self.huts]), self.getScore(), self.colorOSnormal)
 
     
     
