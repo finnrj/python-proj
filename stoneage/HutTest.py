@@ -7,20 +7,48 @@ from Player import Player
 from Strategy import StupidBot
 
 class HutTest(unittest.TestCase):
-
     
     def setUp(self):
         self.redPlayer = Player("Red", StupidBot())
 
-    def testHutPayable(self):
+    def testSimpleHutPayable(self):
         hut = SimpleHut(3,3,4)
         resources = [3,3,3,4,4]
         self.assertEqual([], hut.missing(resources))
         self.assertEqual(10, hut.value(), "value should be 10")
 
-    def testHutNotPayable(self):
+    def testSimpleHutPayableWithOneJoker(self):
+        hut = SimpleHut(3,5,6)
+        resources = [3,5,10]
+        self.assertEqual([], hut.missing(resources))
+        self.assertEqual(14, hut.value(), "value should be 14")
+
+    def testSimpleHutPayableWith2Jokers(self):
+        hut = SimpleHut(3,5,6)
+        resources = [3,10,10]
+        self.assertEqual([], hut.missing(resources))
+        self.assertEqual(14, hut.value(), "value should be 14")
+
+        hut = SimpleHut(3,5,6)
+        resources = [10,5,10]
+        self.assertEqual([], hut.missing(resources))
+        self.assertEqual(14, hut.value(), "value should be 14")
+
+    def testSimpleHutNotPayable(self):
         hut = SimpleHut(3,3,4)
         resources = [3,4,4,4]
+                
+        self.assertEqual([3], hut.missing(resources))
+
+    def testSimpleHutNotPayable2(self):
+        hut = SimpleHut(3,3,4)
+        resources = [2,2,3,5,5]
+                
+        self.assertEqual([3,4], hut.missing(resources))
+
+    def testSimpleHutNotPayableWithJoker(self):
+        hut = SimpleHut(3,3,4)
+        resources = [2,2,3,5,5,10]
                 
         self.assertEqual([3], hut.missing(resources))
 
@@ -39,18 +67,19 @@ class HutTest(unittest.TestCase):
         with self.assertRaisesRegex(PlacementError, "hut is already occupied"):
             hut.placePerson("g")
         
-    def testHutNotPayable2(self):
-        hut = SimpleHut(3,3,4)
-        resources = [2,2,3,5,5]
-                
-        self.assertEqual([3,4], hut.missing(resources))
-
     def testAnyHutWithNoResources(self):
         hut = AnyHut()
         resources = []
         
         self.assertEqual([3], hut.missing(resources))
+
+    def testAnyHutWithJokerResource(self):
+        hut = AnyHut()
+        resources = [10]
         
+        self.assertEqual([], hut.missing(resources))
+        self.assertEqual([6], hut.costs(resources))
+
     def testAnyHutWithResources(self):
         hut = AnyHut()
         resources = [2,2,3,5,5]
@@ -68,6 +97,12 @@ class HutTest(unittest.TestCase):
         self.assertEqual([3,3,3,5,5,5,5], hut.costs(resources))
         self.assertEqual(29, hut.value(), "value should be 29")
 
+    def testAnyHutWithJokerResources(self):
+        hut = AnyHut()
+        resources = [2,2,3,5,5,10,10]
+        
+        self.assertEqual([], hut.missing(resources))
+        self.assertEqual([3,5,5,6,6], hut.costs(resources))
 
     def testAnyHutWithOnlyFood(self):
         hut = AnyHut()
@@ -89,6 +124,22 @@ class HutTest(unittest.TestCase):
         hut = CountHut(5,4)
         resources = []
         self.assertListEqual([3,3,4,5,6], sorted(hut.missing(resources)))
+
+    def testCountHutWithOnlyJokerResources(self):
+        hut = CountHut(4,1)
+        resources = [10]
+        
+        self.assertEqual([3,3,3], hut.missing(resources))
+        
+        hut = CountHut(4,3)
+        resources = [10]
+        self.assertListEqual([3,3,4], sorted(hut.missing(resources)))
+        
+        hut = CountHut(5,4)
+        resources = [10]
+        self.assertListEqual([3,3,4,5], sorted(hut.missing(resources)))
+
+        
 
     def testCountHutWithEnoughResources(self):
         hut = CountHut(4,2)

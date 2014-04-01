@@ -19,6 +19,9 @@ class Strategy:
     
     def buyHuts(self, player, huts):
         raise StrategyNotImplemented("The buyHuts() method should be implemented")
+
+    def isPayable(self, hut, resources):
+        return hut.missing(resources) == []
     
 class StupidBot(Strategy):
     
@@ -63,12 +66,9 @@ class StupidBot(Strategy):
             player.buyHut(hut, payment)
         return huts
 
-    def isPayable(self, hut, resources):
-        return hut.missing(self.usableResources(resources)) == []
-
     def fetchPayableHut(self, availableHuts, resources):
         for hut in availableHuts:
-            if self.isPayable(hut, resources):
+            if self.isPayable(hut, self.usableResources(resources)):
                 return hut
         return None
     
@@ -231,9 +231,6 @@ and the following resource%s: %s
             printError("you can't afford the following hut%s: %s" % (suffix(notPayable), " ".join([str(hut) for hut in notPayable])))
         return payable
 
-    def isPayable(self, hut, resources):
-        return hut.missing(resources) == []
-    
     def buyHut(self, player, hut):
         if isinstance(hut, SimpleHut):
             player.buyHut(hut, hut.costs([]))

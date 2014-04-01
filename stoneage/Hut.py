@@ -26,7 +26,7 @@ class Hut:
         return sum(self._costs)
     
     def containsOnlyFood(self, resources):
-        return sum([resources.count(num) for num in [3, 4, 5, 6]]) == 0
+        return sum([resources.count(num) for num in [3, 4, 5, 6, 10]]) == 0
         
 class SimpleHut(Hut):
     """ hut with exactly three resources """
@@ -47,8 +47,11 @@ class SimpleHut(Hut):
                 clone.remove(res)
             except:
                 missing.append(res)
+        while 10 in clone:
+            clone.remove(10)
+            missing.pop()
         return missing
-    
+
     def __str__(self):
         suffix = self.isOccupied() and self.player.getOutputAbr() or ""
         return str(self._costs) + suffix
@@ -60,9 +63,12 @@ class AnyHut(Hut):
         self._costs = []
 
     def costs(self, resources):
-        nonFood = [resource for resource in resources if resource != 2]
+        nonFood = [self.make_jokers_gold(resource) for resource in resources if resource != 2]
         self._costs = nonFood[:7]
         return nonFood[:7]
+
+    def make_jokers_gold(self, resource):
+        return 6 if resource == 10 else resource
         
     def missing(self, resources):
         if len(resources) == 0 or self.containsOnlyFood(resources) :
@@ -74,7 +80,7 @@ class AnyHut(Hut):
         return "[any:1-7]"  + suffix
     
 class CountHut(Hut):
-    """ Hut with four or five resources of 1 to 5 different types"""
+    """ Hut with four or five resources of 1 to 4 different types"""
     
     def __init__(self, resourceCount, typesCount):
         Hut.__init__(self)
@@ -117,11 +123,16 @@ class CountHut(Hut):
         return True
 
     def missing(self, resources):
-        if len(resources) == 0 or self.containsOnlyFood(resources) :
+        if len(resources) == 0 or self.containsOnlyFood(resources):
             necessaryTypes = [3, 4, 5, 6][:self.typesCount] 
             return necessaryTypes + self.allWood(self.resourceCount - self.typesCount)
         
         typesCounts = [resources.count(num) for num in [3, 4, 5, 6]]
+        for n in range(resources.count(10)):
+            for idx, c in enumerate(typesCounts):
+                if c == 0:
+                    typesCounts[idx] = 1 
+        
         if self.tooFewDifferentTypes(typesCounts):
             result = self.findMissingResourceTypes(typesCounts)
             return result + self.allWood(self.resourceCount - (sum(typesCounts) + len(result)))
@@ -151,7 +162,7 @@ class CountHut(Hut):
         return "[any:%d, types:%d]" %(self.resourceCount, self.typesCount)  + suffix
 
 def main():
-    pass
+    print("hubba")
 
 if __name__ == '__main__':
     main()
