@@ -4,7 +4,7 @@ Created on Oct 30, 2014
 @author: finn
 '''
 import unittest
-from src.Board import Board
+from Board import Board
 
 
 class Test(unittest.TestCase):
@@ -29,11 +29,9 @@ class Test(unittest.TestCase):
         self.assertEqual(0, self.board.getColor(0, 3))
         self.board.play(2)
         self.assertEqual(1, self.board.getColor(0, 2))
-        self.board.play(3) 
+        self.board.play(3)
         print(self.board)   
         self.assertEqual(0, self.board.getColor(1, 3))
-        
-
 
 if __name__ == "__main__":
 #     suite = unittest.TestLoader().loadTestsFromTestCase(Test)
