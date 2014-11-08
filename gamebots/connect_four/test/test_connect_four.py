@@ -4,13 +4,12 @@ Created on Oct 30, 2014
 @author: finn
 '''
 import unittest
-from Board import Board
-
+from connect_four import board
 
 class Test(unittest.TestCase):
 
     def setUp(self):
-        self.board=Board(6, 7)
+        self.board=board.Board(6, 7)
         
     def test_board_initialisation(self):
         self.assertEqual(6, self.board.rowCount())
