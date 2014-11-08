@@ -7,8 +7,8 @@ Created on Oct 30, 2014
 class Board:
 
     def __init__(self, y, x):
-        self.board= [[None for row in range(y)] for col in range(x)]
-        self.move_count=0
+        self.board = [[None for row in range(y)] for col in range(x)]
+        self.move_count = 0
     
     def colCount(self):
         return len(self.board)
@@ -58,15 +58,15 @@ class Board:
         return [[x[idx] for x in self.board] for idx in range(self.rowCount())]
 
     def game_is_over(self):
-        return self.get_winner() is not None or self.move_count==42
+        return self.get_winner() is not None or self.move_count == 42
     
     def __str__(self):
         strings = ["\n"]
-        strings.append((4 * " ") + "".join([("%2s" % col) for col in range(self.colCount())]))
-        strings.append((2 + self.colCount()) * "==")
         for row in reversed(range(self.rowCount())):
             strings.append(("%2s" % row) + ("%2s" % " |")\
              + "".join(["%2s" % self.getMarker(row, col) for col in range(self.colCount())]))
+        strings.append((2 + self.colCount()) * "--")
+        strings.append(4 * " " + "".join([("%2s" % col) for col in range(self.colCount())]))
         return "\n".join(strings) 
     
     
