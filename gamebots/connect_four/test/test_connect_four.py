@@ -110,7 +110,6 @@ class Test(unittest.TestCase):
         self.fill_board_without_winner()
         self.assertIsNone(self.board.get_winner())
         self.assertTrue(self.board.game_is_over())
-        print(self.board)
     
     def fill_board_without_winner(self):
         for x in range(self.board.colCount()):
@@ -121,7 +120,42 @@ class Test(unittest.TestCase):
         for y in range(self.board.rowCount() - 1):
             self.board.play(3)
         self.board.move_count+=1
+        
+    def test_player_0_has_winning_diagonal(self):
+        self.board.board[0][0]=0
+        self.board.board[1][1]=0
+        self.board.board[2][2]=0
+        self.board.board[3][3]=0
+        self.assertEqual(0, self.board.get_winner())
+
+    def test_player_0_has_winning_diagonal2(self):
+        self.board.board[5][5]=0
+        self.board.board[4][4]=0
+        self.board.board[3][3]=0
+        self.board.board[2][2]=0
+        self.assertEqual(0, self.board.get_winner())
+        
+    def test_player_0_has_winning_diagonal3(self):
+        self.board.board[1][0]=0
+        self.board.board[2][1]=0
+        self.board.board[3][2]=0
+        self.board.board[4][3]=0
+        self.assertEqual(0, self.board.get_winner())
+
+    def test_player_0_has_winning_diagonal4(self):
+        self.board.board[3][0]=0
+        self.board.board[4][1]=0
+        self.board.board[5][2]=0
+        self.board.board[6][3]=0
+        self.assertEqual(0, self.board.get_winner())
     
+    def test_player_0_has_winning_diagonal5(self):
+        self.board.board[0][3]=0
+        self.board.board[1][2]=0
+        self.board.board[2][1]=0
+        self.board.board[3][0]=0
+        print(self.board)
+        self.assertEqual(0, self.board.get_winner())
 
 if __name__ == "__main__":
 #     suite = unittest.TestLoader().loadTestsFromTestCase(Test)
