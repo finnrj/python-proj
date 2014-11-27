@@ -8,12 +8,20 @@ Created on Oct 30, 2014
 '''
 from random import randint
 from sys import argv
+from concurrent.futures._base import FINISHED
+import sys
 
 class Board:
 
     def __init__(self, r, c):
         self.board = [[None for row in range(r)] for col in range(c)]
         self.move_count = 0
+
+    def clone(self):
+        result = Board(self.rowCount(), self.colCount())
+        result.board = self.board[:]
+        result.move_count = self.move_count
+        return result
     
     def colCount(self):
         return len(self.board)
@@ -21,25 +29,28 @@ class Board:
     def rowCount(self):
         return len(self.board[0])
     
-    def isEmpty(self):
+    def is_empty(self):
         return self.move_count == 0
     
+    def is_valid_column(self, col):
+        return col in range(self.colCount()) and not self.is_col_full(col)
+
     def play(self, col):
-        if self.is_col_full(col):
+        if not self.is_valid_column(col):
             return
-        self.board[col][self.board[col].index(None)] = self.getPlayer()
+        self.board[col][self.board[col].index(None)] = self.get_player()
         self.move_count += 1
         
     def is_col_full(self, col):
         return not None in self.board[col]
     
-    def getColor(self, row, col):
+    def get_color(self, row, col):
         return self.board[col][row]
     
-    def getMarker(self, y, x):
+    def get_marker(self, y, x):
         return "-" if self.board[x][y] is None else self.board[x][y]
                     
-    def getPlayer(self):
+    def get_player(self):
         return self.move_count % 2
     
     def four_connected_in_col(self, x):
@@ -85,26 +96,10 @@ class Board:
         strings = [""]
         for row in reversed(range(self.rowCount())):
             strings.append(("%2s" % row) + ("%2s" % " |")\
-             + "".join(["%2s" % self.getMarker(row, col) for col in range(self.colCount())]))
+             + "".join(["%2s" % self.get_marker(row, col) for col in range(self.colCount())]))
         strings.append((2 + self.colCount()) * "--")
         strings.append(4 * " " + "".join([("%2s" % col) for col in range(self.colCount())]))
         return "\n".join(strings) 
-
-def play_a_game():
-    board = Board(6, 7)
-    while not board.game_is_over():
-        board.play(randint(0, 6))
-#     if board.get_winner() is None:
-    print(board)    
-    print("the winner is %s" % board.get_winner())
-    
-if __name__ == "__main__":
-    number_of_games = argv[1] if len(argv) > 1 else 10
-    for game in range(number_of_games):
-        print("game: %d" % (game + 1))
-        play_a_game()
-        input(" ")
-    print("finished!")
     
     
     

@@ -18,42 +18,42 @@ class Test(unittest.TestCase):
         self.assertFalse(self.board.game_is_over())  
 
     def test_move_count(self):
-        self.assertTrue(self.board.isEmpty())
+        self.assertTrue(self.board.is_empty())
         self.board.play(3)
-        self.assertFalse(self.board.isEmpty())
+        self.assertFalse(self.board.is_empty())
         
     def test_move_position(self):
-        self.assertIsNone(self.board.getColor(0, 3))
+        self.assertIsNone(self.board.get_color(0, 3))
         self.board.play(3)
-        self.assertEqual(0, self.board.getColor(0, 3))
+        self.assertEqual(0, self.board.get_color(0, 3))
         self.board.play(2)
-        self.assertEqual(1, self.board.getColor(0, 2))
+        self.assertEqual(1, self.board.get_color(0, 2))
         self.board.play(3)
-        self.assertEqual(0, self.board.getColor(1, 3))
+        self.assertEqual(0, self.board.get_color(1, 3))
         
     def test_column_filled_up(self):
-        self.assertEqual(0, self.board.getPlayer())
+        self.assertEqual(0, self.board.get_player())
         self.board.play(3)
         
-        self.assertEqual(1, self.board.getPlayer()) 
+        self.assertEqual(1, self.board.get_player()) 
         self.board.play(3)
         
-        self.assertEqual(0, self.board.getPlayer())
+        self.assertEqual(0, self.board.get_player())
         self.board.play(3)
         
-        self.assertEqual(1, self.board.getPlayer())
+        self.assertEqual(1, self.board.get_player())
         self.board.play(3)
         
-        self.assertEqual(0, self.board.getPlayer())
+        self.assertEqual(0, self.board.get_player())
         self.board.play(3)
         
-        self.assertEqual(1, self.board.getPlayer())
+        self.assertEqual(1, self.board.get_player())
         self.board.play(3)
         
-        self.assertEqual(0, self.board.getPlayer())
+        self.assertEqual(0, self.board.get_player())
         self.board.play(3)
         
-        self.assertEqual(0, self.board.getPlayer())
+        self.assertEqual(0, self.board.get_player())
         
     def test_player_0_has_simple_winning_col(self):
         self.board.play(1)
@@ -106,6 +106,14 @@ class Test(unittest.TestCase):
         self.board.play(4)
         self.assertEqual(0, self.board.get_winner())
         
+    def test_column_of_move(self):
+        self.board.play(7)
+        self.assertTrue(self.board.is_empty())
+        self.board.play(-1)
+        self.assertTrue(self.board.is_empty())
+        self.board.play("1")
+        self.assertTrue(self.board.is_empty())
+    
     def test_full_board(self):
         self.fill_board_without_winner()
         self.assertIsNone(self.board.get_winner())
@@ -156,6 +164,23 @@ class Test(unittest.TestCase):
         self.board.board[3][0]=0
         print(self.board)
         self.assertEqual(0, self.board.get_winner())
+        
+    def test_clone_empty_board(self):
+        cloned_board = self.board.clone()
+        self.assertTrue(cloned_board.is_empty())
+        cloned_board.play(1)
+        self.assertTrue(self.board.is_empty())
+        self.assertFalse(cloned_board.is_empty())
+
+    def test_clone_board(self):
+        self.board.play(1)
+        cloned_board = self.board.clone()
+        self.assertFalse(cloned_board.is_empty())
+        self.assertEqual(self.board.move_count, cloned_board.move_count)
+        
+        cloned_board.play(1)
+        self.assertEqual(self.board.move_count + 1, cloned_board.move_count)
+
 
 if __name__ == "__main__":
 #     suite = unittest.TestLoader().loadTestsFromTestCase(Test)
