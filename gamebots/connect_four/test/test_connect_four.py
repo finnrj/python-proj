@@ -181,6 +181,11 @@ class Test(unittest.TestCase):
         cloned_board.play(1)
         self.assertEqual(self.board.move_count + 1, cloned_board.move_count)
 
+    def test_clone_board_column(self):
+        self.assertTrue(self.board.is_empty())
+        cloned_board = self.board.clone()
+        cloned_board.play(1)
+        self.assertIsNone(self.board.board[1][0])
 
 if __name__ == "__main__":
 #     suite = unittest.TestLoader().loadTestsFromTestCase(Test)

@@ -4,73 +4,48 @@ Created on Nov 27, 2014
 @author: finn
 '''
 import unittest
-from connect_four.monte_carlo import MonteCarlo
+from connect_four.monte_carlo import MonteCarloIterative
 from connect_four.board import Board
 
 
 class Test(unittest.TestCase):
 
 
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        self.monty = MonteCarloIterative()
+        self.monty.color = 1
+
     def test_move(self):
         board=Board(6,7)
-        monty=MonteCarlo()
-        move = monty.play(board)
+        move = self.monty.play(board)
         self.assertTrue(move in range(7))
         
-#     def test_move_possible(self):
-#         board=Board(6,7)
-#         for num in range(6):
-#             board.play(0)
-#             
-#         monty=MonteCarlo()
-#         move = monty.play(board)
-#         self.assertTrue(move in range(1,7))
-    
-#     def test_winning_position_1(self):
-#         board=Board(6,7)
-#         board.board[0][0] = 1
-#         board.board[1][0] = 1
-#         board.board[2][0] = 1
-#         board.play(4)
-#         print(board)
-#             
-#         monty=MonteCarlo(9)
-#         monty.play(board)
-#         self.assertEqual(9, monty.score(3)) 
-#         
-#     def test_winning_position_2(self):
-#         board=Board(6,7)
-#         board.board[0][0] = 1
-#         board.board[0][1] = 1
-#         board.board[0][2] = 1
-#         board.play(1)
-#         print(board)
-#             
-#         monty=MonteCarlo(10)
-#         monty.play(board)
-#         self.assertEqual(10, monty.score(0)) 
-
     def test_add_score(self):
-        monty=MonteCarlo()
-        monty.color = 1
-        
-        monty.add_score(0, 0)
-        self.assertEqual(-1, monty.scores[0])
+        column = 0
+        self.monty.add_score(column, 0)
+        self.assertEqual(-1, self.monty.score(column))
+
+    def test_play_one_round(self):
+        board = Board(6, 7)
+        played_move = self.monty.play(board)
+        self.assertTrue(played_move in range(7))
+
+    def test_add_score_for_other_color(self):
+        self.monty.color = 0
+        column = 0
+        self.monty.add_score(column, self.monty.color)
+        self.assertEqual(1, self.monty.score(column))
 
     def test_add_score2(self):
-        monty=MonteCarlo()
-        monty.color = 1
+        column = 0
+        self.monty.add_score(column, self.monty.color)
+        self.assertEqual(1, self.monty.score(column))
         
-        monty.add_score(0, 1)
-        self.assertEqual(1, monty.scores[0])
-
-
     def test_add_score3(self):
-        monty=MonteCarlo()
-        monty.color = 1
-        
-        monty.add_score(0, None)
-        self.assertEqual(0, monty.scores[0])
+        column = 0
+        self.monty.add_score(column, None)
+        self.assertEqual(0, self.monty.score(column))
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

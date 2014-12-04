@@ -3,8 +3,9 @@ Created on Nov 27, 2014
 
 @author: finn
 '''
+from random import randint
 
-class MonteCarlo:
+class MonteCarloIterative:
     '''
     classdocs
     '''
@@ -21,13 +22,18 @@ class MonteCarlo:
             for col in range(7):
                 if board.is_valid_column(col):
                     clone = board.clone()
-#                     self.play_to_end(clone)
+                    clone.play(col)
+                    self.play_to_end(clone)
                     self.add_score(col, clone.get_winner())
-        return self.scores.index(max(self.scores))
+        return sorted([(val,idx) for idx,val in enumerate(self.scores) 
+                       if board.is_valid_column(idx)], reverse=True)[0][1]
+
+    def play_to_end(self, board):
+        while not board.game_is_over():
+            board.play(randint(0, 6))
     
     def score(self, col):
-        return 10
-
+        return self.scores[col]
     
     def add_score(self, col, winner):
         if winner==self.color:

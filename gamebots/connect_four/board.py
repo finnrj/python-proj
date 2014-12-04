@@ -19,7 +19,7 @@ class Board:
 
     def clone(self):
         result = Board(self.rowCount(), self.colCount())
-        result.board = self.board[:]
+        result.board = [col[:] for col in self.board]
         result.move_count = self.move_count
         return result
     
