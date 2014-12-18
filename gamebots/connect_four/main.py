@@ -55,42 +55,10 @@ def play_ai(board, ai):
         board.play(ai.play(board))
 
 
-# def play_with_stupid_ai_game():
-#     board = Board(6, 7)
-#     while not board.game_is_over():
-#         board.play(randint(0, 6))
-#         print(board)
-#         board.play(input_move())
-# 
-#     print(board)    
-#     print("the winner is %s" % board.get_winner())
-# 
-# def play_with_iterative_Monty():
-#     board = Board(6, 7)
-#     monty = MonteCarloIterative()
-#     monty100 = MonteCarloIterative(100)   
-#     while not board.game_is_over():
-#         board.play(monty.play(board))
-#         print(board)
-#         board.play(monty100.play(board))        
-# #         board.play(input_move())
-#     print(board)    
-#     print("the winner is %s" % board.get_winner())
-# 
-# def play_a_game():
-#     board = Board(6, 7)
-#     while not board.game_is_over():
-#         board.play(randint(0, 6))
-# #     if board.get_winner() is None:
-#     print(board)    
-#     print("the winner is %s" % board.get_winner())
-    
 if __name__ == "__main__":
     number_of_games = int(argv[1]) if len(argv) > 1 else 1
     for game in range(number_of_games):
         print("game: %d" % (game + 1))
-#         play_a_game()
-#         play_with_stupid_ai_game()
-        play_with_ai(MonteCarloIterative(100))
+        play_with_ai(MonteCarloIterative(500))
         input("bye!")
     print("finished!")
