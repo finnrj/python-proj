@@ -125,21 +125,38 @@ class HutTest(unittest.TestCase):
         resources = []
         self.assertListEqual([3,3,4,5,6], sorted(hut.missing(resources)))
 
-    def testCountHutWithOnlyJokerResources(self):
+    def test_1_TypeCountHutWith_1_JokerResources(self):
         hut = CountHut(4,1)
         resources = [10]
         
-        self.assertEqual([3,3,3], hut.missing(resources))
+        self.assertFalse(hut.tooFewDifferentTypes([0,0,0,0], resources.count(10)))
+        self.assertTrue(hut.tooFewResources(resources))
         
+        self.assertEqual([3,3,3], hut.missing(resources))
+
+    def test_2_TypeCountHutWith_1_JokerResources(self):
+        hut = CountHut(4,2)
+        resources = [10]
+        
+        self.assertTrue(hut.tooFewDifferentTypes([0,0,0,0], resources.count(10)))
+
+        self.assertEqual([3,3,3], hut.missing(resources))
+
+    def test_3_TypesCountHutWithOnlyJokerResources(self):
         hut = CountHut(4,3)
         resources = [10]
-        self.assertListEqual([3,3,4], sorted(hut.missing(resources)))
         
+        self.assertTrue(hut.tooFewDifferentTypes([0,0,0,0], resources.count(10)))
+                
+        self.assertListEqual([3,3,4], sorted(hut.missing(resources)))
+
+    def test_4_TypesCountHutWithOnlyJokerResources(self):
         hut = CountHut(5,4)
         resources = [10]
-        self.assertListEqual([3,3,4,5], sorted(hut.missing(resources)))
-
         
+        self.assertTrue(hut.tooFewDifferentTypes([0,0,0,0], resources.count(10)))
+        
+        self.assertListEqual([3,3,4,5], sorted(hut.missing(resources)))
 
     def testCountHutWithEnoughResources(self):
         hut = CountHut(4,2)
