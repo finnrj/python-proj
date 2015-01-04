@@ -39,10 +39,14 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.board.placeOnToolSmith(self.bluePlayer)
         self.assertEqual(1, self.board.personCount(self.bluePlayer))
         self.assertTrue(self.board.toolSmithOccupied())
+
+        print([str(hut) for hut in self.board.availableHuts()])
         
         self.redPlayer.placePersons(self.board)
         self.assertEqual(4, self.board.personCount(self.redPlayer))
         self.assertEqual(1, self.board.personsOnHuts(self.redPlayer))
+        
+        print([str(hut) for hut in self.board.availableHuts()])
 
         self.redPlayer.placePersons(self.board)
         self.assertEqual(5, self.board.personCount(self.redPlayer))
@@ -86,21 +90,21 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.redPlayer.addResources([3, 3, 3, 3, 3, 4, 4, 5, 6,])
         firstHut = CountHut(4, 2)
 
-        self.redPlayer.strategy.adjustResources(firstHut, self.redPlayer.resources)
+        self.redPlayer.strategy.updatePlannedCosts(firstHut, self.redPlayer.resources)
         
         self.assertDictEqual({firstHut : [3,4,3,3]}, self.redPlayer.strategy.plannedCosts)
         
         secondHut = CountHut(4, 3)
         self.assertTrue(self.redPlayer.isPayable(secondHut))
-        self.redPlayer.strategy.adjustResources(secondHut, self.redPlayer.resources)
+        self.redPlayer.strategy.updatePlannedCosts(secondHut, self.redPlayer.resources)
 
         self.assertDictEqual({firstHut : [3,4,3,3], secondHut : [3,4,5,3]}, self.redPlayer.strategy.plannedCosts)
         
-        thirdHut = SimpleHut(5, 5, 6)
-        self.assertFalse(self.redPlayer.isPayable(thirdHut))
+        thirdHut = SimpleHut(3, 5, 6)
+        self.assertTrue(self.redPlayer.isPayable(thirdHut))
         
         fourthHut = CountHut(5, 2)
-        self.assertFalse(self.redPlayer.isPayable(fourthHut))
+        self.assertTrue(self.redPlayer.isPayable(fourthHut))
         
     def testBuyingHutsChangesScore(self):
         self.redPlayer.addResources([3, 3, 4, 3, 4, 5])

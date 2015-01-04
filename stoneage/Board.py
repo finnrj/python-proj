@@ -2,7 +2,7 @@
 
 from Hut import SimpleHut, AnyHut, CountHut
 from random import shuffle
-from Resource import HuntingGrounds, Forest, ClayPit, Quarry, River, Farm,\
+from ResourceField import HuntingGrounds, Forest, ClayPit, Quarry, River, Farm,\
     BreedingHut, ToolSmith
 from Card import Card, MultiplierCard, SymbolCard
 

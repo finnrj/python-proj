@@ -27,7 +27,7 @@ class StupidBot(Strategy):
     
     def __init__(self):
         self.plannedCosts = {}
-    
+        
     def placePersons(self, player, board):
         if player.isNewRound(board):
             self.plannedCosts = {}
@@ -47,7 +47,7 @@ class StupidBot(Strategy):
         payableHut = self.fetchPayableHut(board.availableHuts(), player.resources[:])
         if payableHut is not None:
             board.placeOnHut(payableHut, player)
-            self.adjustResources(payableHut, player.resources[:])
+            self.updatePlannedCosts(payableHut, player.resources[:])
             return
         # place on resources
         if player.resources.count(3) < 2 and board.freeForestSlots() > 0:
@@ -67,15 +67,16 @@ class StupidBot(Strategy):
         return huts
 
     def fetchPayableHut(self, availableHuts, resources):
+        nonPlannedResources = self.nonPlannedResources(resources)
         for hut in availableHuts:
-            if self.isPayable(hut, self.usableResources(resources)):
+            if self.isPayable(hut, nonPlannedResources):
                 return hut
         return None
     
-    def adjustResources(self, hut, resources):
-        self.plannedCosts[hut] = hut.costs(self.usableResources(resources))
+    def updatePlannedCosts(self, hut, resources):
+        self.plannedCosts[hut] = hut.costs(self.nonPlannedResources(resources))
         
-    def usableResources(self, resources):
+    def nonPlannedResources(self, resources):
         usableResources = resources[:]
         plannedResources = [cost for costs in self.plannedCosts.values() for cost in costs]
         
@@ -304,7 +305,7 @@ and the following resource%s: %s
                 toolsToUse.remove(tool)
 
     def chooseReapingResource(self, occupiedResources):
-        promptString = """\nWhich Resource to Reap? (%s) """ % (occupiedResources)
+        promptString = """\nWhich ResourceField to Reap? (%s) """ % (occupiedResources)
         if len(occupiedResources) == 1:
             return occupiedResources[0]
         finished = False 

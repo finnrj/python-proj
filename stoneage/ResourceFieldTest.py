@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 import unittest
-from Resource import Resource, HuntingGrounds, Forest, River, Quarry, Farm,\
+from ResourceField import Resource, HuntingGrounds, Forest, River, Quarry, Farm,\
     BreedingHut, ToolSmith
 from Board import PlacementError
 from Strategy import StupidBot
