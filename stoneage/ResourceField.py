@@ -1,9 +1,10 @@
 #! /usr/bin/env python3
 
 from random import randint
+from Resource import Resource
 
-class Resource():
-    """Base Class to represent a resource field on the board. """
+class ResourceField():
+    """Base Class to represent a Resource field on the board. """
     
     def __init__(self):
         self.maxPersons = 7
@@ -31,12 +32,12 @@ class Resource():
         if numberOfPersons == 0:
             return []
         eyes = sum([randint(1, 6) for dice in range(0, numberOfPersons)])
-        toolValueToAdd = player.toolsToUse(self.resourceValue, eyes)
+        toolValueToAdd = player.toolsToUse(self.resource, eyes)
         if toolValueToAdd:
             print("player: " + player.getAbr() + " uses toolvalue: " + str(toolValueToAdd))
         eyesAndTools = eyes + toolValueToAdd
-        count = int(eyesAndTools/self.resourceValue)
-        return [self.resourceValue for resource in range(count)]
+        count = int(eyesAndTools/self.resource.value)
+        return [self.resource for resource in range(count)]
 
     def __str__(self):
         suffix = ("%-19s: " % self.name)
@@ -44,12 +45,12 @@ class Resource():
         unfilled = (self.maxPersons - len(filled)) * ["0"]
         return suffix + " ".join(filled + unfilled)
         
-class HuntingGrounds(Resource):
-    """Class to represent a food resource field on the board."""
+class HuntingGrounds(ResourceField):
+    """Class to represent a food Resource field on the board."""
 
     def __init__(self):
-        Resource.__init__(self)
-        self.resourceValue = 2
+        ResourceField.__init__(self)
+        self.resource = Resource.food
         self.name = "Hunting grounds (f)"
         self.abreviation = 'f'
 
@@ -61,92 +62,93 @@ class HuntingGrounds(Resource):
         filled = [player.getOutputAbr() for player in self.persons for n in range(self.count(player))]
         return self.name + ": " +  " ".join(filled)
 
-class Forest(Resource):
-    """Class to represent a wood resource field on the board."""
+class Forest(ResourceField):
+    """Class to represent a wood Resource field on the board."""
 
     def __init__(self):
-        Resource.__init__(self)
-        self.resourceValue = 3
+        ResourceField.__init__(self)
+        self.resource = Resource.wood
         self.name = "Forest (w)"
         self.abreviation = 'w'
 
-class ClayPit(Resource):
-    """Class to represent a clay resource field on the board."""
+class ClayPit(ResourceField):
+    """Class to represent a clay Resource field on the board."""
 
     def __init__(self):
-        Resource.__init__(self)        
-        self.resourceValue = 4
+        ResourceField.__init__(self)        
+        self.resource = Resource.clay
         self.name = "Clay pit (c)"
         self.abreviation = 'c'
         
-class Quarry(Resource):
-    """Class to represent a stone resource field on the board."""
+class Quarry(ResourceField):
+    """Class to represent a stone Resource field on the board."""
 
     def __init__(self):
-        Resource.__init__(self)
-        self.resourceValue = 5
+        ResourceField.__init__(self)
+        self.resource = Resource.stone
         self.name = "Quarry (s)"
         self.abreviation = 's'
 
-class River(Resource):
-    """Class to represent a gold resource field on the board."""
+class River(ResourceField):
+    """Class to represent a gold Resource field on the board."""
 
     def __init__(self):
-        Resource.__init__(self)        
-        self.resourceValue = 6
+        ResourceField.__init__(self)        
+        self.resource = Resource.gold
         self.name = "River (g)"
         self.abreviation = 'g'
         
-class ToolSmith(Resource):
+class ToolSmith(ResourceField):
     """Class to represent the tool-smith in the village part of the board"""
     def __init__(self):
-        Resource.__init__(self)        
+        ResourceField.__init__(self)        
         self.name = "Toolsmith (t)"
         self.abreviation = 't'
-        self.resourceValue = 7
+        self.resource = Resource.tool
         self.maxPersons = 1
         
     def addPerson(self, abr):
-        Resource.addPerson(self, 1, abr)
+        ResourceField.addPerson(self, 1, abr)
         
     def reapResources(self, player):
         if self.persons.pop(player, None):
-            return [7]
+            return [self.resource]
         return []
     
-class Farm(Resource):
+class Farm(ResourceField):
     """Class to represent the farm in the village part of the board"""
     
     def __init__(self):
-        Resource.__init__(self)        
+        ResourceField.__init__(self)        
         self.name = "Farm (a)"
         self.abreviation = 'a'
-        self.resourceValue = 8
+        self.resource = Resource.farmer
         self.maxPersons = 1
         
     def addPerson(self, player):
-        Resource.addPerson(self, 1, player)
+        ResourceField.addPerson(self, 1, player)
         
     def reapResources(self, player):
         if self.persons.pop(player, None):
-            return [8]
+            return [self.resource]
         return []
 
-class BreedingHut(Resource):
+class BreedingHut(ResourceField):
     """Class to represent the breeding hut in the village part of the board"""
     
     def __init__(self):
-        Resource.__init__(self)        
+        ResourceField.__init__(self)        
         self.name = "Breeding hut (b)"
         self.abreviation = 'b'
         self.maxPersons = 2
+        self.resource = Resource.person
         
     def addPerson(self, player):
-        Resource.addPerson(self, 2, player)
+        ResourceField.addPerson(self, 2, player)
         
     def reapResources(self, player):
         if self.persons.pop(player, None):
-            return [9]
+            return [self.resource]
         return []
 
 

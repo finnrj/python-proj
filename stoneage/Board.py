@@ -161,7 +161,7 @@ class Board:
     def personsOnGrounds(self, player):
         return sum([ground.count(player) for ground in self.grounds])
 
-    def personCount(self, player):
+    def person(self, player):
         return self.personsOnGrounds(player) + self.personsOnHuts(player)
     
     def resourceGrounds(self):

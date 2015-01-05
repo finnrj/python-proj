@@ -7,6 +7,7 @@ import unittest
 from Player import Player
 from Board import Board
 from Hut import SimpleHut, CountHut
+from Resource import Resource
 from Strategy import StupidBot
 
 class StupidBotStrategyTest(unittest.TestCase):
@@ -17,9 +18,9 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.board = Board()
         
     def testPlacePersonsWithoutResources(self):
-        nPersonsBefore = self.board.personCount(self.redPlayer)
+        nPersonsBefore = self.board.person(self.redPlayer)
         self.redPlayer.placePersons(self.board)
-        self.assertGreater(self.board.personCount(self.redPlayer), nPersonsBefore)
+        self.assertGreater(self.board.person(self.redPlayer), nPersonsBefore)
 
       
     def testPlacingOrderWhenTwoHutsAffordable(self):
@@ -27,29 +28,27 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.redPlayer.addResources([3, 3, 4, 3, 4, 5])
         
         self.redPlayer.placePersons(self.board)
-        self.assertEqual(1, self.board.personCount(self.redPlayer))
+        self.assertEqual(1, self.board.person(self.redPlayer))
         self.assertTrue(self.board.farmOccupied())
 
         self.redPlayer.placePersons(self.board)
-        self.assertEqual(3, self.board.personCount(self.redPlayer))
+        self.assertEqual(3, self.board.person(self.redPlayer))
         self.assertTrue(self.board.breedingHutOccupied())
         
         # occupying the toolsmith with blue player         
         self.assertFalse(self.board.toolSmithOccupied())
         self.board.placeOnToolSmith(self.bluePlayer)
-        self.assertEqual(1, self.board.personCount(self.bluePlayer))
+        self.assertEqual(1, self.board.person(self.bluePlayer))
         self.assertTrue(self.board.toolSmithOccupied())
 
-        print([str(hut) for hut in self.board.availableHuts()])
-        
         self.redPlayer.placePersons(self.board)
-        self.assertEqual(4, self.board.personCount(self.redPlayer))
+        self.assertEqual(4, self.board.person(self.redPlayer))
         self.assertEqual(1, self.board.personsOnHuts(self.redPlayer))
         
         print([str(hut) for hut in self.board.availableHuts()])
 
         self.redPlayer.placePersons(self.board)
-        self.assertEqual(5, self.board.personCount(self.redPlayer))
+        self.assertEqual(5, self.board.person(self.redPlayer))
         self.assertEqual(2, self.board.personsOnHuts(self.redPlayer))
         
     def testPlacingOfNoSimpleHutPersons(self):
@@ -57,19 +56,19 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.redPlayer.addResources([3, 3])
         
         self.redPlayer.placePersons(self.board)
-        self.assertEqual(1, self.board.personCount(self.redPlayer))
+        self.assertEqual(1, self.board.person(self.redPlayer))
         self.assertTrue(self.board.farmOccupied())
 
         self.redPlayer.placePersons(self.board)
-        self.assertEqual(3, self.board.personCount(self.redPlayer))
+        self.assertEqual(3, self.board.person(self.redPlayer))
         self.assertTrue(self.board.breedingHutOccupied())
         
         self.redPlayer.placePersons(self.board)
-        self.assertEqual(4, self.board.personCount(self.redPlayer))
+        self.assertEqual(4, self.board.person(self.redPlayer))
         self.assertTrue(self.board.toolSmithOccupied())
 
         self.redPlayer.placePersons(self.board)
-        self.assertEqual(5, self.board.personCount(self.redPlayer))
+        self.assertEqual(5, self.board.person(self.redPlayer))
 
     def testFeeding(self):
         self.assertEqual(0, self.redPlayer.foodMissing())
@@ -145,7 +144,7 @@ class StupidBotStrategyTest(unittest.TestCase):
 
     def testBreedingMaximum(self):
         self.assertEqual(5, self.redPlayer.getPersonCount())
-        self.redPlayer.personCount = 10
+        self.redPlayer.person = 10
 
         self.redPlayer.addResources([8])
         self.assertEqual(10, self.redPlayer.getPersonCount())
@@ -162,30 +161,30 @@ class StupidBotStrategyTest(unittest.TestCase):
 
     def testToolsToUseWith_100(self):
         self.redPlayer.toolbox.upgrade()
-        resourceValue = 3
+        resource = Resource.wood
         eyes = 5
-        self.assertEqual(1, self.redPlayer.toolsToUse(resourceValue, eyes))
+        self.assertEqual(1, self.redPlayer.toolsToUse(resource, eyes))
 
-        resourceValue = 3
+        resource = Resource.wood
         eyes = 4
-        self.assertEqual(0, self.redPlayer.toolsToUse(resourceValue, eyes))
+        self.assertEqual(0, self.redPlayer.toolsToUse(resource, eyes))
 
     def testToolsToUseWith_110(self):
         self.redPlayer.toolbox.upgrade()
         self.redPlayer.toolbox.upgrade()
         
-        resourceValue = 3
+        resource = Resource.wood
         eyes = 4
-        self.assertEqual(2, self.redPlayer.toolsToUse(resourceValue, eyes))
+        self.assertEqual(2, self.redPlayer.toolsToUse(resource, eyes))
         
     def testToolsToUseWith_111(self):
         self.redPlayer.toolbox.upgrade()
         self.redPlayer.toolbox.upgrade()
         self.redPlayer.toolbox.upgrade()
                 
-        resourceValue = 3
+        resource = Resource.wood
         eyes = 4
-        self.assertEqual(2, self.redPlayer.toolsToUse(resourceValue, eyes))
+        self.assertEqual(2, self.redPlayer.toolsToUse(resource, eyes))
 
 
     def testToolsToUseWith_221_rv4(self):
@@ -195,9 +194,9 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.redPlayer.toolbox.upgrade()
         self.redPlayer.toolbox.upgrade()
                 
-        resourceValue = 4
+        resource = Resource.clay
         eyes = 1
-        self.assertEqual(3, self.redPlayer.toolsToUse(resourceValue, eyes))
+        self.assertEqual(3, self.redPlayer.toolsToUse(resource, eyes))
 
     def testToolsToUseWith_221(self):
         self.redPlayer.toolbox.upgrade()
@@ -206,9 +205,9 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.redPlayer.toolbox.upgrade()
         self.redPlayer.toolbox.upgrade()
                 
-        resourceValue = 3
+        resource = Resource.wood
         eyes = 5
-        self.assertEqual(4, self.redPlayer.toolsToUse(resourceValue, eyes))
+        self.assertEqual(4, self.redPlayer.toolsToUse(resource, eyes))
 
     def testToolsToUseWith_222(self):
         self.redPlayer.toolbox.upgrade()
@@ -218,17 +217,17 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.redPlayer.toolbox.upgrade()
         self.redPlayer.toolbox.upgrade()
         
-        resourceValue = 6
+        resource = Resource.gold
         eyes = 3
-        self.assertEqual(4, self.redPlayer.toolsToUse(resourceValue, eyes))
+        self.assertEqual(4, self.redPlayer.toolsToUse(resource, eyes))
 
     def testToolsToUseWith_444(self):
         for index in range(1,13):
             self.redPlayer.toolbox.upgrade()
         
-        resourceValue = 3
+        resource = Resource.wood
         eyes = 4
-        self.assertEqual(12, self.redPlayer.toolsToUse(resourceValue, eyes))
+        self.assertEqual(12, self.redPlayer.toolsToUse(resource, eyes))
 
     def testToolsToUseWith_322(self):
         self.redPlayer.toolbox.upgrade()
@@ -239,9 +238,9 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.redPlayer.toolbox.upgrade()
         self.redPlayer.toolbox.upgrade()
                 
-        resourceValue = 6
+        resource = Resource.gold
         eyes = 3
-        self.assertEqual(3, self.redPlayer.toolsToUse(resourceValue, eyes))        
+        self.assertEqual(3, self.redPlayer.toolsToUse(resource, eyes))        
         
     def testReapingOrder(self):
         self.assertEqual("g", self.redPlayer.chooseReapingResource("fsg"))
@@ -251,16 +250,18 @@ class StupidBotStrategyTest(unittest.TestCase):
         
     def testChooseChristmas(self):
         self.assertEqual(0, self.redPlayer.getFoodTrack())
-        self.assertListEqual([3,4,7], self.redPlayer.chooseChristmas([3,4,7,8]))
+        self.assertListEqual([Resource.wood, Resource.clay, Resource.tool],
+                             self.redPlayer.chooseChristmas([Resource.wood, Resource.clay, Resource.tool, Resource.farmer]))
         self.assertEqual(1, self.redPlayer.getFoodTrack())
         
         self.assertEqual([0,0,0], self.redPlayer.getTools())
-        self.assertListEqual([3,4], self.redPlayer.chooseChristmas([3,4,7]))
+        self.assertListEqual([Resource.wood, Resource.clay],
+                             self.redPlayer.chooseChristmas([Resource.wood, Resource.clay, Resource.tool]))
         self.assertEqual([1,0,0], self.redPlayer.getTools())
         
         self.assertEqual([], self.redPlayer.getNonFood())
-        self.assertListEqual([3], self.redPlayer.chooseChristmas([3,4]))
-        self.assertEqual([4], self.redPlayer.getNonFood())
+        self.assertListEqual([Resource.wood], self.redPlayer.chooseChristmas([Resource.wood, Resource.clay]))
+        self.assertEqual([Resource.clay], self.redPlayer.getNonFood())
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(StupidBotStrategyTest)

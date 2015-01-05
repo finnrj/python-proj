@@ -1,5 +1,6 @@
 from Hut import AnyHut, CountHut, SimpleHut
 from Board import PlacementError
+from Resource import Resource
 
 ERROR_PREFIX = '\x1b[1;33m\x1b[45m'
 ERROR_SUFFIX = '\x1b[0m'
@@ -108,16 +109,16 @@ class StupidBot(Strategy):
                 sumToUse += tool
         return sumToUse
 
-    def toolsToUse(self, resourceValue, eyes, toolbox):
-        mod = eyes % resourceValue
-        greedyToolvalue = resourceValue - mod
+    def toolsToUse(self, resource, eyes, toolbox):
+        mod = eyes % resource.value
+        greedyToolvalue = resource.value - mod
 
         # if tools can't help: quit
         if sum(toolbox.getUnused()) < greedyToolvalue:
             return 0
         
-        while sum(toolbox.getUnused()) >= greedyToolvalue + resourceValue:
-            greedyToolvalue += resourceValue
+        while sum(toolbox.getUnused()) >= greedyToolvalue + resource.value:
+            greedyToolvalue += resource.value
 
         # looking for tools that can be kept
         # precondition: Tools are sorted descending 
@@ -140,11 +141,11 @@ class Human(Strategy):
     """Class for a human redPlayer"""
     
     prompt = """You have %d people, foodtrack: %d, food: %d 
-and the following resource%s: %s 
+and the following Resource%s: %s 
 %d person%s available. Please place person%s!
 """
      
-#        Input format: <resource> <number>, where
+#        Input format: <Resource> <number>, where
 #
 #            Grounds:                
 #                Hunting:   f
@@ -187,7 +188,7 @@ and the following resource%s: %s
     def fetchPlacePersonsInput(self, people, foodtrack, food, resources, personsLeft):
         return fetchConvertedInput(self.prompt % (people, foodtrack, food, suffix(resources), str(resources), personsLeft, suffix(personsLeft), 
                                    suffix(personsLeft)),
-                                   lambda v: printfString("'%s' does not seem to be of format <resource><number>!", v),
+                                   lambda v: printfString("'%s' does not seem to be of format <Resource><number>!", v),
                                    stringAndNumber)
         
     def processPlacePersonsInput(self, resource, number, player, board):
@@ -203,7 +204,7 @@ and the following resource%s: %s
 
     def printResourceStatus(self, player):
         nonFood = player.getNonFood()
-        print("available resource%s: %s " % (suffix(nonFood), str(nonFood)))
+        print("available Resource%s: %s " % (suffix(nonFood), str(nonFood)))
 
     def buyHuts(self, player, huts):
         if huts:
@@ -278,7 +279,7 @@ and the following resource%s: %s
         if len(hut.missing(payment)) != 0:
             printError("missing resources: " + str(hut.missing(payment)))
         if len(payment) != hut.getResourceCount():
-            printError("Given resource count:" + str(len(payment)) + ", required count: " + str(hut.getResourceCount()))
+            printError("Given Resource count:" + str(len(payment)) + ", required count: " + str(hut.getResourceCount()))
         return len(hut.missing(payment)) == 0 and len(payment) == hut.getResourceCount()
     
     def toolsToUse(self, resourceValue, eyes, toolbox):
@@ -319,8 +320,8 @@ and the following resource%s: %s
     def chooseChristmas(self, player, presents):
         stringPresents = "%s" % (presents)  
         stringPresents = stringPresents.replace("7", "(t)ool")
-        stringPresents = stringPresents.replace("8", "(f)arm track")
-        promptString = """\nChoose resource for Christmas from (%s) """ % (stringPresents)
+        stringPresents = stringPresents.replace("8", "(f)ood track")
+        promptString = """\nChoose Resource for Christmas from (%s) """ % (stringPresents)
         finished = False
         while not finished:
             inputString = input(promptString).lower()
@@ -330,13 +331,13 @@ and the following resource%s: %s
                 inputChar = inputString[0]
                  
             if inputChar == "t":
-                chosenResource = 7                
+                chosenResource = Resource.tool                
             elif inputChar == "f":
-                chosenResource = 8
+                chosenResource = Resource.farmer
             else:
                 try:               
                     chosenResource = int(inputChar)
-                    if not chosenResource in presents or chosenResource in [7,8]:
+                    if not chosenResource in presents or chosenResource in [Resource.tool, Resource.farmer]:
                         chosenResource = 0
                 except:
                     chosenResource = 0

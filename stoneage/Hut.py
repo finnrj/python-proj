@@ -1,12 +1,12 @@
 #! /usr/bin/env python3
 from itertools import permutations
+from Resource import Resource
 
 class Hut:
     """Super Class representing a 'hut' building tile"""
 
-    NON_FOOD_TYPES = [3, 4, 5, 6, 10]
-    RESOURCE_TYPES = [3, 4, 5, 6]
-    FOOD = 2
+    NON_FOOD_TYPES = [Resource.wood, Resource.clay, Resource.stone, Resource.gold, Resource.joker]
+    RESOURCE_TYPES = [Resource.wood, Resource.clay, Resource.stone, Resource.gold]
     
     def __init__(self):
         self.player = None
@@ -51,8 +51,8 @@ class SimpleHut(Hut):
                 clone.remove(res)
             except:
                 missing.append(res)
-        while 10 in clone:
-            clone.remove(10)
+        while Resource.joker in clone:
+            clone.remove(Resource.joker)
             missing.pop()
         return missing
 
@@ -67,16 +67,16 @@ class AnyHut(Hut):
         self._costs = []
 
     def costs(self, resources):
-        nonFood = [self.make_jokers_gold(resource) for resource in resources if resource != 2]
+        nonFood = [self.make_jokers_gold(resource) for resource in resources if resource != Resource.food]
         self._costs = nonFood[:7]
         return nonFood[:7]
 
     def make_jokers_gold(self, resource):
-        return 6 if resource == 10 else resource
+        return Resource.gold if resource == Resource.joker else resource
         
     def missing(self, resources):
         if len(resources) == 0 or self.containsOnlyFood(resources) :
-            return [3]
+            return [Resource.wood]
         return [] 
     
     def __str__(self):
@@ -97,7 +97,7 @@ class CountHut(Hut):
 
     def costs(self, resources):
         result = []        
-        nonFood = [resource for resource in resources if resource != 2]
+        nonFood = [resource for resource in resources if resource in self.NON_FOOD_TYPES]
         if self.missing (resources):
             return result
 
@@ -114,11 +114,11 @@ class CountHut(Hut):
         raise("CountHut:missing is probably false")
 
     def sufficientResources(self, nonFood, typesPaymentCandidate):
-        neededResourceCount = self.resourceCount - nonFood.count(10)
+        neededResourceCount = self.resourceCount - nonFood.count(Resource.joker)
         return sum([nonFood.count(resourceType) for resourceType in typesPaymentCandidate]) >= neededResourceCount
 
     def tooFewDifferentTypes(self, typesCounts, jokerCount):
-        return 4 - typesCounts.count(0) + jokerCount < self.typesCount
+        return (4 - typesCounts.count(0)) + jokerCount < self.typesCount
 
     def tooFewResources(self, resources):
         availableTypes = self.extractAvailableResourceTypes(resources)
@@ -126,14 +126,6 @@ class CountHut(Hut):
             if self.sufficientResources(resources, permutation):
                 return False
         return True
-
-    def jokerEnhancedTypeCounts(self, resources):
-        typeCounts = self.extractTypeCounts(resources)
-        for jokerResource in range(resources.count(10)):
-            for idx, typeCount in enumerate(typeCounts):
-                if typeCount == 0:
-                    typeCounts[idx] = 1
-        return typeCounts
 
     def extractAvailableResourceTypes(self, resources):
         return [resourceType for resourceType in self.RESOURCE_TYPES if resources.count(resourceType) > 0]
@@ -148,25 +140,25 @@ class CountHut(Hut):
         
         typeCounts = self.extractTypeCounts(resources)
         
-        if self.tooFewDifferentTypes(typeCounts, resources.count(10)):
-            result = self.findMissingResourceTypes(typeCounts, resources.count(10))
-            return result + self.allWood(self.resourceCount - (sum(typeCounts) + resources.count(10) + len(result)))
+        if self.tooFewDifferentTypes(typeCounts, resources.count(Resource.joker)):
+            result = self.findMissingResourceTypes(typeCounts, resources.count(Resource.joker))
+            return result + self.allWood(self.resourceCount - (sum(typeCounts) + resources.count(Resource.joker) + len(result)))
           
         if self.tooFewResources(resources):
             availableTypes = self.extractAvailableResourceTypes(resources)
             if len(availableTypes) == 0:
-                availableTypes.append(3)
+                availableTypes.append(Resource.wood)
             firstPossibleTypes = availableTypes[:self.typesCount]
             clone = resources[:]
-            for jokerCount in range(resources.count(10)):
+            for jokerCount in range(resources.count(Resource.joker)):
                 clone.append(firstPossibleTypes[0])
             return (self.resourceCount - sum([clone.count(resourceType) for resourceType in firstPossibleTypes])) * [firstPossibleTypes[0]] 
         return []
     
     def findMissingResourceTypes(self, typeCounts, jokerCount):
-        """ returns list with missing resource types in typeCounts """
+        """ returns list with missing Resource types in typeCounts """
         
-        missingTypesCount =  self.typesCount - (4 - typeCounts.count(0) + jokerCount)
+        missingTypesCount =  self.typesCount - ((4 - typeCounts.count(0)) + jokerCount)
         result = []
  
         if missingTypesCount <= 0:
@@ -174,7 +166,7 @@ class CountHut(Hut):
         
         for idx, count in enumerate(typeCounts):
             if count == 0:
-                result.append(idx + 3)
+                result.append(Resource.from_value(idx + 3))
                 missingTypesCount -= 1
             if missingTypesCount == 0:
                 return result
@@ -184,7 +176,7 @@ class CountHut(Hut):
     def allWood(self, count):
         """ returns list with all count wood resources """
         
-        return count * [3]
+        return count * [Resource.wood]
         
     def __str__(self):
         suffix = self.isOccupied() and self.player.getOutputAbr() or ""        

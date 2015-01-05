@@ -32,38 +32,38 @@ class BoardTest(unittest.TestCase):
         self.assertNotIn(targetHut, ahs, "hut should not be available")
 
     def testPersonCountAfterPlacingOnHut(self):
-        self.assertEqual(0, self.board.personCount(self.redPlayer))
+        self.assertEqual(0, self.board.person(self.redPlayer))
         self.assertEqual(0, self.board.personsOnHuts(self.redPlayer))
         self.board.placeOnHutIndex(0, self.redPlayer)
-        self.assertEqual(1, self.board.personCount(self.redPlayer))
+        self.assertEqual(1, self.board.person(self.redPlayer))
         self.assertEqual(1, self.board.personsOnHuts(self.redPlayer))
 
-        self.assertEqual(0, self.board.personCount(self.bluePlayer))
+        self.assertEqual(0, self.board.person(self.bluePlayer))
         self.assertEqual(0, self.board.personsOnHuts(self.bluePlayer))        
         self.board.placeOnHutIndex(1, self.bluePlayer)
-        self.assertEqual(1, self.board.personCount(self.bluePlayer))
+        self.assertEqual(1, self.board.person(self.bluePlayer))
         self.assertEqual(1, self.board.personsOnHuts(self.bluePlayer))  
         
     def testPlacePersonsWithoutResources(self):
-        self.assertEqual(0, self.board.personCount(self.redPlayer))
+        self.assertEqual(0, self.board.person(self.redPlayer))
         self.board.addHunters(2, self.redPlayer)
         self.board.addLumberjacks(2, self.redPlayer)
 
-        self.assertEqual(4, self.board.personCount(self.redPlayer))
+        self.assertEqual(4, self.board.person(self.redPlayer))
 
         self.board.addClayDiggers(1, self.redPlayer)
         
-        self.assertEqual(5, self.board.personCount(self.redPlayer))
+        self.assertEqual(5, self.board.person(self.redPlayer))
        
     def testIllegalPlacement(self):
         self.board.addStoneDiggers(2, self.redPlayer)
         
-        self.assertEqual(2, self.board.personCount(self.redPlayer))
+        self.assertEqual(2, self.board.person(self.redPlayer))
         from Board import PlacementError
         with self.assertRaises(PlacementError):
             self.board.addStoneDiggers(1, self.redPlayer)
         
-        self.assertEqual(2, self.board.personCount(self.redPlayer))
+        self.assertEqual(2, self.board.person(self.redPlayer))
         
     def testIsFinished(self):
         self.board = Board([SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4)])

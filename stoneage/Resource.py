@@ -3,9 +3,9 @@ Created on Jan 4, 2015
 
 @author: finn
 '''
-from enum import Enum
+from enum import IntEnum
 
-class Resource(Enum):
+class Resource(IntEnum):
     '''
     classdocs
     '''
@@ -16,8 +16,17 @@ class Resource(Enum):
     stone = 5
     gold = 6
     tool = 7
-    foodTrack = 8
-    personCount = 9
+    farmer = 8
+    person = 9
     joker = 10
+
+    
+    @classmethod
+    def from_value(cls, value):
+        for name, resource in Resource.__members__():
+            if resource.value == value:
+                return resource
+        return None
+    
 
         

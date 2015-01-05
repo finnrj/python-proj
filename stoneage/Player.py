@@ -23,7 +23,7 @@ class Player():
         self.resources = 12 * [2]
         self.huts = []
         self.cards = []
-        self.personCount = 5
+        self.person = 5
         self.score = 0
         self.color = color
         self.playerAbr = color[:1].lower()
@@ -38,7 +38,7 @@ class Player():
         else:
             self.colorOS = self.colorOSnormal
         self.strategy = strategy
-        self.foodTrack = 0
+        self.farmer = 0
         self.toolbox = Toolbox()
         self.oneTimeTools = []
         
@@ -54,21 +54,21 @@ class Player():
         return hash(self.getColor() + self.strategy.__str__())
 
     def getFoodTrack(self):
-        return self.foodTrack
+        return self.farmer
 
     def getTools(self):
         return self.toolbox.getTools()
 
     def getPersonCount(self):
-        return self.personCount
+        return self.person
 
     def foodMissing(self):
-        return max(0, (self.personCount - self.foodTrack) - self.resources.count(2))
+        return max(0, (self.person - self.farmer) - self.resources.count(2))
     
     def feed(self):
         if self.foodMissing() > 0 :
             self.score += self.hungerPenalty
-        for person in range((self.personCount - self.foodTrack) - self.foodMissing()): 
+        for person in range((self.person - self.farmer) - self.foodMissing()): 
             self.resources.remove(2)
 
     def getFood(self):
@@ -82,10 +82,10 @@ class Player():
             self.toolbox.upgrade()
             additionalResources.remove(7)
         while 8 in additionalResources: 
-            self.foodTrack = min(self.maxFoodTrack, self.foodTrack + 1)
+            self.farmer = min(self.maxFoodTrack, self.farmer + 1)
             additionalResources.remove(8)
         while 9 in additionalResources: 
-            self.personCount = min(self.maxPersonCount, self.personCount + 1)
+            self.person = min(self.maxPersonCount, self.person + 1)
             additionalResources.remove(9)
         self.resources.extend(additionalResources)
         
@@ -129,11 +129,11 @@ class Player():
             if card.getSymbol() == "hutBuilder":
                 mulitplierPoints += card.getMultiplier() * len(self.huts)
             elif card.getSymbol() == "farmer":
-                mulitplierPoints += card.getMultiplier() * self.foodTrack
+                mulitplierPoints += card.getMultiplier() * self.farmer
             elif card.getSymbol() == "toolMaker":
                 mulitplierPoints += card.getMultiplier() * sum(self.toolbox.getTools())
             elif card.getSymbol() == "shaman":
-                mulitplierPoints += card.getMultiplier() * self.personCount
+                mulitplierPoints += card.getMultiplier() * self.person
 
         return points1 + points2 + mulitplierPoints
        
@@ -144,13 +144,13 @@ class Player():
         return self.score + self.getCardScore() + len(self.getNonFood())
     
     def secondScoreCriteria(self):
-        return self.foodTrack + sum(self.toolbox.getTools()) + self.personCount
+        return self.farmer + sum(self.toolbox.getTools()) + self.person
     
     def personsLeft(self, board):
-        return self.personCount - board.personCount(self)
+        return self.person - board.person(self)
 
     def isNewRound(self, board):
-        return self.personsLeft(board) == self.personCount
+        return self.personsLeft(board) == self.person
 
     def placePersons(self, board):
         self.strategy.placePersons(self, board)
@@ -170,8 +170,8 @@ class Player():
     def getOutputAbr(self):
         return "%s%s%s" %  (self.colorOS, self.playerAbr, self.colorOSnormal)
     
-    def toolsToUse(self, resourceValue, eyes): 
-        return self.strategy.toolsToUse(resourceValue, eyes, self.toolbox)
+    def toolsToUse(self, resource, eyes): 
+        return self.strategy.toolsToUse(resource, eyes, self.toolbox)
     
     def newRound(self):
         self.toolbox.reset()
