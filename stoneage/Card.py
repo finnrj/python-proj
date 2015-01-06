@@ -1,4 +1,5 @@
 from random import randint
+from Resource import Resource
 
 class Card:
     
@@ -10,19 +11,19 @@ class Card:
     def action(self, players, cardPile):
         activePlayer = players[0]
         if self.actionType == "food":
-            activePlayer.addResources(self.number * [2])
+            activePlayer.addResources(self.number * [Resource.food])
         elif self.actionType == "foodTrack":
-            activePlayer.addResources([8])
+            activePlayer.addResources([Resource.farmer])
         elif self.actionType == "stone":
-            activePlayer.addResources([5,5])
+            activePlayer.addResources([Resource.stone, Resource.stone])
         elif self.actionType == "score":
             activePlayer.addScore (self.number)
         elif self.actionType == "tool":
-            activePlayer.addResources([7])
+            activePlayer.addResources([Resource.tool])
         elif self.actionType == "joker":
-            activePlayer.addResources(self.number *  [10])
+            activePlayer.addResources(self.number *  [Resource.joker])
         elif self.actionType == "christmas":
-            presents = [randint(3, 8) for dice in range(0, len(players))]
+            presents = [Resource(randint(3, 8)) for dice in range(0, len(players))]
             for player in players:
                 player.chooseChristmas(presents)
         elif self.actionType == "roll":

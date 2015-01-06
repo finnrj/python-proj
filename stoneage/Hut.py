@@ -166,7 +166,7 @@ class CountHut(Hut):
         
         for idx, count in enumerate(typeCounts):
             if count == 0:
-                result.append(Resource.from_value(idx + 3))
+                result.append(Resource(idx + 3))
                 missingTypesCount -= 1
             if missingTypesCount == 0:
                 return result

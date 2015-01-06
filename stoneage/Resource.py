@@ -20,13 +20,4 @@ class Resource(IntEnum):
     person = 9
     joker = 10
 
-    
-    @classmethod
-    def from_value(cls, value):
-        for name, resource in Resource.__members__():
-            if resource.value == value:
-                return resource
-        return None
-    
-
         

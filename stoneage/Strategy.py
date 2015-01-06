@@ -110,15 +110,15 @@ class StupidBot(Strategy):
         return sumToUse
 
     def toolsToUse(self, resource, eyes, toolbox):
-        mod = eyes % resource.value
-        greedyToolvalue = resource.value - mod
+        mod = eyes % resource
+        greedyToolvalue = resource - mod
 
         # if tools can't help: quit
         if sum(toolbox.getUnused()) < greedyToolvalue:
             return 0
         
-        while sum(toolbox.getUnused()) >= greedyToolvalue + resource.value:
-            greedyToolvalue += resource.value
+        while sum(toolbox.getUnused()) >= greedyToolvalue + resource:
+            greedyToolvalue += resource
 
         # looking for tools that can be kept
         # precondition: Tools are sorted descending 
