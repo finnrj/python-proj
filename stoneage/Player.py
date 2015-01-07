@@ -7,6 +7,7 @@ Created on Nov 22, 2012
 from functools import total_ordering
 from Toolbox import Toolbox
 from Card import SymbolCard, MultiplierCard
+from Resource import Resource
 
 @total_ordering
 class Player():
@@ -20,7 +21,7 @@ class Player():
     colorOSnormal  = '\x1b[0m'
 
     def __init__(self, color, strategy):
-        self.resources = 12 * [2]
+        self.resources = 12 * [Resource.food]
         self.huts = []
         self.cards = []
         self.person = 5
@@ -63,30 +64,30 @@ class Player():
         return self.person
 
     def foodMissing(self):
-        return max(0, (self.person - self.farmer) - self.resources.count(2))
+        return max(0, (self.person - self.farmer) - self.resources.count(Resource.food))
     
     def feed(self):
         if self.foodMissing() > 0 :
             self.score += self.hungerPenalty
         for person in range((self.person - self.farmer) - self.foodMissing()): 
-            self.resources.remove(2)
+            self.resources.remove(Resource.food)
 
     def getFood(self):
-        return [resource for resource in self.resources if resource == 2]
+        return [resource for resource in self.resources if resource == Resource.food]
     
     def getNonFood(self):
-        return sorted([resource for resource in self.resources if resource != 2])
+        return sorted([resource for resource in self.resources if resource != Resource.food])
 
     def addResources(self, additionalResources):
-        while 7 in additionalResources: 
+        while Resource.tool in additionalResources: 
             self.toolbox.upgrade()
-            additionalResources.remove(7)
-        while 8 in additionalResources: 
+            additionalResources.remove(Resource.tool)
+        while Resource.farmer in additionalResources: 
             self.farmer = min(self.maxFoodTrack, self.farmer + 1)
-            additionalResources.remove(8)
-        while 9 in additionalResources: 
+            additionalResources.remove(Resource.farmer)
+        while Resource.person in additionalResources: 
             self.person = min(self.maxPersonCount, self.person + 1)
-            additionalResources.remove(9)
+            additionalResources.remove(Resource.person)
         self.resources.extend(additionalResources)
         
     def addOneTimeTool(self, value):
@@ -188,23 +189,6 @@ People: %d, Foodtrack: %d, Food: %d, Tools: %s
 Resources: %s
 huts: %s    
 score: %d%s\n""" % (self.colorOS, self.getColor(), self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox, 
-                  str(sorted(self.getNonFood())), 
+                  str(sorted([resource.name for resource in self.getNonFood()])), 
                   ",".join([str(hut) for hut in self.huts]), self.getScore(), self.colorOSnormal)
-
-    
-    
-    
-
-    
-    
-    
-
-    
-    
-    
-
-    
-    
-    
-
 

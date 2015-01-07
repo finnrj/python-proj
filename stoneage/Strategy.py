@@ -167,7 +167,7 @@ and the following Resource%s: %s
     def placePersons(self, player, board):
         personsLeft = player.personsLeft(board)
         try:
-            resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.resources.count(2),
+            resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.resources.count(Resource.food),
                                                            player.getNonFood(), personsLeft)
             if not resource in "hfwcsgtab":
                 raise PlacementError("illegal character: "+resource)
@@ -186,7 +186,7 @@ and the following Resource%s: %s
             self.placePersons(player, board)
     
     def fetchPlacePersonsInput(self, people, foodtrack, food, resources, personsLeft):
-        return fetchConvertedInput(self.prompt % (people, foodtrack, food, suffix(resources), str(resources), personsLeft, suffix(personsLeft), 
+        return fetchConvertedInput(self.prompt % (people, foodtrack, food, suffix(resources), str([resource.name for resource in resources]), personsLeft, suffix(personsLeft), 
                                    suffix(personsLeft)),
                                    lambda v: printfString("'%s' does not seem to be of format <Resource><number>!", v),
                                    stringAndNumber)
@@ -204,7 +204,7 @@ and the following Resource%s: %s
 
     def printResourceStatus(self, player):
         nonFood = player.getNonFood()
-        print("available Resource%s: %s " % (suffix(nonFood), str(nonFood)))
+        print("available Resource%s: %s " % (suffix(nonFood), str([resource.name for resource in nonFood])))
 
     def buyHuts(self, player, huts):
         if huts:
@@ -240,13 +240,13 @@ and the following Resource%s: %s
             player.buyHut(hut, self.chooseResourecestoPay(player.getNonFood(), hut))
             
     def chooseResourecestoPay(self, nonFoodResources, hut):
-        promptString = "\nchoose resources (format='445...') to pay the hut: %s\n available resources: %s " % (str(hut), str(nonFoodResources))
+        promptString = "\nchoose resources (format='wcsgj...') to pay the hut: %s\n available resources: %s " % (str(hut), str(nonFoodResources))
 
         finished = False
         while not finished:
             chosenResources = fetchConvertedInput(promptString,
                                                  lambda v: printfString("the input '%s' does not consist of only numbers!", v),
-                                                 mapToNumbers)
+                                                 mapToResources)
             if not chosenResources:
                 chosenResources = nonFoodResources
             finished = all([self.chosenItemsAvailable(nonFoodResources, chosenResources),
@@ -374,6 +374,16 @@ def stringAndNumber(inputString):
 def mapToNumbers(inputString):
     if not inputString : return []
     return [int(ch) for ch in inputString]
+
+letter2Resource = {'w' : Resource.wood,
+                   'c' : Resource.clay,
+                   's' : Resource.stone,
+                   'g' : Resource.gold,
+                   'j' : Resource.joker}
+
+def mapToResources(inputString):
+    if not inputString : return []
+    return [letter2Resource[ch] for ch in inputString]
 
 def printfString(string, values):
     return string % values

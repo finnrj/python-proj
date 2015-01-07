@@ -5,6 +5,7 @@ import unittest
 from Player import Player
 from Card import SymbolCard
 from Strategy import StupidBot
+from Resource import Resource
 
 class PlayerTest(unittest.TestCase):
     
@@ -30,7 +31,7 @@ class PlayerTest(unittest.TestCase):
 
     def testScore(self):
         self.assertEquals(0, self.redPlayer.getScore())
-        self.bluePlayer.addResources([2, 3, 3])
+        self.bluePlayer.addResources([Resource.food, Resource.wood, Resource.wood])
         self.assertEquals(2, self.bluePlayer.getScore())
         self.bluePlayer.addCard(SymbolCard("pottery", "food", 7), [self.bluePlayer, self.redPlayer], None)
         self.assertEquals(3, self.bluePlayer.getScore())
@@ -38,19 +39,19 @@ class PlayerTest(unittest.TestCase):
     def testSecondPointCriteria(self):
         self.assertEquals(5, self.redPlayer.secondScoreCriteria())
         
-        self.redPlayer.addResources([7,7])
+        self.redPlayer.addResources([Resource.tool,Resource.tool])
         self.assertEquals(7, self.redPlayer.secondScoreCriteria())
-        self.redPlayer.addResources([7,7])
+        self.redPlayer.addResources([Resource.tool,Resource.tool])
         self.assertEquals(9, self.redPlayer.secondScoreCriteria())
         
-        self.redPlayer.addResources([8,8])
+        self.redPlayer.addResources([Resource.farmer,Resource.farmer])
         self.assertEquals(11, self.redPlayer.secondScoreCriteria())
-        self.redPlayer.addResources([8,8])
+        self.redPlayer.addResources([Resource.farmer,Resource.farmer])
         self.assertEquals(13, self.redPlayer.secondScoreCriteria())
         
-        self.redPlayer.addResources([9])
+        self.redPlayer.addResources([Resource.person])
         self.assertEquals(14, self.redPlayer.secondScoreCriteria())
-        self.redPlayer.addResources([9])
+        self.redPlayer.addResources([Resource.person])
         self.assertEquals(15, self.redPlayer.secondScoreCriteria())
         
 if __name__ == '__main__':

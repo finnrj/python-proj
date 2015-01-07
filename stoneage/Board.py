@@ -5,6 +5,7 @@ from random import shuffle
 from ResourceField import HuntingGrounds, Forest, ClayPit, Quarry, River, Farm,\
     BreedingHut, ToolSmith
 from Card import Card, MultiplierCard, SymbolCard
+from Resource import Resource
 
 class PlacementError(Exception):
     """Exception class for illegal placements"""
@@ -71,23 +72,23 @@ class Board:
         shuffle(self.cardPile)
 
     def _defaultHuts(self):
-        return [SimpleHut(3, 3, 4),
-                SimpleHut(3, 3, 5),
-                SimpleHut(3, 3, 6),
-                SimpleHut(3, 4, 5),
-                SimpleHut(3, 4, 4),
-                SimpleHut(3, 5, 5),
-                SimpleHut(3, 4, 6),
-                SimpleHut(3, 4, 6),
-                SimpleHut(3, 4, 5),
-                SimpleHut(3, 5, 6),
-                SimpleHut(3, 5, 6),
-                SimpleHut(4, 4, 5),
-                SimpleHut(4, 4, 6),
-                SimpleHut(4, 5, 5),
-                SimpleHut(4, 5, 6),
-                SimpleHut(4, 5, 6),
-                SimpleHut(5, 5, 6),
+        return [SimpleHut(Resource.wood, Resource.wood, Resource.clay),
+                SimpleHut(Resource.wood, Resource.wood, Resource.stone),
+                SimpleHut(Resource.wood, Resource.wood, Resource.gold),
+                SimpleHut(Resource.wood, Resource.clay, Resource.stone),
+                SimpleHut(Resource.wood, Resource.clay, Resource.clay),
+                SimpleHut(Resource.wood, Resource.stone, Resource.stone),
+                SimpleHut(Resource.wood, Resource.clay, Resource.gold),
+                SimpleHut(Resource.wood, Resource.clay, Resource.gold),
+                SimpleHut(Resource.wood, Resource.clay, Resource.stone),
+                SimpleHut(Resource.wood, Resource.stone, Resource.gold),
+                SimpleHut(Resource.wood, Resource.stone, Resource.gold),
+                SimpleHut(Resource.clay, Resource.clay, Resource.stone),
+                SimpleHut(Resource.clay, Resource.clay, Resource.gold),
+                SimpleHut(Resource.clay, Resource.stone, Resource.stone),
+                SimpleHut(Resource.clay, Resource.stone, Resource.gold),
+                SimpleHut(Resource.clay, Resource.stone, Resource.gold),
+                SimpleHut(Resource.stone, Resource.stone, Resource.gold),
                 AnyHut(),
                 AnyHut(),
                 AnyHut(),

@@ -58,7 +58,7 @@ class SimpleHut(Hut):
 
     def __str__(self):
         suffix = self.isOccupied() and self.player.getOutputAbr() or ""
-        return str(self._costs) + suffix
+        return str([resource.name for resource in self._costs]) + suffix
     
 class AnyHut(Hut):
     """ 1-7 Hut """

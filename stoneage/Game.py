@@ -6,9 +6,10 @@ Created on Nov 22, 2012
 @author: finn
 '''
 
-from Board import Board
 from random import shuffle
 
+from Board import Board
+from Resource import Resource
 from Strategy import StupidBot, Human
 from Player import Player
 

@@ -5,6 +5,7 @@ from Board import Board
 from Hut import Hut, SimpleHut
 from Player import Player
 from Strategy import StupidBot
+from Resource import Resource
 
 class BoardTest(unittest.TestCase):
 
@@ -66,15 +67,20 @@ class BoardTest(unittest.TestCase):
         self.assertEqual(2, self.board.person(self.redPlayer))
         
     def testIsFinished(self):
-        self.board = Board([SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4)])
+        self.board = Board([SimpleHut(Resource.wood,Resource.wood,Resource.clay), 
+                            SimpleHut(Resource.wood,Resource.wood,Resource.clay), 
+                            SimpleHut(Resource.wood,Resource.wood,Resource.clay), 
+                            SimpleHut(Resource.wood,Resource.wood,Resource.clay)])
         self.assertFalse(self.board.isFinished())
-        self.board = Board([SimpleHut(3,3,4), SimpleHut(3,3,4), SimpleHut(3,3,4)])
+        self.board = Board([SimpleHut(Resource.wood,Resource.wood,Resource.clay), 
+                            SimpleHut(Resource.wood,Resource.wood,Resource.clay), 
+                            SimpleHut(Resource.wood,Resource.wood,Resource.clay)])
         self.assertTrue(self.board.isFinished())
         
     def testReapResources(self):
-        hutForRed = SimpleHut(3, 3, 4)
-        hutForBlue = SimpleHut(3, 4, 4)
-        self.board = Board([hutForRed, hutForBlue, SimpleHut(3,4,5), SimpleHut(4,5,6)])
+        hutForRed = SimpleHut(Resource.wood, Resource.wood, Resource.clay)
+        hutForBlue = SimpleHut(Resource.wood, Resource.clay, Resource.clay)
+        self.board = Board([hutForRed, hutForBlue, SimpleHut(Resource.wood,Resource.clay,Resource.stone), SimpleHut(Resource.clay,Resource.stone,Resource.gold)])
         self.board.placeOnHut(hutForRed, self.redPlayer)
         self.board.placeOnHut(hutForBlue, self.bluePlayer)
         
