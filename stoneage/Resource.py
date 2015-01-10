@@ -1,8 +1,5 @@
-'''
-Created on Jan 4, 2015
+#! /usr/bin/env python3
 
-@author: finn
-'''
 from enum import IntEnum
 
 class Resource(IntEnum):
@@ -20,4 +17,21 @@ class Resource(IntEnum):
     person = 9
     joker = 10
 
-        
+    
+    def getColoredName(self):
+        outputColors = {Resource.food:  "48;5;10",
+                        Resource.wood:  "48;5;130",
+                        Resource.clay:  "48;5;173",
+                        Resource.stone: "48;5;7",
+                        Resource.gold:  "48;5;11",
+                        Resource.joker: "48;5;30"}
+        return "\033[%sm%s\033[0m" % (outputColors[self], self._name_)
+    
+    @classmethod
+    def coloredOutput(clz,resources):
+        return "[%s]" % ",".join([resource.getColoredName() for resource in resources])
+
+            
+if __name__ == '__main__':
+    for name, resource in Resource.__members__.items():
+        print(name, resource, resource.getColoredName())

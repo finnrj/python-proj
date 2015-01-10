@@ -138,7 +138,7 @@ class StupidBot(Strategy):
         return "Stupid Bot"
     
 class Human(Strategy):
-    """Class for a human redPlayer"""
+    """Class for a human player"""
     
     prompt = """You have %d people, foodtrack: %d, food: %d 
 and the following Resource%s: %s 
@@ -167,8 +167,7 @@ and the following Resource%s: %s
     def placePersons(self, player, board):
         personsLeft = player.personsLeft(board)
         try:
-            resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.resources.count(Resource.food),
-                                                           player.getNonFood(), personsLeft)
+            resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.resources.count(Resource.food), player.getNonFood(), personsLeft)
             if not resource in "hfwcsgtab":
                 raise PlacementError("illegal character: "+resource)
             elif resource not in "tab" and number == 0:
@@ -186,8 +185,7 @@ and the following Resource%s: %s
             self.placePersons(player, board)
     
     def fetchPlacePersonsInput(self, people, foodtrack, food, resources, personsLeft):
-        return fetchConvertedInput(self.prompt % (people, foodtrack, food, suffix(resources), str([resource.name for resource in resources]), personsLeft, suffix(personsLeft), 
-                                   suffix(personsLeft)),
+        return fetchConvertedInput(self.prompt % (people, foodtrack, food, suffix(resources), Resource.coloredOutput(resources), personsLeft, suffix(personsLeft), suffix(personsLeft)),
                                    lambda v: printfString("'%s' does not seem to be of format <Resource><number>!", v),
                                    stringAndNumber)
         
@@ -204,7 +202,7 @@ and the following Resource%s: %s
 
     def printResourceStatus(self, player):
         nonFood = player.getNonFood()
-        print("available Resource%s: %s " % (suffix(nonFood), str([resource.name for resource in nonFood])))
+        print("available Resource%s: %s " % (suffix(nonFood), Resource.coloredOutput(nonFood)))
 
     def buyHuts(self, player, huts):
         if huts:
@@ -230,7 +228,7 @@ and the following Resource%s: %s
     def filterOutPayableHuts(self, player, huts):
         notPayable, payable = [hut for hut in huts if not player.isPayable(hut)], [hut for hut in huts if player.isPayable(hut)]
         if notPayable:
-            printError("you can't afford the following hut%s: %s" % (suffix(notPayable), " ".join([str(hut) for hut in notPayable])))
+            printError("you can't afford the following hut%s: " % suffix(notPayable), " ".join([str(hut) for hut in notPayable]))
         return payable
 
     def buyHut(self, player, hut):
@@ -306,16 +304,17 @@ and the following Resource%s: %s
                 toolsToUse.remove(tool)
 
     def chooseReapingResource(self, occupiedResources):
-        promptString = """\nWhich ResourceField to Reap? (%s) """ % (occupiedResources)
+        firstOccupied = occupiedResources[0]
         if len(occupiedResources) == 1:
-            return occupiedResources[0]
+            return firstOccupied
+        promptString = """\nWhich ResourceField %s to Reap? (%s) """ % (occupiedResources, firstOccupied)
         finished = False 
         while not finished:
             chosenResource = input(promptString).lower()
-            finished = chosenResource and chosenResource in occupiedResources
+            finished = chosenResource == None or chosenResource in occupiedResources
             if not finished:
                 print("'%s' not in '%s'" % (chosenResource, occupiedResources))
-        return chosenResource
+        return chosenResource if chosenResource else firstOccupied
 
     def chooseChristmas(self, player, presents):
         stringPresents = "%s" % (presents)  
@@ -351,12 +350,10 @@ and the following Resource%s: %s
     def __str__(self):
         return "Human"
 
-
-
 # output helper methods
 
-def printError(errormessage):
-    print("%s %s %s\n" % (ERROR_PREFIX, errormessage, ERROR_SUFFIX))
+def printError(errormessage, messageSuffix = None):
+    print("%s %s %s %s\n" % (ERROR_PREFIX, errormessage, ERROR_SUFFIX, messageSuffix if messageSuffix else "")) 
     
 def suffix(numberOrList):
     size = numberOrList if isinstance(numberOrList, type(1)) else len(numberOrList)

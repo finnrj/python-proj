@@ -31,7 +31,7 @@ class Player():
         if color == 'Red':
             self.colorOS = '\x1b[1;31m'
         elif color == 'Green':
-            self.colorOS = '\x1b[2;32m'
+            self.colorOS = '\x1b[1;32m'
         elif color == 'Yellow':
             self.colorOS = '\x1b[2;33m'
         elif color == 'Blue':
@@ -183,12 +183,15 @@ class Player():
     def chooseReapingResource(self, occupiedResources):
         return self.strategy.chooseReapingResource(occupiedResources)
     
+    def resourcesColoredOutput(self):
+        return "[%s]" % ",".join([resource.getColoredName() for resource in sorted(self.getNonFood())])
+    
     def __str__(self):
-        return """%s%s
+        return """%s%s%s
 People: %d, Foodtrack: %d, Food: %d, Tools: %s
 Resources: %s
 huts: %s    
-score: %d%s\n""" % (self.colorOS, self.getColor(), self.getPersonCount(), self.getFoodTrack(), self.resources.count(2), self.toolbox, 
-                  str(sorted([resource.name for resource in self.getNonFood()])), 
-                  ",".join([str(hut) for hut in self.huts]), self.getScore(), self.colorOSnormal)
+score: %d\n""" % (self.colorOS, self.getColor(), self.colorOSnormal, self.getPersonCount(), self.getFoodTrack(), self.resources.count(Resource.food), self.toolbox, 
+                  Resource.coloredOutput(sorted(self.getNonFood())), 
+                  ",".join([str(hut) for hut in self.huts]), self.getScore())
 
