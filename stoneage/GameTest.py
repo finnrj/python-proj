@@ -16,10 +16,10 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         self.game = Game()
-        self.redPlayer = Player("Red", Strategy())
-        self.bluePlayer = Player("Blue", Strategy())
-        self.yellowPlayer = Player("Yellow", Strategy())
-        self.greenPlayer = Player("Green", Strategy())
+        self.redPlayer = Player(PlayerColor.Red, Strategy())
+        self.bluePlayer = Player(PlayerColor.Blue, Strategy())
+        self.yellowPlayer = Player(PlayerColor.Yellow, Strategy())
+        self.greenPlayer = Player(PlayerColor.Green, Strategy())
         for p in [self.redPlayer, self.bluePlayer, self.yellowPlayer, self.greenPlayer]:                
             self.game.addPlayer(p)
     

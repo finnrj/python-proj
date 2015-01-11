@@ -6,14 +6,14 @@ from ResourceField import ResourceField, HuntingGrounds, Forest, River, Quarry, 
 from Resource import Resource 
 from Board import PlacementError
 from Strategy import StupidBot
-from Player import Player
+from Player import Player, PlayerColor
 
 
 class ResourceTest(unittest.TestCase):
     
     def setUp(self):
-        self.redPlayer = Player("Red", StupidBot())
-        self.bluePlayer = Player("Blue", StupidBot())
+        self.redPlayer = Player(PlayerColor.Red, StupidBot())
+        self.bluePlayer = Player(PlayerColor.Blue, StupidBot())
             
     def testCount(self):
         rs = River()

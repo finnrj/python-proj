@@ -4,7 +4,7 @@ Created on Nov 22, 2012
 @author: finn
 '''
 import unittest
-from Player import Player
+from Player import Player, PlayerColor
 from Board import Board
 from Hut import SimpleHut, CountHut
 from Resource import Resource
@@ -13,8 +13,8 @@ from Strategy import StupidBot
 class StupidBotStrategyTest(unittest.TestCase):
 
     def setUp(self):
-        self.redPlayer = Player("Red", StupidBot())
-        self.bluePlayer = Player("Blue", StupidBot())
+        self.redPlayer = Player(PlayerColor.Red, StupidBot())
+        self.bluePlayer = Player(PlayerColor.Blue, StupidBot())
         self.board = Board()
         
     def testPlacePersonsWithoutResources(self):
@@ -24,8 +24,8 @@ class StupidBotStrategyTest(unittest.TestCase):
 
       
     def testPlacingOrderWhenTwoHutsAffordable(self):
-        self.board = Board([SimpleHut(3, 3, 4), SimpleHut(3, 5, 6), SimpleHut(3, 3, 6), SimpleHut(3, 4, 5)])
-        self.redPlayer.addResources([3, 3, 4, 3, 4, 5])
+        self.board = Board([SimpleHut(Resource.wood, Resource.wood, Resource.clay), SimpleHut(Resource.wood, Resource.stone, Resource.gold), SimpleHut(Resource.wood, Resource.wood, Resource.gold), SimpleHut(Resource.wood, Resource.clay, Resource.stone)])
+        self.redPlayer.addResources([Resource.wood, Resource.wood, Resource.clay, Resource.wood, Resource.clay, Resource.stone])
         
         self.redPlayer.placePersons(self.board)
         self.assertEqual(1, self.board.person(self.redPlayer))
@@ -52,8 +52,8 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.assertEqual(2, self.board.personsOnHuts(self.redPlayer))
         
     def testPlacingOfNoSimpleHutPersons(self):
-        self.board = Board([SimpleHut(3, 3, 4), SimpleHut(3, 3, 5), SimpleHut(3, 3, 6), SimpleHut(3, 4, 5)])
-        self.redPlayer.addResources([3, 3])
+        self.board = Board([SimpleHut(Resource.wood, Resource.wood, Resource.clay), SimpleHut(Resource.wood, Resource.wood, Resource.stone), SimpleHut(Resource.wood, Resource.wood, Resource.gold), SimpleHut(Resource.wood, Resource.clay, Resource.stone)])
+        self.redPlayer.addResources([Resource.wood, Resource.wood])
         
         self.redPlayer.placePersons(self.board)
         self.assertEqual(1, self.board.person(self.redPlayer))
@@ -82,35 +82,35 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.redPlayer.feed()
         self.redPlayer.feed()
         self.assertEqual(3, self.redPlayer.foodMissing())
-        self.redPlayer.addResources([8,8])
+        self.redPlayer.addResources([Resource.farmer,Resource.farmer])
         self.assertEqual(1, self.redPlayer.foodMissing())
     
     def testIsPayableBug(self):
-        self.redPlayer.addResources([3, 3, 3, 3, 3, 4, 4, 5, 6,])
+        self.redPlayer.addResources([Resource.wood, Resource.wood, Resource.wood, Resource.wood, Resource.wood, Resource.clay, Resource.clay, Resource.stone, Resource.gold,])
         firstHut = CountHut(4, 2)
 
         self.redPlayer.strategy.updatePlannedCosts(firstHut, self.redPlayer.resources)
         
-        self.assertDictEqual({firstHut : [3,4,3,3]}, self.redPlayer.strategy.plannedCosts)
+        self.assertDictEqual({firstHut : [Resource.wood,Resource.clay,Resource.wood,Resource.wood]}, self.redPlayer.strategy.plannedCosts)
         
         secondHut = CountHut(4, 3)
         self.assertTrue(self.redPlayer.isPayable(secondHut))
         self.redPlayer.strategy.updatePlannedCosts(secondHut, self.redPlayer.resources)
 
-        self.assertDictEqual({firstHut : [3,4,3,3], secondHut : [3,4,5,3]}, self.redPlayer.strategy.plannedCosts)
+        self.assertDictEqual({firstHut : [Resource.wood,Resource.clay,Resource.wood,Resource.wood], secondHut : [Resource.wood,Resource.clay,Resource.stone,Resource.wood]}, self.redPlayer.strategy.plannedCosts)
         
-        thirdHut = SimpleHut(3, 5, 6)
+        thirdHut = SimpleHut(Resource.wood, Resource.stone, Resource.gold)
         self.assertTrue(self.redPlayer.isPayable(thirdHut))
         
         fourthHut = CountHut(5, 2)
         self.assertTrue(self.redPlayer.isPayable(fourthHut))
         
     def testBuyingHutsChangesScore(self):
-        self.redPlayer.addResources([3, 3, 4, 3, 4, 5])
-        hut1 = SimpleHut(3, 3, 4)
-        hut2 = SimpleHut(3, 4, 5)
-        self.redPlayer.strategy.plannedCosts = {hut1 : [3,3,4], 
-                                             hut2 : [3,4,5]}
+        self.redPlayer.addResources([Resource.wood, Resource.wood, Resource.clay, Resource.wood, Resource.clay, Resource.stone])
+        hut1 = SimpleHut(Resource.wood, Resource.wood, Resource.clay)
+        hut2 = SimpleHut(Resource.wood, Resource.clay, Resource.stone)
+        self.redPlayer.strategy.plannedCosts = {hut1 : [Resource.wood,Resource.wood,Resource.clay], 
+                                             hut2 : [Resource.wood,Resource.clay,Resource.stone]}
         
         self.assertEqual(0, self.redPlayer.score)
         self.redPlayer.buyHuts([hut1, hut2])
@@ -118,23 +118,23 @@ class StupidBotStrategyTest(unittest.TestCase):
         
     def testFoodTrack(self):
         self.assertEqual(0, self.redPlayer.getFoodTrack())
-        self.redPlayer.addResources([8])
+        self.redPlayer.addResources([Resource.farmer])
         self.assertEqual(1, self.redPlayer.getFoodTrack())
         
-        self.redPlayer.addResources([3,3,8])
+        self.redPlayer.addResources([Resource.wood,Resource.wood,Resource.farmer])
         self.assertEqual(2, self.redPlayer.getFoodTrack())
-        self.assertEqual([3,3], self.redPlayer.getNonFood())
+        self.assertEqual([Resource.wood,Resource.wood], self.redPlayer.getNonFood())
         
-        self.redPlayer.addResources([4,8,8,3])
+        self.redPlayer.addResources([Resource.clay,Resource.farmer,Resource.farmer,Resource.wood])
         self.assertEqual(4, self.redPlayer.getFoodTrack())
-        self.assertListEqual(sorted([3,3,4,3]), self.redPlayer.getNonFood())
+        self.assertListEqual(sorted([Resource.wood,Resource.wood,Resource.clay,Resource.wood]), self.redPlayer.getNonFood())
         
     def testFoodTrackMaximum(self):
         self.assertEqual(0, self.redPlayer.getFoodTrack())
-        self.redPlayer.addResources(10 * [8])
+        self.redPlayer.addResources(10 * [Resource.farmer])
         self.assertEqual(10, self.redPlayer.getFoodTrack())
 
-        self.redPlayer.addResources([8])
+        self.redPlayer.addResources([Resource.farmer])
         self.assertEqual(10, self.redPlayer.getFoodTrack())
 
     def testBreeding(self):
@@ -146,7 +146,7 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.assertEqual(5, self.redPlayer.getPersonCount())
         self.redPlayer.person = 10
 
-        self.redPlayer.addResources([8])
+        self.redPlayer.addResources([Resource.farmer])
         self.assertEqual(10, self.redPlayer.getPersonCount())
 
     def testPlaceOnBreedingHut(self):
@@ -156,7 +156,7 @@ class StupidBotStrategyTest(unittest.TestCase):
 
     def testTools(self):
         self.assertEqual([0, 0, 0], self.redPlayer.getTools())
-        self.redPlayer.addResources([7])
+        self.redPlayer.addResources([Resource.tool])
         self.assertEqual([1, 0, 0], self.redPlayer.getTools())
 
     def testToolsToUseWith_100(self):

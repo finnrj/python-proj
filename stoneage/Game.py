@@ -11,7 +11,7 @@ from random import shuffle
 from Board import Board
 from Resource import Resource
 from Strategy import StupidBot, Human
-from Player import Player
+from Player import Player, PlayerColor
 
 
 class Game(object):
@@ -81,10 +81,10 @@ class Game(object):
 
 def main():
     game = Game()
-    game.addPlayer(Player("Red", StupidBot()))
-    game.addPlayer(Player("Blue",  StupidBot()))
-    game.addPlayer(Player("Green",  Human()))
-    game.addPlayer(Player("Yellow",  StupidBot()))
+    game.addPlayer(Player(PlayerColor.Red, StupidBot()))
+    game.addPlayer(Player(PlayerColor.Blue,  StupidBot()))
+    game.addPlayer(Player(PlayerColor.Green,  Human()))
+    game.addPlayer(Player(PlayerColor.Yellow,  StupidBot()))
     shuffle(game.players)
     game.printPlayers()
     round = 1

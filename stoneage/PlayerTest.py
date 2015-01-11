@@ -2,7 +2,7 @@
 
 import unittest
 
-from Player import Player
+from Player import Player, PlayerColor
 from Card import SymbolCard
 from Strategy import StupidBot
 from Resource import Resource
@@ -10,12 +10,12 @@ from Resource import Resource
 class PlayerTest(unittest.TestCase):
     
     def setUp(self):
-        self.redPlayer = Player("Red", StupidBot())
-        self.bluePlayer = Player("Blue", StupidBot())
+        self.redPlayer = Player(PlayerColor.Red, StupidBot())
+        self.bluePlayer = Player(PlayerColor.Blue, StupidBot())
 
     def testgetColor(self):
-        self.assertEquals("Red", self.redPlayer.getColor())
-        self.assertEquals("Blue", self.bluePlayer.getColor())
+        self.assertEquals(PlayerColor.Red, self.redPlayer.getColor())
+        self.assertEquals(PlayerColor.Blue, self.bluePlayer.getColor())
 
     def testOutputColor(self):
         self.assertEquals("\x1b[1;31mRed\x1b[0m", self.redPlayer.getOutputColor())

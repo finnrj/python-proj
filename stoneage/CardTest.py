@@ -1,64 +1,65 @@
 #! /usr/bin/env python3
 
 import unittest
-from Card import SymbolCard, MultiplierCard
-from Player import Player
+from Card import SymbolCard, MultiplierCard, CardAction, CardMultiplier, CardSymbol
+from Player import Player, PlayerColor
 from Strategy import StupidBot
 from Hut import SimpleHut
+from Resource import Resource
 
 class CardTest(unittest.TestCase):
     
     def setUp(self):
-        self.activePlayer = Player("Red", StupidBot())
-        self.opponentBlue = Player("Blue", StupidBot())
-        self.opponentGreen = Player("Green", StupidBot())
-        self.cardPile = [SymbolCard("weaving", "food", 3), SymbolCard("weaving", "food", 1)]
+        self.activePlayer = Player(PlayerColor.Red, StupidBot())
+        self.opponentBlue = Player(PlayerColor.Blue, StupidBot())
+        self.opponentGreen = Player(PlayerColor.Green, StupidBot())
+        self.cardPile = [SymbolCard(CardSymbol.weaving, CardAction.food, 3), SymbolCard(CardSymbol.weaving, CardAction.food, 1)]
         
         self.players = [self.activePlayer, self.opponentBlue, self.opponentGreen]
         
-        self.potCard = SymbolCard("pottery", "food", 7)
+        self.potCard = SymbolCard(CardSymbol.pottery, CardAction.food, 7)
         
-        self.weaveCard3 = SymbolCard("weaving", "food", 3)
-        self.weaveCard1 = SymbolCard("weaving", "food", 1)
+        self.weaveCard3 = SymbolCard(CardSymbol.weaving, CardAction.food, 3)
+        self.weaveCard1 = SymbolCard(CardSymbol.weaving, CardAction.food, 1)
         
-        self.timeCardc = SymbolCard("time", "christmas", 0)
-        self.timeCardft = SymbolCard("time", "foodTrack", 1)
+        self.timeCardc = SymbolCard(CardSymbol.time, CardAction.christmas, 0)
+        self.timeCardft = SymbolCard(CardSymbol.time, CardAction.foodTrack, 1)
         
-        self.healCard5 = SymbolCard("healing", "food", 5)
-        self.healCard2 = SymbolCard("healing", "joker", 2)
+        self.healCard5 = SymbolCard(CardSymbol.healing, CardAction.food, 5)
+        self.healCard2 = SymbolCard(CardSymbol.healing, CardAction.joker, 2)
         
-        self.transCard2 = SymbolCard("transport", "stone", 2)
+        self.transCard2 = SymbolCard(CardSymbol.transport, CardAction.stone, 2)
         
-        self.musicCard = SymbolCard("music", "score", 3)
+        self.musicCard = SymbolCard(CardSymbol.music, CardAction.score, 3)
         
-        self.artCard = SymbolCard("art", "tool", 1)
-        self.artCardg = SymbolCard("art", "roll", 6)
+        self.artCard = SymbolCard(CardSymbol.art, CardAction.tool, 1)
+        self.artCardg = SymbolCard(CardSymbol.art, CardAction.roll, 6)
         
-        self.writingCard = SymbolCard("writing", "extracard", 1)
+        self.writingCard = SymbolCard(CardSymbol.writing, CardAction.extracard, 1)
         
-        self.hutBuilderCard = MultiplierCard("hutBuilder", 1, "christmas", 0)
-        self.hutBuilderCard2 = MultiplierCard("hutBuilder", 2, "christmas", 0)
-        self.hutBuilderCard3 = MultiplierCard("hutBuilder", 3, "score", 3)
+        self.hutBuilderCard = MultiplierCard(CardMultiplier.hutBuilder, 1, CardAction.christmas, 0)
+        self.hutBuilderCard2 = MultiplierCard(CardMultiplier.hutBuilder, 2, CardAction.christmas, 0)
+        self.hutBuilderCard3 = MultiplierCard(CardMultiplier.hutBuilder, 3, CardAction.score, 3)
 
-        self.farmerCard = MultiplierCard("farmer", 1, "stone", 1)
-        self.farmerCard2 = MultiplierCard("farmer", 1, "foodTrack", 1)
-        self.farmerCard3 = MultiplierCard("farmer", 2, "food", 3)        
+        self.farmerCard = MultiplierCard(CardMultiplier.farmer, 1, CardAction.stone, 1)
+        self.farmerCard2 = MultiplierCard(CardMultiplier.farmer, 1, CardAction.foodTrack, 1)
+        self.farmerCard3 = MultiplierCard(CardMultiplier.farmer, 2, CardAction.food, 3)        
 
-        self.toolMakerCard = MultiplierCard("toolMaker", 1, "oneTimeTool", 3)        
-        self.toolMakerCard2 = MultiplierCard("toolMaker", 1, "oneTimeTool", 4)
-        self.toolMakerCard3= MultiplierCard("toolMaker", 2, "oneTimeTool", 2)
+        self.toolMakerCard = MultiplierCard(CardMultiplier.toolMaker, 1, CardAction.oneTimeTool, 3)        
+        self.toolMakerCard2 = MultiplierCard(CardMultiplier.toolMaker, 1, CardAction.oneTimeTool, 4)
+        self.toolMakerCard3= MultiplierCard(CardMultiplier.toolMaker, 2, CardAction.oneTimeTool, 2)
     
-        self.shamanCard = MultiplierCard("shaman", 1, "stone", 1)
-        self.shamanCard2 = MultiplierCard("shaman", 1, "gold", 1)
-        self.shamanCard3 = MultiplierCard("shaman", 2, "roll", 3)
+        self.shamanCard = MultiplierCard(CardMultiplier.shaman, 1, CardAction.stone, 1)
+        self.shamanCard2 = MultiplierCard(CardMultiplier.shaman, 1, CardAction.gold, 1)
+        self.shamanCard3 = MultiplierCard(CardMultiplier.shaman, 2, CardAction.roll, 3)
             
     def testCardGetSymbol(self):
-        self.assertEqual("pottery", self.potCard.getSymbol())
+        self.assertEqual(CardSymbol.pottery, self.potCard.getSymbol())
             
     def testPotCardAction(self):
-        self.assertEqual(12 * [2], self.activePlayer.getFood())
+        self.assertEqual(12 * [Resource.food], self.activePlayer.getFood())
         self.activePlayer.addCard(self.potCard, self.players, self.cardPile)
-        self.assertEqual(19 * [2], self.activePlayer.getFood())
+        self.assertEqual(19 * [Resource.food], self.activePlayer.getFood())
 
     def testArtCardAction(self):
         self.assertEqual([0,0,0], self.activePlayer.getTools())
@@ -66,20 +67,20 @@ class CardTest(unittest.TestCase):
         self.assertEqual([1,0,0], self.activePlayer.getTools())
 
     def testHealCardAction(self):
-        self.assertEqual(12 * [2], self.activePlayer.getFood())
+        self.assertEqual(12 * [Resource.food], self.activePlayer.getFood())
         self.activePlayer.addCard(self.healCard5, self.players, self.cardPile)
-        self.assertEqual(17 * [2], self.activePlayer.getFood())
+        self.assertEqual(17 * [Resource.food], self.activePlayer.getFood())
        
         self.assertEqual([], self.activePlayer.getNonFood())
         self.activePlayer.addCard(self.healCard2, self.players, self.cardPile)
-        self.assertEqual(2 * [10], self.activePlayer.getNonFood())
+        self.assertEqual(2 * [Resource.joker], self.activePlayer.getNonFood())
         
     def testWeaveCardAction(self):
-        self.assertEqual(12 * [2], self.activePlayer.getFood())
+        self.assertEqual(12 * [Resource.food], self.activePlayer.getFood())
         self.activePlayer.addCard(self.weaveCard3, self.players, self.cardPile)
-        self.assertEqual((12 + 3) * [2], self.activePlayer.getFood())
+        self.assertEqual((12 + 3) * [Resource.food], self.activePlayer.getFood())
         self.activePlayer.addCard(self.weaveCard1, self.players, self.cardPile)
-        self.assertEqual((12 + 4) * [2], self.activePlayer.getFood())
+        self.assertEqual((12 + 4) * [Resource.food], self.activePlayer.getFood())
  
     def testTimeCardAction(self):
         self.assertEqual(0, self.activePlayer.getFoodTrack())
@@ -89,7 +90,7 @@ class CardTest(unittest.TestCase):
     def testTransCardAction(self):
         self.assertEqual([], self.activePlayer.getNonFood())
         self.activePlayer.addCard(self.transCard2, self.players, self.cardPile)
-        self.assertEqual([5,5], self.activePlayer.getNonFood())
+        self.assertEqual([Resource.stone, Resource.stone], self.activePlayer.getNonFood())
     
     def testMusicCardAction(self):
         self.assertEqual(0, self.activePlayer.getScore())
@@ -125,7 +126,7 @@ class CardTest(unittest.TestCase):
         self.activePlayer.addCard(self.artCardg, self.players, self.cardPile)
         self.assertTrue(len(self.activePlayer.getNonFood()) > 0)
         self.assertTrue(len(self.activePlayer.getNonFood()) < 3)
-        self.assertTrue(6 in self.activePlayer.getNonFood())
+        self.assertTrue(Resource.gold in self.activePlayer.getNonFood())
         
     def testExtraCardCard(self):
         self.assertEqual(0, len(self.activePlayer.cards))
@@ -133,7 +134,7 @@ class CardTest(unittest.TestCase):
         self.assertEqual(2, len(self.activePlayer.cards))
         
     def testHutBuildersCards(self):
-        self.activePlayer.huts.append(SimpleHut(3,3,4))
+        self.activePlayer.huts.append(SimpleHut(Resource.wood, Resource.wood, Resource.clay))
         self.assertEqual(0, self.activePlayer.getCardScore())
         self.activePlayer.addCard(self.hutBuilderCard, self.players, self.cardPile)
         self.assertEqual(1, self.activePlayer.getCardScore())
@@ -144,11 +145,11 @@ class CardTest(unittest.TestCase):
         self.activePlayer.addCard(self.hutBuilderCard3, self.players, self.cardPile)
         self.assertEqual(6, self.activePlayer.getCardScore())
         
-        self.activePlayer.huts.append(SimpleHut(3,3,4))
+        self.activePlayer.huts.append(SimpleHut(Resource.wood, Resource.wood, Resource.clay))
         self.assertEqual(12, self.activePlayer.getCardScore())
 
     def testFarmerCards(self):
-        self.activePlayer.addResources([8, 8])
+        self.activePlayer.addResources([Resource.farmer, Resource.farmer])
         self.assertEqual(0, self.activePlayer.getCardScore())
         self.activePlayer.addCard(self.farmerCard, self.players, self.cardPile)
         self.assertEqual(2, self.activePlayer.getCardScore())
@@ -158,7 +159,7 @@ class CardTest(unittest.TestCase):
         self.assertEqual(12, self.activePlayer.getCardScore())
 
     def testToolMakerCards(self):
-        self.activePlayer.addResources([7, 7])
+        self.activePlayer.addResources([Resource.tool, Resource.tool])
         self.assertEqual(0, self.activePlayer.getCardScore())
         self.activePlayer.addCard(self.toolMakerCard, self.players, self.cardPile)
         self.assertEqual(2, self.activePlayer.getCardScore())

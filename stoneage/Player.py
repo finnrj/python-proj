@@ -5,9 +5,17 @@ Created on Nov 22, 2012
 '''
 
 from functools import total_ordering
+from enum import Enum
+
 from Toolbox import Toolbox
-from Card import SymbolCard, MultiplierCard
+from Card import SymbolCard, MultiplierCard, CardMultiplier
 from Resource import Resource
+
+class PlayerColor(Enum):
+    Red = '\x1b[1;31m',
+    Green = '\x1b[1;32m',
+    Yellow = '\x1b[2;33m',
+    Blue = '\x1b[1;34m'
 
 @total_ordering
 class Player():
@@ -27,17 +35,19 @@ class Player():
         self.person = 5
         self.score = 0
         self.color = color
-        self.playerAbr = color[:1].lower()
-        if color == 'Red':
-            self.colorOS = '\x1b[1;31m'
-        elif color == 'Green':
-            self.colorOS = '\x1b[1;32m'
-        elif color == 'Yellow':
-            self.colorOS = '\x1b[2;33m'
-        elif color == 'Blue':
-            self.colorOS = '\x1b[1;34m'
-        else:
-            self.colorOS = self.colorOSnormal
+        self.playerAbr = color.name[:1].lower()
+        self.colorOS = color.value
+        
+#         if color == 'Red':
+#             self.colorOS = '\x1b[1;31m'
+#         elif color == 'Green':
+#             self.colorOS = '\x1b[1;32m'
+#         elif color == 'Yellow':
+#             self.colorOS = '\x1b[2;33m'
+#         elif color == 'Blue':
+#             self.colorOS = '\x1b[1;34m'
+#         else:
+#             self.colorOS = self.colorOSnormal
         self.strategy = strategy
         self.farmer = 0
         self.toolbox = Toolbox()
@@ -127,13 +137,13 @@ class Player():
         
         mulitplierPoints = 0
         for card in [c for c in self.cards if isinstance(c, MultiplierCard)]:
-            if card.getSymbol() == "hutBuilder":
+            if card.getSymbol() == CardMultiplier.hutBuilder:
                 mulitplierPoints += card.getMultiplier() * len(self.huts)
-            elif card.getSymbol() == "farmer":
+            elif card.getSymbol() == CardMultiplier.farmer:
                 mulitplierPoints += card.getMultiplier() * self.farmer
-            elif card.getSymbol() == "toolMaker":
+            elif card.getSymbol() == CardMultiplier.toolMaker:
                 mulitplierPoints += card.getMultiplier() * sum(self.toolbox.getTools())
-            elif card.getSymbol() == "shaman":
+            elif card.getSymbol() == CardMultiplier.shaman:
                 mulitplierPoints += card.getMultiplier() * self.person
 
         return points1 + points2 + mulitplierPoints
@@ -163,7 +173,7 @@ class Player():
         return self.color
 
     def getOutputColor(self):
-        return "%s%s%s" %  (self.colorOS, self.color, self.colorOSnormal)
+        return "%s%s%s" %  (self.colorOS, self.color.name, self.colorOSnormal)
 
     def getAbr(self):
         return self.playerAbr
@@ -191,7 +201,7 @@ class Player():
 People: %d, Foodtrack: %d, Food: %d, Tools: %s
 Resources: %s
 huts: %s    
-score: %d\n""" % (self.colorOS, self.getColor(), self.colorOSnormal, self.getPersonCount(), self.getFoodTrack(), self.resources.count(Resource.food), self.toolbox, 
+score: %d\n""" % (self.colorOS, self.color.name, self.colorOSnormal, self.getPersonCount(), self.getFoodTrack(), self.resources.count(Resource.food), self.toolbox, 
                   Resource.coloredOutput(sorted(self.getNonFood())), 
                   ",".join([str(hut) for hut in self.huts]), self.getScore())
 

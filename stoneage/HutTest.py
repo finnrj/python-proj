@@ -10,7 +10,7 @@ from Resource import Resource
 class HutTest(unittest.TestCase):
     
     def setUp(self):
-        self.redPlayer = Player("Red", StupidBot())
+        self.redPlayer = Player(PlayerColor.Red, StupidBot())
 
     def testSimpleHutPayable(self):
         hut = SimpleHut(Resource.wood, Resource.wood,Resource.clay)

@@ -3,7 +3,7 @@
 import unittest
 from Board import Board
 from Hut import Hut, SimpleHut
-from Player import Player
+from Player import Player, PlayerColor
 from Strategy import StupidBot
 from Resource import Resource
 
@@ -11,8 +11,8 @@ class BoardTest(unittest.TestCase):
 
     def setUp(self):
         self.board = Board()
-        self.redPlayer = Player("Red", StupidBot())
-        self.bluePlayer = Player("Blue", StupidBot())
+        self.redPlayer = Player(PlayerColor.Red, StupidBot())
+        self.bluePlayer = Player(PlayerColor.Blue, StupidBot())
         self.players = [self.redPlayer, self.bluePlayer]
 
     def testBoardInitialization(self):
