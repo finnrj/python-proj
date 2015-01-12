@@ -12,9 +12,9 @@ from Card import SymbolCard, MultiplierCard, CardMultiplier
 from Resource import Resource
 
 class PlayerColor(Enum):
-    Red = '\x1b[1;31m',
-    Green = '\x1b[1;32m',
-    Yellow = '\x1b[2;33m',
+    Red = '\x1b[1;31m'
+    Green = '\x1b[1;32m'
+    Yellow = '\x1b[2;33m'
     Blue = '\x1b[1;34m'
 
 @total_ordering
@@ -37,17 +37,6 @@ class Player():
         self.color = color
         self.playerAbr = color.name[:1].lower()
         self.colorOS = color.value
-        
-#         if color == 'Red':
-#             self.colorOS = '\x1b[1;31m'
-#         elif color == 'Green':
-#             self.colorOS = '\x1b[1;32m'
-#         elif color == 'Yellow':
-#             self.colorOS = '\x1b[2;33m'
-#         elif color == 'Blue':
-#             self.colorOS = '\x1b[1;34m'
-#         else:
-#             self.colorOS = self.colorOSnormal
         self.strategy = strategy
         self.farmer = 0
         self.toolbox = Toolbox()
@@ -62,7 +51,7 @@ class Player():
         return self is other
     
     def __hash__(self):
-        return hash(self.getColor() + self.strategy.__str__())
+        return hash("".join([o.__str__() for o in [self.getColor(), self.strategy]]))
 
     def getFoodTrack(self):
         return self.farmer

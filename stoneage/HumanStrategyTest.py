@@ -5,7 +5,7 @@ Created on Mar 30, 2013
 '''
 import unittest
 from Strategy import Strategy, StrategyNotImplemented, Human
-from Player import Player
+from Player import Player, PlayerColor
 from Board import Board
 from Toolbox import Toolbox
 
@@ -14,11 +14,11 @@ class HumanStrategyTest(unittest.TestCase):
     def setUp(self):
         self.board = Board()
         self.human = Human()
-        self.player = Player("Green", self.human)
+        self.player = Player(PlayerColor.Green, self.human)
         self.human.player = self.player
 
     def testStrategyClassShouldBeImplemented(self):
-        player = Player("Green", Strategy())
+        player = Player(PlayerColor.Green, Strategy())
         with self.assertRaisesRegex(StrategyNotImplemented, "The placePersons\(\) method should be implemented"):
             player.placePersons(Board())
 

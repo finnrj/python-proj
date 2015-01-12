@@ -38,7 +38,7 @@ class Game(object):
         print("\nRound: %d" % (round))
         while not self.allPersonsPlaced():
             for player in [p for p in self.players if p.personsLeft(self.board) > 0]:
-                print("Player: %-6s to place persons" % (player.getOutputColor()))                
+#                 print("Player: %-6s to place persons" % (player.getOutputColor()))                
                 if isinstance(player.strategy, Human):                
                     print (self.board)  
                 player.placePersons(self.board)

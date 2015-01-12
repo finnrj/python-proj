@@ -45,8 +45,6 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.assertEqual(4, self.board.person(self.redPlayer))
         self.assertEqual(1, self.board.personsOnHuts(self.redPlayer))
         
-        print([str(hut) for hut in self.board.availableHuts()])
-
         self.redPlayer.placePersons(self.board)
         self.assertEqual(5, self.board.person(self.redPlayer))
         self.assertEqual(2, self.board.personsOnHuts(self.redPlayer))

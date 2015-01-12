@@ -7,7 +7,7 @@ Created on Nov 22, 2012
 '''
 import unittest
 from Game import Game
-from Player import Player
+from Player import Player, PlayerColor
 from Hut import SimpleHut
 from Strategy import Strategy
 

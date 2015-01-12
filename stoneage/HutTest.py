@@ -3,7 +3,7 @@
 import unittest
 
 from Hut import SimpleHut, AnyHut, CountHut
-from Player import Player
+from Player import Player, PlayerColor
 from Strategy import StupidBot
 from Resource import Resource
 

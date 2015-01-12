@@ -51,11 +51,11 @@ class StupidBot(Strategy):
             self.updatePlannedCosts(payableHut, player.resources[:])
             return
         # place on resources
-        if player.resources.count(3) < 2 and board.freeForestSlots() > 0:
+        if player.resources.count(Resource.wood) < 2 and board.freeForestSlots() > 0:
             board.addLumberjacks(min(player.personsLeft(board), board.freeForestSlots()) , player)
-        elif player.resources.count(4) < 2 and board.freeClayPitSlots() > 0:
+        elif player.resources.count(Resource.clay) < 2 and board.freeClayPitSlots() > 0:
             board.addClayDiggers(min(player.personsLeft(board), board.freeClayPitSlots()), player)
-        elif player.resources.count(5) < 2 and board.freeQuarrySlots() > 0:
+        elif player.resources.count(Resource.stone) < 2 and board.freeQuarrySlots() > 0:
             board.addStoneDiggers(min(player.personsLeft(board), board.freeQuarrySlots()), player)
         elif board.freeRiverSlots() > 0:
             board.addGoldDiggers(min(player.personsLeft(board), board.freeRiverSlots()), player)
@@ -317,32 +317,25 @@ and the following Resource%s: %s
         return chosenResource if chosenResource else firstOccupied
 
     def chooseChristmas(self, player, presents):
-        stringPresents = "%s" % (presents)  
-        stringPresents = stringPresents.replace("7", "(t)ool")
-        stringPresents = stringPresents.replace("8", "(f)ood track")
-        promptString = """\nChoose Resource for Christmas from (%s) """ % (stringPresents)
+        stringPresents = "%s" % (", ".join([present.name for present in presents]))  
+#         stringPresents = stringPresents.replace("7", "(t)ool")
+#         stringPresents = stringPresents.replace("8", "(f)ood track")
+        promptString = """\nChoose Resource for Christmas from %s, index: 1-%d""" % (stringPresents, len(presents))
         finished = False
         while not finished:
             inputString = input(promptString).lower()
             if not inputString:
-                inputChar = "" 
+                inputChar = "1" 
             else: 
                 inputChar = inputString[0]
-                 
-            if inputChar == "t":
-                chosenResource = Resource.tool                
-            elif inputChar == "f":
-                chosenResource = Resource.farmer
-            else:
-                try:               
-                    chosenResource = int(inputChar)
-                    if not chosenResource in presents or chosenResource in [Resource.tool, Resource.farmer]:
-                        chosenResource = 0
-                except:
-                    chosenResource = 0
-            finished = inputChar and chosenResource in presents
+
+            try:               
+                chosenResource = presents[int(inputChar) - 1]
+            except:
+                chosenResource = None
+            finished = inputChar and chosenResource != None
             if not finished:
-                print("'%s' not in '%s'" % (inputChar, stringPresents))
+                print("'%s' not in '%d'" % (inputChar, len(presents)))
         presents.remove(chosenResource)
         player.addResources([chosenResource])
         return presents
