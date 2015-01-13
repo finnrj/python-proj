@@ -109,7 +109,7 @@ class StupidBot(Strategy):
                 sumToUse += tool
         return sumToUse
 
-    def toolsToUse(self, resource, eyes, toolbox):
+    def toolsToUse(self, resource, eyes, toolbox, oneTimeTools):
         mod = eyes % resource
         greedyToolvalue = resource - mod
 

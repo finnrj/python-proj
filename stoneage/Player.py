@@ -171,7 +171,7 @@ class Player():
         return "%s%s%s" %  (self.colorOS, self.playerAbr, self.colorOSnormal)
     
     def toolsToUse(self, resource, eyes): 
-        return self.strategy.toolsToUse(resource, eyes, self.toolbox)
+        return self.strategy.toolsToUse(resource, eyes, self.toolbox, self.oneTimeTools)
     
     def newRound(self):
         self.toolbox.reset()

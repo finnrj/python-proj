@@ -238,8 +238,35 @@ class StupidBotStrategyTest(unittest.TestCase):
                 
         resource = Resource.gold
         eyes = 3
-        self.assertEqual(3, self.redPlayer.toolsToUse(resource, eyes))        
+        self.assertEqual(3, self.redPlayer.toolsToUse(resource, eyes))
         
+    def testToolsToUseWith_000_OneTimeTool_2(self):
+        self.redPlayer.addOneTimeTool(2)
+        self.assertTrue(len(self.redPlayer.oneTimeTools) == 1)
+        
+        resource = Resource.wood
+        eyes = 4
+        self.assertEqual(2, self.redPlayer.toolsToUse(resource, eyes))
+        self.assertTrue(len(self.redPlayer.oneTimeTools) == 0)
+
+    def testToolsToUseWith_000_OneTimeTool_3_notUsed(self):
+        self.redPlayer.addOneTimeTool(3)
+        self.assertTrue(len(self.redPlayer.oneTimeTools) == 1)
+        
+        resource = Resource.wood
+        eyes = 4
+        self.assertEqual(0, self.redPlayer.toolsToUse(resource, eyes))
+        self.assertTrue(len(self.redPlayer.oneTimeTools) == 1)
+
+    def testToolsToUseWith_000_OneTimeTool_3_Used(self):
+        self.redPlayer.addOneTimeTool(3)
+        self.assertTrue(len(self.redPlayer.oneTimeTools) == 1)
+        
+        resource = Resource.clay
+        eyes = 5
+        self.assertEqual(3, self.redPlayer.toolsToUse(resource, eyes))
+        self.assertTrue(len(self.redPlayer.oneTimeTools) == 0)
+
     def testReapingOrder(self):
         self.assertEqual("g", self.redPlayer.chooseReapingResource("fsg"))
         self.assertEqual("s", self.redPlayer.chooseReapingResource("fs"))

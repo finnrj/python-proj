@@ -23,7 +23,7 @@ class CardTest(unittest.TestCase):
         self.weaveCard1 = SymbolCard(CardSymbol.weaving, CardAction.food, 1)
         
         self.timeCardc = SymbolCard(CardSymbol.time, CardAction.christmas, 0)
-        self.timeCardft = SymbolCard(CardSymbol.time, CardAction.foodTrack, 1)
+        self.timeCardft = SymbolCard(CardSymbol.time, CardAction.farmer, 1)
         
         self.healCard5 = SymbolCard(CardSymbol.healing, CardAction.food, 5)
         self.healCard2 = SymbolCard(CardSymbol.healing, CardAction.joker, 2)
@@ -42,7 +42,7 @@ class CardTest(unittest.TestCase):
         self.hutBuilderCard3 = MultiplierCard(CardMultiplier.hutBuilder, 3, CardAction.score, 3)
 
         self.farmerCard = MultiplierCard(CardMultiplier.farmer, 1, CardAction.stone, 1)
-        self.farmerCard2 = MultiplierCard(CardMultiplier.farmer, 1, CardAction.foodTrack, 1)
+        self.farmerCard2 = MultiplierCard(CardMultiplier.farmer, 1, CardAction.farmer, 1)
         self.farmerCard3 = MultiplierCard(CardMultiplier.farmer, 2, CardAction.food, 3)        
 
         self.toolMakerCard = MultiplierCard(CardMultiplier.toolMaker, 1, CardAction.oneTimeTool, 3)        

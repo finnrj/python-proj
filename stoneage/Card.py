@@ -5,8 +5,8 @@ from Resource import Resource
 
 
 class CardAction(Enum):
-    food, foodTrack, clay, stone, gold, score, tool, joker, christmas, roll, extracard, oneTimeTool = range(1, 13)
-    
+    christmas, clay, extracard, farmer, food, gold, joker, oneTimeTool, roll, score, stone, tool  = range(1, 13)
+
 class CardSymbol(Enum):
     weaving, time, healing, art, pottery, transport, music, writing = range(1,9)
      
@@ -22,28 +22,34 @@ class Card:
 
     def executeAction(self, players, cardPile):
         activePlayer = players[0]
-        if self.action == CardAction.food:
-            activePlayer.addResources(self.number * [Resource.food])
-        elif self.action == CardAction.foodTrack:
-            activePlayer.addResources([Resource.farmer])
-        elif self.action == CardAction.stone:
-            activePlayer.addResources([Resource.stone, Resource.stone])
-        elif self.action == CardAction.score:
-            activePlayer.addScore (self.number)
-        elif self.action == CardAction.tool:
-            activePlayer.addResources([Resource.tool])
-        elif self.action == CardAction.joker:
-            activePlayer.addResources(self.number *  [Resource.joker])
-        elif self.action == CardAction.christmas:
+        if self.action == CardAction.christmas:
             presents = [Resource(randint(3, 8)) for dice in range(0, len(players))]
             for player in players:
                 player.chooseChristmas(presents)
+        elif self.action == CardAction.clay:
+            activePlayer.addResources([Resource.clay])
+        elif self.action == CardAction.extracard:
+            activePlayer.cards.append(cardPile.pop())
+        elif self.action == CardAction.farmer:
+            activePlayer.addResources([Resource.farmer])
+        elif self.action == CardAction.food:
+            activePlayer.addResources(self.number * [Resource.food])
+        elif self.action == CardAction.gold:
+            activePlayer.addResources([Resource.gold])
+        elif self.action == CardAction.joker:
+            activePlayer.addResources(self.number *  [Resource.joker])
+        elif self.action == CardAction.oneTimeTool:
+            pass
         elif self.action == CardAction.roll:
             eyes = sum([randint(1, 6) for dice in [1,2]])
             numberOfResources = int((eyes + activePlayer.toolsToUse(self.number, eyes))/self.number)
             activePlayer.addResources(numberOfResources * [self.number])
-        elif self.action == CardAction.extracard:
-            activePlayer.cards.append(cardPile.pop())
+        elif self.action == CardAction.score:
+            activePlayer.addScore (self.number)
+        elif self.action == CardAction.stone:
+            activePlayer.addResources(self.number * [Resource.stone])
+        elif self.action == CardAction.tool:
+            activePlayer.addResources([Resource.tool])
             
     def execute(self, players, cardPile):
         self.executeAction(players, cardPile)
