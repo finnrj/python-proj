@@ -87,6 +87,9 @@ class StupidBot(Strategy):
     
 
     def findToolsToKeep(self, unusedTools, greedyToolvalue):
+        if len(unusedTools) == 0:
+            return unusedTools
+        
         if unusedTools[0] == greedyToolvalue:
             return unusedTools[1:]
         
@@ -97,7 +100,6 @@ class StupidBot(Strategy):
                 toolsToKeep.append(tool)
                 sumToReduce -= tool
         return toolsToKeep
-
 
     def useTools(self, toolbox, toolsToKeep):
         sumToUse = 0
@@ -114,11 +116,15 @@ class StupidBot(Strategy):
         greedyToolvalue = resource - mod
 
         # if tools can't help: quit
-        if sum(toolbox.getUnused()) < greedyToolvalue:
+        if sum(toolbox.getUnused() + oneTimeTools) < greedyToolvalue:
             return 0
         
-        while sum(toolbox.getUnused()) >= greedyToolvalue + resource:
+        while sum(toolbox.getUnused() + oneTimeTools) >= greedyToolvalue + resource:
             greedyToolvalue += resource
+
+#         if sum(toolbox.getUnused()) < greedyToolvalue:
+#             self.useOneTimeTools(oneTimeTools, greedyToolvalue - )
+
 
         # looking for tools that can be kept
         # precondition: Tools are sorted descending 

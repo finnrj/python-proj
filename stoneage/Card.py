@@ -41,7 +41,7 @@ class Card:
         elif self.action == CardAction.oneTimeTool:
             pass
         elif self.action == CardAction.roll:
-            eyes = sum([randint(1, 6) for dice in [1,2]])
+            eyes = sum([randint(1, 6) for dice in ["first", "second"]])
             numberOfResources = int((eyes + activePlayer.toolsToUse(self.number, eyes))/self.number)
             activePlayer.addResources(numberOfResources * [self.number])
         elif self.action == CardAction.score:
