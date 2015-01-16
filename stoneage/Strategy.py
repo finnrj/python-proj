@@ -111,6 +111,16 @@ class StupidBot(Strategy):
                 sumToUse += tool
         return sumToUse
 
+    def useOneTimeTools(self, resource, greedyToolvalue, oneTimeTools):
+        oneTimeValueToUse = 0
+        if greedyToolvalue in oneTimeTools:
+            oneTimeValueToUse += greedyToolvalue
+            oneTimeTools.remove(greedyToolvalue)
+        elif (greedyToolvalue + resource) in oneTimeTools:
+            oneTimeValueToUse += greedyToolvalue + resource
+            oneTimeTools.remove(greedyToolvalue + resource)
+        return oneTimeValueToUse
+
     def toolsToUse(self, resource, eyes, toolbox, oneTimeTools):
         mod = eyes % resource
         greedyToolvalue = resource - mod
@@ -118,18 +128,16 @@ class StupidBot(Strategy):
         # if tools can't help: quit
         if sum(toolbox.getUnused() + oneTimeTools) < greedyToolvalue:
             return 0
+
+        oneTimeValueToUse = self.useOneTimeTools(resource, greedyToolvalue, oneTimeTools)
         
-        while sum(toolbox.getUnused() + oneTimeTools) >= greedyToolvalue + resource:
+        while sum(toolbox.getUnused()) >= greedyToolvalue + resource:
             greedyToolvalue += resource
-
-#         if sum(toolbox.getUnused()) < greedyToolvalue:
-#             self.useOneTimeTools(oneTimeTools, greedyToolvalue - )
-
 
         # looking for tools that can be kept
         # precondition: Tools are sorted descending 
         toolsToKeep = self.findToolsToKeep(toolbox.getUnused(), greedyToolvalue)
-        return self.useTools(toolbox, toolsToKeep)          
+        return self.useTools(toolbox, toolsToKeep) + oneTimeValueToUse
 
     def chooseReapingResource(self, occupiedResources):
         return occupiedResources[-1]
@@ -286,20 +294,26 @@ and the following Resource%s: %s
             printError("Given Resource count:" + str(len(payment)) + ", required count: " + str(hut.getResourceCount()))
         return len(hut.missing(payment)) == 0 and len(payment) == hut.getResourceCount()
     
-    def toolsToUse(self, resourceValue, eyes, toolbox):
+    def toolsToUse(self, resourceValue, eyes, toolbox, oneTimeTools):
         mod = eyes % resourceValue
         unusedTools = toolbox.getUnused()
-        if mod + sum(unusedTools) < resourceValue:
+        if sum(unusedTools + oneTimeTools) < resourceValue - mod:
             return 0
         else:
-            promptString = """\nResourcevalue: %d, eyes: %d, your available tools: %s
-            choose tools to use (format='2', '21', '221') """ % (resourceValue, eyes, str(unusedTools))
+            promptString = """\nResourcevalue: %d, eyes: %d, your available tools: %s, oneTimeTools: %s
+            choose tools to use (format='2', '21', '221') """ % (resourceValue, eyes, str(unusedTools), str(oneTimeTools))
             finished = False
             while not finished:
                 chosenTools = fetchConvertedInput(promptString,
                                                  lambda v: printfString("the input '%s' does not consist of only numbers!", v),
                                                  mapToNumbers)
-                finished = self.chosenItemsAvailable(unusedTools, chosenTools)
+                finished = self.chosenItemsAvailable(unusedTools + oneTimeTools, chosenTools)
+                
+            for tool in chosenTools[:]:
+                if not tool in unusedTools:
+                    oneTimeTools.remove(tool)
+                    chosenTools.remove(tool)
+                    
             self.useTools(toolbox, chosenTools[:])
             return sum(chosenTools)
     

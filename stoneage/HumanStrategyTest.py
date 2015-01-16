@@ -57,11 +57,12 @@ class HumanStrategyTest(unittest.TestCase):
         
     def testHumanToolToUse(self):
         toolbox = Toolbox()
-        self.assertEqual(0, self.human.toolsToUse(3, 2, toolbox))
+        oneTimeTools = []
+        self.assertEqual(0, self.human.toolsToUse(3, 2, toolbox, oneTimeTools))
         toolbox.upgrade()
-        self.assertEqual(0, self.human.toolsToUse(3, 7, toolbox))
+        self.assertEqual(0, self.human.toolsToUse(3, 7, toolbox, oneTimeTools))
         toolbox.upgrade()
-        self.assertEqual(0, self.human.toolsToUse(3, 9, toolbox))
+        self.assertEqual(0, self.human.toolsToUse(3, 9, toolbox, oneTimeTools))
         
     def testUseTools(self):
         toolbox = Toolbox()
