@@ -12,10 +12,17 @@ from Card import SymbolCard, MultiplierCard, CardMultiplier
 from Resource import Resource
 
 class PlayerColor(Enum):
-    Red = '\x1b[1;31m'
-    Green = '\x1b[1;32m'
-    Yellow = '\x1b[2;33m'
-    Blue = '\x1b[1;34m'
+    '''background colors for player persons'''
+    
+    Red = '\x1b[48;5;9m'
+    Green = '\x1b[42m'
+    Yellow = '\x1b[48;5;11m'
+    Blue = '\x1b[48;5;33m'
+# foreground colors
+#     Red = '\x1b[1;31m'
+#     Green = '\x1b[1;32m'
+#     Yellow = '\x1b[2;33m'
+#     Blue = '\x1b[1;34m'
 
 @total_ordering
 class Player():
@@ -161,8 +168,10 @@ class Player():
     def getColor(self):
         return self.color
 
-    def getOutputColor(self):
-        return "%s%s%s" %  (self.colorOS, self.color.name, self.colorOSnormal)
+    def getOutputColor(self, length = None):
+        actualLength = length if length else len(self.color.name)
+        nameString = "%-" + str(actualLength) + "s"
+        return ("%s" + nameString + "%s") %  (self.colorOS, self.color.name, self.colorOSnormal)
 
     def getAbr(self):
         return self.playerAbr
@@ -187,10 +196,12 @@ class Player():
     
     def __str__(self):
         return """%s%s%s
-People: %d, Foodtrack: %d, Food: %d, Tools: %s
+People: %d, Foodtrack: %d, Food: %d, Tools: %s, One-time tools: %s
 Resources: %s
-huts: %s    
-score: %d\n""" % (self.colorOS, self.color.name, self.colorOSnormal, self.getPersonCount(), self.getFoodTrack(), self.resources.count(Resource.food), self.toolbox, 
+Hutcount: %d    
+score: %d\n""" % (self.colorOS, self.color.name, self.colorOSnormal, \
+                  self.getPersonCount(), self.getFoodTrack(), self.resources.count(Resource.food), self.toolbox, self.oneTimeTools,  
                   Resource.coloredOutput(sorted(self.getNonFood())), 
-                  ",".join([str(hut) for hut in self.huts]), self.getScore())
+                  len(self.huts), \
+                  self.getScore())
 

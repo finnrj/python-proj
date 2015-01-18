@@ -18,16 +18,16 @@ class PlayerTest(unittest.TestCase):
         self.assertEquals(PlayerColor.Blue, self.bluePlayer.getColor())
 
     def testOutputColor(self):
-        self.assertEquals("\x1b[1;31mRed\x1b[0m", self.redPlayer.getOutputColor())
-        self.assertEquals("\x1b[1;34mBlue\x1b[0m", self.bluePlayer.getOutputColor())
+        self.assertEquals("\x1b[48;5;9mRed\x1b[0m", self.redPlayer.getOutputColor())
+        self.assertEquals("\x1b[48;5;33mBlue\x1b[0m", self.bluePlayer.getOutputColor())
 
     def testgetAbr(self):
         self.assertEquals("r", self.redPlayer.getAbr())
         self.assertEquals("b", self.bluePlayer.getAbr())
 
     def testgetOutputAbr(self):
-        self.assertEquals("\x1b[1;31mr\x1b[0m", self.redPlayer.getOutputAbr())
-        self.assertEquals("\x1b[1;34mb\x1b[0m", self.bluePlayer.getOutputAbr())
+        self.assertEquals("\x1b[48;5;9mr\x1b[0m", self.redPlayer.getOutputAbr())
+        self.assertEquals("\x1b[48;5;33mb\x1b[0m", self.bluePlayer.getOutputAbr())
 
     def testScore(self):
         self.assertEquals(0, self.redPlayer.getScore())

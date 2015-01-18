@@ -66,9 +66,9 @@ class Game(object):
 
     def doPrintPlayers(self, heading, scoreFunc):
         print(heading)
-        maximalLength = max(len(player.getOutputColor()) for player in self.players)
+        maximalColorLength = max(len(player.getColor().name) for player in self.players)
         for player in self.getPlayers():
-            print(("%-" + str(maximalLength) + "s : %s (%s)")  % (player.getOutputColor(), scoreFunc(player) , player.getStrategy()))
+            print("%s : %s (%s)"  % (player.getOutputColor(maximalColorLength), scoreFunc(player) , player.getStrategy()))            
     
     def printPlayers(self):
         self.doPrintPlayers("Players:", lambda p: "")

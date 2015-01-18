@@ -252,7 +252,8 @@ and the following Resource%s: %s
             player.buyHut(hut, self.chooseResourecestoPay(player.getNonFood(), hut))
             
     def chooseResourecestoPay(self, nonFoodResources, hut):
-        promptString = "\nchoose resources (format='wcsgj...') to pay the hut: %s\n available resources: %s " % (str(hut), str(nonFoodResources))
+        promptString = "\nchoose resources (format='wcsgj...') to pay the hut: %s\n available resources: %s " % (str(hut), 
+                                                                                                                 Resource.coloredOutput(nonFoodResources))
 
         finished = False
         while not finished:
@@ -338,8 +339,6 @@ and the following Resource%s: %s
 
     def chooseChristmas(self, player, presents):
         stringPresents = "%s" % (", ".join([present.name for present in presents]))  
-#         stringPresents = stringPresents.replace("7", "(t)ool")
-#         stringPresents = stringPresents.replace("8", "(f)ood track")
         promptString = """\nChoose Resource for Christmas from %s, index: 1-%d""" % (stringPresents, len(presents))
         finished = False
         while not finished:

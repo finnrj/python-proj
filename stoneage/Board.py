@@ -224,7 +224,7 @@ class Board:
         return [len(stack) for stack in self.hutStacks].count(0) > 0
     
     def hutStacksString(self):
-        stackstrings = ["%s" % ("[" * (len(stack)-1) + (str(stack[-1]))) for stack in self.hutStacks if len(stack) > 0]
+        stackstrings = ["%s" % ("|" * (len(stack)-1) + (str(stack[-1])))  for stack in self.hutStacks if len(stack) > 0]
         hutstacks = ["%d: %-25s" % (idx + 1, s) for idx, s in enumerate(stackstrings)]
         return "%s\n%s" % ("  ".join(hutstacks[:2]), "  ".join(hutstacks[2:])) 
     
