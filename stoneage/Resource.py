@@ -23,7 +23,7 @@ class Resource(IntEnum):
                         Resource.wood:  "48;5;130",
                         Resource.clay:  "48;5;173",
                         Resource.stone: "48;5;7",
-                        Resource.gold:  "48;5;11",
+                        Resource.gold:  "48;5;220",
                         Resource.joker: "48;5;30"}
         return "\033[%sm%s\033[0m" % (outputColors[self], self._name_)
     

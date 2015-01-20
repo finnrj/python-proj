@@ -223,6 +223,11 @@ class Board:
     def isFinished(self):
         return [len(stack) for stack in self.hutStacks].count(0) > 0
     
+    def cardPileString(self):
+        pilestrings = ["%s" % str(card) for card in self.cardPile[:4]]
+        cards = ["price: %d: %-25s" % (4 - idx, s) for idx, s in enumerate(pilestrings)]
+        return "%s\n%s" % ("  ".join(cards[:2]), "  ".join(cards[2:])) 
+    
     def hutStacksString(self):
         stackstrings = ["%s" % ("|" * (len(stack)-1) + (str(stack[-1])))  for stack in self.hutStacks if len(stack) > 0]
         hutstacks = ["%d: %-25s" % (idx + 1, s) for idx, s in enumerate(stackstrings)]
@@ -230,7 +235,8 @@ class Board:
     
     def __str__(self):
         return "Hut Stacks: \n%s" % self.hutStacksString() + "\n" +\
-             "\n".join(str(ground) for ground in self.grounds) + "\n"
+            "Cards: \n%s" % self.cardPileString() + "\n" +\
+            "\n".join(str(ground) for ground in self.grounds) + "\n"
 
 def main():
     pass

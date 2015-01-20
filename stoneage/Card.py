@@ -16,6 +16,7 @@ class CardMultiplier(Enum):
 class Card:
     
     def __init__(self, symbol, action, number):
+        self.player = None
         self.symbol = symbol
         self.action = action
         self.number = number
@@ -56,19 +57,48 @@ class Card:
         
     def getSymbol(self):
         return self.symbol
+    
+    def placePerson(self, player):
+        if self.isOccupied():
+            from Board import PlacementError
+            raise PlacementError("card is already occupied")
+        self.player = player
+
+    def removePerson(self):
+        self.player = None
+
+    def isOccupied(self):
+        return self.player != None
+
+    def isOccupiedBy(self):
+        return self.player
+
 
     
 class SymbolCard(Card):
     def __init__(self, symbol, action, number):
         Card.__init__(self, symbol, action, number)
+        self.color = "48;5;118"
+
+    def outputString(self):
+        return "action: %s, number: %d, symbol: %s" % (self.action.name, self.number, self.symbol.name)
+        
+    def __str__(self):
+        return "\033[%sm%s\033[0m" % (self.color, self.outputString())
 
 class MultiplierCard(Card):
     def __init__(self, symbol, multiplier, action, number):
         Card.__init__(self, symbol, action, number)
         self.multiplier = multiplier
+        self.color = "48;5;136"
         
     def getMultiplier(self):
         return self.multiplier
     
+    def outputString(self):
+        return "action: %s, %d x %s" % (self.action.name, self.multiplier, self.symbol.name)
+    
+    def __str__(self):
+        return "\033[%sm%s\033[0m" % (self.color, self.outputString())
     
     
