@@ -23,35 +23,35 @@ class CardTest(unittest.TestCase):
         self.weaveCard1 = SymbolCard(CardSymbol.weaving, CardAction.food, 1)
         
         self.timeCardc = SymbolCard(CardSymbol.time, CardAction.christmas, 0)
-        self.timeCardft = SymbolCard(CardSymbol.time, CardAction.farmer, 1)
+        self.timeCardft = SymbolCard(CardSymbol.time, CardAction.foodtrack, 1)
         
         self.healCard5 = SymbolCard(CardSymbol.healing, CardAction.food, 5)
-        self.healCard2 = SymbolCard(CardSymbol.healing, CardAction.joker, 2)
+        self.healCard2 = SymbolCard(CardSymbol.healing, CardAction.resource, 2)
         
         self.transCard2 = SymbolCard(CardSymbol.transport, CardAction.stone, 2)
         
-        self.musicCard = SymbolCard(CardSymbol.music, CardAction.score, 3)
+        self.musicCard = SymbolCard(CardSymbol.music, CardAction.point, 3)
         
         self.artCard = SymbolCard(CardSymbol.art, CardAction.tool, 1)
         self.artCardg = SymbolCard(CardSymbol.art, CardAction.roll, 6)
         
         self.writingCard = SymbolCard(CardSymbol.writing, CardAction.extracard, 1)
         
-        self.hutBuilderCard = MultiplierCard(CardMultiplier.hutBuilder, 1, CardAction.christmas, 0)
-        self.hutBuilderCard2 = MultiplierCard(CardMultiplier.hutBuilder, 2, CardAction.christmas, 0)
-        self.hutBuilderCard3 = MultiplierCard(CardMultiplier.hutBuilder, 3, CardAction.score, 3)
+        self.hutBuilderCard = MultiplierCard(CardMultiplier.hutcount, 1, CardAction.christmas, 0)
+        self.hutBuilderCard2 = MultiplierCard(CardMultiplier.hutcount, 2, CardAction.christmas, 0)
+        self.hutBuilderCard3 = MultiplierCard(CardMultiplier.hutcount, 3, CardAction.point, 3)
 
-        self.farmerCard = MultiplierCard(CardMultiplier.farmer, 1, CardAction.stone, 1)
-        self.farmerCard2 = MultiplierCard(CardMultiplier.farmer, 1, CardAction.farmer, 1)
-        self.farmerCard3 = MultiplierCard(CardMultiplier.farmer, 2, CardAction.food, 3)        
+        self.farmerCard = MultiplierCard(CardMultiplier.foodtrack, 1, CardAction.stone, 1)
+        self.farmerCard2 = MultiplierCard(CardMultiplier.foodtrack, 1, CardAction.foodtrack, 1)
+        self.farmerCard3 = MultiplierCard(CardMultiplier.foodtrack, 2, CardAction.food, 3)        
 
-        self.toolMakerCard = MultiplierCard(CardMultiplier.toolMaker, 1, CardAction.oneTimeTool, 3)        
-        self.toolMakerCard2 = MultiplierCard(CardMultiplier.toolMaker, 1, CardAction.oneTimeTool, 4)
-        self.toolMakerCard3= MultiplierCard(CardMultiplier.toolMaker, 2, CardAction.oneTimeTool, 2)
+        self.toolMakerCard = MultiplierCard(CardMultiplier.toolsum, 1, CardAction.onetimetool, 3)        
+        self.toolMakerCard2 = MultiplierCard(CardMultiplier.toolsum, 1, CardAction.onetimetool, 4)
+        self.toolMakerCard3= MultiplierCard(CardMultiplier.toolsum, 2, CardAction.onetimetool, 2)
     
-        self.shamanCard = MultiplierCard(CardMultiplier.shaman, 1, CardAction.stone, 1)
-        self.shamanCard2 = MultiplierCard(CardMultiplier.shaman, 1, CardAction.gold, 1)
-        self.shamanCard3 = MultiplierCard(CardMultiplier.shaman, 2, CardAction.roll, 3)
+        self.shamanCard = MultiplierCard(CardMultiplier.personcount, 1, CardAction.stone, 1)
+        self.shamanCard2 = MultiplierCard(CardMultiplier.personcount, 1, CardAction.gold, 1)
+        self.shamanCard3 = MultiplierCard(CardMultiplier.personcount, 2, CardAction.roll, 3)
             
     def testCardGetSymbol(self):
         self.assertEqual(CardSymbol.pottery, self.potCard.getSymbol())
@@ -149,7 +149,7 @@ class CardTest(unittest.TestCase):
         self.assertEqual(12, self.activePlayer.getCardScore())
 
     def testFarmerCards(self):
-        self.activePlayer.addResources([Resource.farmer, Resource.farmer])
+        self.activePlayer.addResources([Resource.foodtrack, Resource.foodtrack])
         self.assertEqual(0, self.activePlayer.getCardScore())
         self.activePlayer.addCard(self.farmerCard, self.players, self.cardPile)
         self.assertEqual(2, self.activePlayer.getCardScore())

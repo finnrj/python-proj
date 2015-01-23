@@ -44,9 +44,9 @@ class PlayerTest(unittest.TestCase):
         self.redPlayer.addResources([Resource.tool,Resource.tool])
         self.assertEquals(9, self.redPlayer.secondScoreCriteria())
         
-        self.redPlayer.addResources([Resource.farmer,Resource.farmer])
+        self.redPlayer.addResources([Resource.foodtrack,Resource.foodtrack])
         self.assertEquals(11, self.redPlayer.secondScoreCriteria())
-        self.redPlayer.addResources([Resource.farmer,Resource.farmer])
+        self.redPlayer.addResources([Resource.foodtrack,Resource.foodtrack])
         self.assertEquals(13, self.redPlayer.secondScoreCriteria())
         
         self.redPlayer.addResources([Resource.person])

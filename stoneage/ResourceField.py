@@ -122,7 +122,7 @@ class Farm(ResourceField):
         ResourceField.__init__(self)        
         self.name = "Farm (a)"
         self.abreviation = 'a'
-        self.resource = Resource.farmer
+        self.resource = Resource.foodtrack
         self.maxPersons = 1
         
     def addPerson(self, player):

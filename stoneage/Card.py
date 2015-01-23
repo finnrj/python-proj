@@ -5,13 +5,13 @@ from Resource import Resource
 
 
 class CardAction(Enum):
-    christmas, clay, extracard, farmer, food, gold, joker, oneTimeTool, roll, score, stone, tool  = range(1, 13)
+    christmas, clay, extracard, foodtrack, food, gold, resource, onetimetool, roll, point, stone, tool  = range(1, 13)
 
 class CardSymbol(Enum):
     weaving, time, healing, art, pottery, transport, music, writing = range(1,9)
      
 class CardMultiplier(Enum):
-    hutBuilder, farmer, toolMaker, shaman = range(1,5)
+    hutcount, foodtrack, toolsum, personcount = range(1,5)
     
 class Card:
     
@@ -31,21 +31,21 @@ class Card:
             activePlayer.addResources([Resource.clay])
         elif self.action == CardAction.extracard:
             activePlayer.cards.append(cardPile.pop())
-        elif self.action == CardAction.farmer:
-            activePlayer.addResources([Resource.farmer])
+        elif self.action == CardAction.foodtrack:
+            activePlayer.addResources([Resource.foodtrack])
         elif self.action == CardAction.food:
             activePlayer.addResources(self.number * [Resource.food])
         elif self.action == CardAction.gold:
             activePlayer.addResources([Resource.gold])
-        elif self.action == CardAction.joker:
+        elif self.action == CardAction.resource:
             activePlayer.addResources(self.number *  [Resource.joker])
-        elif self.action == CardAction.oneTimeTool:
-            pass
+        elif self.action == CardAction.onetimetool:
+            activePlayer.addOneTimeTool(self.number)
         elif self.action == CardAction.roll:
             eyes = sum([randint(1, 6) for dice in ["first", "second"]])
             numberOfResources = int((eyes + activePlayer.toolsToUse(self.number, eyes))/self.number)
             activePlayer.addResources(numberOfResources * [self.number])
-        elif self.action == CardAction.score:
+        elif self.action == CardAction.point:
             activePlayer.addScore (self.number)
         elif self.action == CardAction.stone:
             activePlayer.addResources(self.number * [Resource.stone])
@@ -72,19 +72,31 @@ class Card:
 
     def isOccupiedBy(self):
         return self.player
-
-
+    
+    def actionString(self):
+        if self.action == CardAction.christmas:
+            return "%s" % (self.action.name)
+        if self.action in [CardAction.clay, CardAction.stone, CardAction.gold, CardAction.extracard, CardAction.food]:
+            return "%d %s" % (self.number, self.action.name)
+        if self.action in [CardAction.foodtrack, CardAction.tool]:
+            return "+1 %s" % (self.action.name)
+        if self.action in [CardAction.resource, CardAction.point]:
+            return "%d %ss" % (self.number, self.action.name)
+        if self.action == CardAction.onetimetool:
+            return "OT-tool: %d" % (self.number)
+        if self.action == CardAction.roll:
+            return "%s for %s" % (self.action.name, Resource.getByValue(self.number))
     
 class SymbolCard(Card):
     def __init__(self, symbol, action, number):
         Card.__init__(self, symbol, action, number)
         self.color = "48;5;118"
 
-    def outputString(self):
-        return "action: %s, number: %d, symbol: %s" % (self.action.name, self.number, self.symbol.name)
+    def outputStrings(self):
+        return ["\033[%sm%-15s\033[0m" % (self.color,s) for s in (padString(self.actionString()), padString("%s" %  self.symbol.name))]
         
     def __str__(self):
-        return "\033[%sm%s\033[0m" % (self.color, self.outputString())
+        return "\033[%sm%s\033[0m" % (self.color, ", ".join(self.outputStrings()))
 
 class MultiplierCard(Card):
     def __init__(self, symbol, multiplier, action, number):
@@ -95,10 +107,13 @@ class MultiplierCard(Card):
     def getMultiplier(self):
         return self.multiplier
     
-    def outputString(self):
-        return "action: %s, %d x %s" % (self.action.name, self.multiplier, self.symbol.name)
+    def outputStrings(self):
+        return ["\033[%sm%-15s\033[0m" % (self.color,s) for s in (padString(self.actionString()), padString("%d x %s" % (self.multiplier, self.symbol.name)))]
     
     def __str__(self):
-        return "\033[%sm%s\033[0m" % (self.color, self.outputString())
+        return "\033[%sm%s\033[0m" % (self.color, ", ".join(self.outputStrings()))
     
+def padString(target, width = 15):
+    return ((width - len(target))//2) * " " + target
+
     

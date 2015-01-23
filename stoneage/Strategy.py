@@ -45,17 +45,17 @@ class StupidBot(Strategy):
             return
     
         # check huts
-        payableHut = self.fetchPayableHut(board.availableHuts(), player.resources[:])
+        payableHut = self.fetchPayableHut(board.availableHuts(), player.joker[:])
         if payableHut is not None:
             board.placeOnHut(payableHut, player)
-            self.updatePlannedCosts(payableHut, player.resources[:])
+            self.updatePlannedCosts(payableHut, player.joker[:])
             return
         # place on resources
-        if player.resources.count(Resource.wood) < 2 and board.freeForestSlots() > 0:
+        if player.joker.count(Resource.wood) < 2 and board.freeForestSlots() > 0:
             board.addLumberjacks(min(player.personsLeft(board), board.freeForestSlots()) , player)
-        elif player.resources.count(Resource.clay) < 2 and board.freeClayPitSlots() > 0:
+        elif player.joker.count(Resource.clay) < 2 and board.freeClayPitSlots() > 0:
             board.addClayDiggers(min(player.personsLeft(board), board.freeClayPitSlots()), player)
-        elif player.resources.count(Resource.stone) < 2 and board.freeQuarrySlots() > 0:
+        elif player.joker.count(Resource.stone) < 2 and board.freeQuarrySlots() > 0:
             board.addStoneDiggers(min(player.personsLeft(board), board.freeQuarrySlots()), player)
         elif board.freeRiverSlots() > 0:
             board.addGoldDiggers(min(player.personsLeft(board), board.freeRiverSlots()), player)
@@ -181,7 +181,7 @@ and the following Resource%s: %s
     def placePersons(self, player, board):
         personsLeft = player.personsLeft(board)
         try:
-            resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.resources.count(Resource.food), player.getNonFood(), personsLeft)
+            resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.joker.count(Resource.food), player.getNonFood(), personsLeft)
             if not resource in "hfwcsgtab":
                 raise PlacementError("illegal character: "+resource)
             elif resource not in "tab" and number == 0:

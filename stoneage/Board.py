@@ -43,39 +43,39 @@ class Board:
         self.cardPile = [SymbolCard(CardSymbol.weaving, CardAction.food, 3), 
                          SymbolCard(CardSymbol.weaving, CardAction.food, 1),
                          SymbolCard(CardSymbol.time, CardAction.christmas, 0), 
-                         SymbolCard(CardSymbol.time, CardAction.farmer, 1),
+                         SymbolCard(CardSymbol.time, CardAction.foodtrack, 1),
                          SymbolCard(CardSymbol.healing, CardAction.food, 5), 
-                         SymbolCard(CardSymbol.healing, CardAction.joker, 2),
+                         SymbolCard(CardSymbol.healing, CardAction.resource, 2),
                          SymbolCard(CardSymbol.art, CardAction.tool, 1), 
                          SymbolCard(CardSymbol.art, CardAction.roll, 6),
                          SymbolCard(CardSymbol.pottery, CardAction.food, 7), 
                          SymbolCard(CardSymbol.pottery, CardAction.christmas, 0), 
                          SymbolCard(CardSymbol.transport, CardAction.stone, 2), 
                          SymbolCard(CardSymbol.transport, CardAction.christmas, 0),
-                         SymbolCard(CardSymbol.music, CardAction.score, 3), 
-                         SymbolCard(CardSymbol.music, CardAction.score, 3),
+                         SymbolCard(CardSymbol.music, CardAction.point, 3), 
+                         SymbolCard(CardSymbol.music, CardAction.point, 3),
                          SymbolCard(CardSymbol.writing, CardAction.extracard, 1), 
                          SymbolCard(CardSymbol.writing, CardAction.christmas, 0),
-                         MultiplierCard(CardMultiplier.hutBuilder, 1, CardAction.christmas, 0),
-                         MultiplierCard(CardMultiplier.hutBuilder, 1, CardAction.food, 4),
-                         MultiplierCard(CardMultiplier.hutBuilder, 2, CardAction.christmas, 0),
-                         MultiplierCard(CardMultiplier.hutBuilder, 2, CardAction.food, 2),
-                         MultiplierCard(CardMultiplier.hutBuilder, 3, CardAction.score, 3),
-                         MultiplierCard(CardMultiplier.farmer, 1, CardAction.christmas, 0),
-                         MultiplierCard(CardMultiplier.farmer, 1, CardAction.farmer, 1),
-                         MultiplierCard(CardMultiplier.farmer, 1, CardAction.stone, 1),
-                         MultiplierCard(CardMultiplier.farmer, 2, CardAction.food, 3),
-                         MultiplierCard(CardMultiplier.farmer, 2, CardAction.christmas, 0),
-                         MultiplierCard(CardMultiplier.toolMaker, 2, CardAction.christmas, 0),
-                         MultiplierCard(CardMultiplier.toolMaker, 2, CardAction.christmas, 0),   
-                         MultiplierCard(CardMultiplier.toolMaker, 1, CardAction.oneTimeTool, 3),
-                         MultiplierCard(CardMultiplier.toolMaker, 1, CardAction.oneTimeTool, 4),
-                         MultiplierCard(CardMultiplier.toolMaker, 2, CardAction.oneTimeTool, 2),
-                         MultiplierCard(CardMultiplier.shaman, 1, CardAction.stone, 1),
-                         MultiplierCard(CardMultiplier.shaman, 1, CardAction.gold, 1),
-                         MultiplierCard(CardMultiplier.shaman, 2, CardAction.clay, 1),                                                                                      
-                         MultiplierCard(CardMultiplier.shaman, 2, CardAction.roll, 3),
-                         MultiplierCard(CardMultiplier.shaman, 1, CardAction.roll, 5),
+                         MultiplierCard(CardMultiplier.hutcount, 1, CardAction.christmas, 0),
+                         MultiplierCard(CardMultiplier.hutcount, 1, CardAction.food, 4),
+                         MultiplierCard(CardMultiplier.hutcount, 2, CardAction.christmas, 0),
+                         MultiplierCard(CardMultiplier.hutcount, 2, CardAction.food, 2),
+                         MultiplierCard(CardMultiplier.hutcount, 3, CardAction.point, 3),
+                         MultiplierCard(CardMultiplier.foodtrack, 1, CardAction.christmas, 0),
+                         MultiplierCard(CardMultiplier.foodtrack, 1, CardAction.foodtrack, 1),
+                         MultiplierCard(CardMultiplier.foodtrack, 1, CardAction.stone, 1),
+                         MultiplierCard(CardMultiplier.foodtrack, 2, CardAction.food, 3),
+                         MultiplierCard(CardMultiplier.foodtrack, 2, CardAction.christmas, 0),
+                         MultiplierCard(CardMultiplier.toolsum, 2, CardAction.christmas, 0),
+                         MultiplierCard(CardMultiplier.toolsum, 2, CardAction.christmas, 0),   
+                         MultiplierCard(CardMultiplier.toolsum, 1, CardAction.onetimetool, 3),
+                         MultiplierCard(CardMultiplier.toolsum, 1, CardAction.onetimetool, 4),
+                         MultiplierCard(CardMultiplier.toolsum, 2, CardAction.onetimetool, 2),
+                         MultiplierCard(CardMultiplier.personcount, 1, CardAction.stone, 1),
+                         MultiplierCard(CardMultiplier.personcount, 1, CardAction.gold, 1),
+                         MultiplierCard(CardMultiplier.personcount, 2, CardAction.clay, 1),                                                                                      
+                         MultiplierCard(CardMultiplier.personcount, 2, CardAction.roll, 3),
+                         MultiplierCard(CardMultiplier.personcount, 1, CardAction.roll, 5),
                          ]
         shuffle(self.cardPile)
 
@@ -223,19 +223,23 @@ class Board:
     def isFinished(self):
         return [len(stack) for stack in self.hutStacks].count(0) > 0
     
-    def cardPileString(self):
-        pilestrings = ["%s" % str(card) for card in self.cardPile[:4]]
-        cards = ["price: %d: %-25s" % (4 - idx, s) for idx, s in enumerate(pilestrings)]
-        return "%s\n%s" % ("  ".join(cards[:2]), "  ".join(cards[2:])) 
+    def cardPileStrings(self):
+        padding = 5 * " "
+        headingline = [padding.join(["%-15s" % s for s in ("       %d." % p for p in range(4, 0, -1))])]
+        pilestrings = [card.outputStrings() for card in self.cardPile[:4]]
+#         print("     ".join(["%s" % s for s in (l[0] for l in pilestrings)]))
+        cards = [padding.join(["%s" % s for s in (l[0] for l in pilestrings)]),
+                 padding.join(["%s" % s for s in (l[1] for l in pilestrings)])]
+        return headingline + cards 
     
     def hutStacksString(self):
         stackstrings = ["%s" % ("|" * (len(stack)-1) + (str(stack[-1])))  for stack in self.hutStacks if len(stack) > 0]
-        hutstacks = ["%d: %-25s" % (idx + 1, s) for idx, s in enumerate(stackstrings)]
+        hutstacks = ["h%d: %-25s" % (idx + 1, s) for idx, s in enumerate(stackstrings)]
         return "%s\n%s" % ("  ".join(hutstacks[:2]), "  ".join(hutstacks[2:])) 
-    
+        
     def __str__(self):
-        return "Hut Stacks: \n%s" % self.hutStacksString() + "\n" +\
-            "Cards: \n%s" % self.cardPileString() + "\n" +\
+        return "\nHut Stacks: \n%s" % self.hutStacksString() + "\n\n" +\
+            "Cards: \n%s\n%s\n%s" % (self.cardPileStrings()[0], self.cardPileStrings()[1], self.cardPileStrings()[2]) + "\n\n" +\
             "\n".join(str(ground) for ground in self.grounds) + "\n"
 
 def main():

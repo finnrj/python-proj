@@ -13,7 +13,7 @@ class Resource(IntEnum):
     stone = 5
     gold = 6
     tool = 7
-    farmer = 8
+    foodtrack = 8
     person = 9
     joker = 10
 
@@ -31,6 +31,12 @@ class Resource(IntEnum):
     def coloredOutput(clz,resources):
         return "[%s]" % ",".join([resource.getColoredName() for resource in resources])
 
+    @classmethod
+    def getByValue(clz,value):
+        for name, member in clz.__members__.items():
+            if member.value == value:
+                return name
+        return None
             
 if __name__ == '__main__':
     for name, resource in Resource.__members__.items():

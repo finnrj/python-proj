@@ -116,7 +116,7 @@ class ResourceTest(unittest.TestCase):
         self.assertEqual([], farmResource)
          
         farmResource = farm.reapResources(self.redPlayer)
-        self.assertEqual([Resource.farmer], farmResource)
+        self.assertEqual([Resource.foodtrack], farmResource)
          
     def testBreedingHut(self):
         breedingHut = BreedingHut()

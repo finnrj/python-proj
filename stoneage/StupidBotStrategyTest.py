@@ -80,20 +80,20 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.redPlayer.feed()
         self.redPlayer.feed()
         self.assertEqual(3, self.redPlayer.foodMissing())
-        self.redPlayer.addResources([Resource.farmer,Resource.farmer])
+        self.redPlayer.addResources([Resource.foodtrack,Resource.foodtrack])
         self.assertEqual(1, self.redPlayer.foodMissing())
     
     def testIsPayableBug(self):
         self.redPlayer.addResources([Resource.wood, Resource.wood, Resource.wood, Resource.wood, Resource.wood, Resource.clay, Resource.clay, Resource.stone, Resource.gold,])
         firstHut = CountHut(4, 2)
 
-        self.redPlayer.strategy.updatePlannedCosts(firstHut, self.redPlayer.resources)
+        self.redPlayer.strategy.updatePlannedCosts(firstHut, self.redPlayer.joker)
         
         self.assertDictEqual({firstHut : [Resource.wood,Resource.clay,Resource.wood,Resource.wood]}, self.redPlayer.strategy.plannedCosts)
         
         secondHut = CountHut(4, 3)
         self.assertTrue(self.redPlayer.isPayable(secondHut))
-        self.redPlayer.strategy.updatePlannedCosts(secondHut, self.redPlayer.resources)
+        self.redPlayer.strategy.updatePlannedCosts(secondHut, self.redPlayer.joker)
 
         self.assertDictEqual({firstHut : [Resource.wood,Resource.clay,Resource.wood,Resource.wood], secondHut : [Resource.wood,Resource.clay,Resource.stone,Resource.wood]}, self.redPlayer.strategy.plannedCosts)
         
@@ -110,29 +110,29 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.redPlayer.strategy.plannedCosts = {hut1 : [Resource.wood,Resource.wood,Resource.clay], 
                                              hut2 : [Resource.wood,Resource.clay,Resource.stone]}
         
-        self.assertEqual(0, self.redPlayer.score)
+        self.assertEqual(0, self.redPlayer.point)
         self.redPlayer.buyHuts([hut1, hut2])
-        self.assertEqual(22, self.redPlayer.score)
+        self.assertEqual(22, self.redPlayer.point)
         
     def testFoodTrack(self):
         self.assertEqual(0, self.redPlayer.getFoodTrack())
-        self.redPlayer.addResources([Resource.farmer])
+        self.redPlayer.addResources([Resource.foodtrack])
         self.assertEqual(1, self.redPlayer.getFoodTrack())
         
-        self.redPlayer.addResources([Resource.wood,Resource.wood,Resource.farmer])
+        self.redPlayer.addResources([Resource.wood,Resource.wood,Resource.foodtrack])
         self.assertEqual(2, self.redPlayer.getFoodTrack())
         self.assertEqual([Resource.wood,Resource.wood], self.redPlayer.getNonFood())
         
-        self.redPlayer.addResources([Resource.clay,Resource.farmer,Resource.farmer,Resource.wood])
+        self.redPlayer.addResources([Resource.clay,Resource.foodtrack,Resource.foodtrack,Resource.wood])
         self.assertEqual(4, self.redPlayer.getFoodTrack())
         self.assertListEqual(sorted([Resource.wood,Resource.wood,Resource.clay,Resource.wood]), self.redPlayer.getNonFood())
         
     def testFoodTrackMaximum(self):
         self.assertEqual(0, self.redPlayer.getFoodTrack())
-        self.redPlayer.addResources(10 * [Resource.farmer])
+        self.redPlayer.addResources(10 * [Resource.foodtrack])
         self.assertEqual(10, self.redPlayer.getFoodTrack())
 
-        self.redPlayer.addResources([Resource.farmer])
+        self.redPlayer.addResources([Resource.foodtrack])
         self.assertEqual(10, self.redPlayer.getFoodTrack())
 
     def testBreeding(self):
@@ -144,7 +144,7 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.assertEqual(5, self.redPlayer.getPersonCount())
         self.redPlayer.person = 10
 
-        self.redPlayer.addResources([Resource.farmer])
+        self.redPlayer.addResources([Resource.foodtrack])
         self.assertEqual(10, self.redPlayer.getPersonCount())
 
     def testPlaceOnBreedingHut(self):
@@ -276,7 +276,7 @@ class StupidBotStrategyTest(unittest.TestCase):
     def testChooseChristmas(self):
         self.assertEqual(0, self.redPlayer.getFoodTrack())
         self.assertListEqual([Resource.wood, Resource.clay, Resource.tool],
-                             self.redPlayer.chooseChristmas([Resource.wood, Resource.clay, Resource.tool, Resource.farmer]))
+                             self.redPlayer.chooseChristmas([Resource.wood, Resource.clay, Resource.tool, Resource.foodtrack]))
         self.assertEqual(1, self.redPlayer.getFoodTrack())
         
         self.assertEqual([0,0,0], self.redPlayer.getTools())
