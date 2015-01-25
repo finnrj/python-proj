@@ -199,9 +199,9 @@ class Player():
 People: %d, Foodtrack: %d, Food: %d, Tools: %s, One-time tools: %s
 Resources: %s
 Hutcount: %d    
-score: %d\n""" % (self.colorOS, self.color.name, self.colorOSnormal, \
+score (cardscore): %d (%d)\n""" % (self.colorOS, self.color.name, self.colorOSnormal, \
                   self.getPersonCount(), self.getFoodTrack(), self.joker.count(Resource.food), self.toolbox, self.oneTimeTools,  
                   Resource.coloredOutput(sorted(self.getNonFood())), 
                   len(self.huts), \
-                  self.getScore())
+                  self.getScore(), self.getCardScore())
 

@@ -13,6 +13,7 @@ class CardTest(unittest.TestCase):
         self.activePlayer = Player(PlayerColor.Red, StupidBot())
         self.opponentBlue = Player(PlayerColor.Blue, StupidBot())
         self.opponentGreen = Player(PlayerColor.Green, StupidBot())
+        
         self.cardPile = [SymbolCard(CardSymbol.weaving, CardAction.food, 3), SymbolCard(CardSymbol.weaving, CardAction.food, 1)]
         
         self.players = [self.activePlayer, self.opponentBlue, self.opponentGreen]
@@ -199,6 +200,24 @@ class CardTest(unittest.TestCase):
         self.assertEqual(36 + 9, self.activePlayer.getCardScore())
         self.activePlayer.addCard(self.artCard, self.players, self.cardPile)
         self.assertEqual(49 + 9, self.activePlayer.getCardScore())
+        
+        
+    def testPlacePerson(self):
+        self.assertEqual(0, self.activePlayer.getCardScore())
+        
+        self.assertFalse(self.shamanCard.isOccupied())
+        self.assertIsNone(self.shamanCard.isOccupiedBy())
+                          
+        self.shamanCard.placePerson(self.activePlayer)
+        self.assertTrue(self.shamanCard.isOccupied())
+        self.assertEqual(self.activePlayer, self.shamanCard.isOccupiedBy())
+
+    def testPlacePersonTwice(self):
+        hut = SimpleHut(Resource.wood,Resource.wood,Resource.clay)
+        self.shamanCard.placePerson(self.activePlayer)
+        from Board import PlacementError
+        with self.assertRaisesRegex(PlacementError, "card is already occupied"):
+            self.shamanCard.placePerson(self.opponentBlue)
         
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(CardTest)

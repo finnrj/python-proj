@@ -43,6 +43,8 @@ class StupidBot(Strategy):
         if not board.toolSmithOccupied():
             board.placeOnToolSmith(player)
             return
+        
+        # check cards
     
         # check huts
         payableHut = self.fetchPayableHut(board.availableHuts(), player.joker[:])
@@ -182,16 +184,16 @@ and the following Resource%s: %s
         personsLeft = player.personsLeft(board)
         try:
             resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.joker.count(Resource.food), player.getNonFood(), personsLeft)
-            if not resource in "hfwcsgtab":
-                raise PlacementError("illegal character: "+resource)
+            if not resource in "chfwpsgtab":
+                raise PlacementError("illegal character: " + resource)
             elif resource not in "tab" and number == 0:
                 raise PlacementError("please place at least one person")
             elif resource == "b" and personsLeft < 2:
                 raise PlacementError("cannot breed with only %d person left" % (personsLeft))
-            elif resource != "h" and number > personsLeft:
+            elif resource not in "ch" and number > personsLeft:
                 raise PlacementError("cannot place %d persons with only %d left" % (number, personsLeft))
-            elif resource == "h" and  number > 4:
-                raise PlacementError("hut index has to be between 1 - 4, not %d" % (number))
+            elif resource in "ch" and  number > 4:
+                raise PlacementError("hut index/card price has to be between 1 - 4, not %d" % (number))
             self.processPlacePersonsInput(resource, number, player, board)
         except PlacementError as e:
             printError("ERROR: " + str(e))
@@ -206,13 +208,14 @@ and the following Resource%s: %s
     def processPlacePersonsInput(self, resource, number, player, board):
         if   resource == "f": board.addHunters(number, player)
         elif resource == "w": board.addLumberjacks(number, player)
-        elif resource == "c": board.addClayDiggers(number, player)
+        elif resource == "p": board.addClayDiggers(number, player)
         elif resource == "s": board.addStoneDiggers(number, player)
         elif resource == "g": board.addGoldDiggers(number, player)
         elif resource == "t": board.placeOnToolSmith(player)
         elif resource == "a": board.placeOnFarm(player)
         elif resource == "b": board.placeOnBreedingHut(player)
         elif resource == "h": board.placeOnHutIndex(number - 1, player)
+        elif resource == "c": board.placeOnCardWithPrice(number, player)
 
     def printResourceStatus(self, player):
         nonFood = player.getNonFood()

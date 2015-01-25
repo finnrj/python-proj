@@ -84,12 +84,12 @@ class BoardTest(unittest.TestCase):
         self.board.placeOnHut(hutForRed, self.redPlayer)
         self.board.placeOnHut(hutForBlue, self.bluePlayer)
         
-        huts = self.board.reapResources(self.players)
+        huts, cards = self.board.reapResources(self.players)
         self.assertEqual(1, len(huts))
         self.assertEqual([hutForRed], huts)
         self.players.reverse()
         
-        huts = self.board.reapResources(self.players)
+        huts, cards = self.board.reapResources(self.players)
         self.assertEqual([hutForBlue], huts)
 
     def testReapResourcesWithFarm(self):

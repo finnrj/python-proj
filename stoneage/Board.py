@@ -4,7 +4,8 @@ from Hut import SimpleHut, AnyHut, CountHut
 from random import shuffle
 from ResourceField import HuntingGrounds, Forest, ClayPit, Quarry, River, Farm,\
     BreedingHut, ToolSmith
-from Card import Card, MultiplierCard, SymbolCard, CardAction, CardMultiplier, CardSymbol
+from Card import Card, MultiplierCard, SymbolCard, CardAction, CardMultiplier, CardSymbol,\
+    padString
 from Resource import Resource
 
 class PlacementError(Exception):
@@ -167,11 +168,14 @@ class Board:
     def personsOnHuts(self, player):
         return [stack[-1].isOccupiedBy() for stack in self.hutStacks].count(player)
 
+    def personsOnCards(self, player):
+        return [card.isOccupiedBy() for card in self.openCards()].count(player)
+
     def personsOnGrounds(self, player):
         return sum([ground.count(player) for ground in self.grounds])
 
     def person(self, player):
-        return self.personsOnGrounds(player) + self.personsOnHuts(player)
+        return self.personsOnGrounds(player) + self.personsOnHuts(player) + self.personsOnCards(player)
     
     def resourceGrounds(self):
         return self.grounds[:-3]
@@ -180,42 +184,60 @@ class Board:
         return self.grounds[-3:]
     
     def occupiedCards(self, player):
-        return []
+        return [card for card in self.openCards() if card.isOccupiedBy() == player]
+    
+    def openCards(self):
+        return self.cardPile[:4]
+
+    def occupiedHuts(self, player):
+        return [stack[-1] for stack in self.hutStacks if len(stack) > 0 and stack[-1].isOccupiedBy() == player]    
     
     def numberOfCardsLeft(self):
         return len(self.cardPile)
     
     def reapResources(self, players):
-        player = players[0]
+        activePlayer = players[0]
         reapedResources = []
         for ground in self.villageGrounds():
-            player.addResources(ground.reapResources(player))
-
-        for card in self.occupiedCards(player):
-            player.addCard(players)
+            activePlayer.addResources(ground.reapResources(activePlayer))
 
 #       get occupied grounds
         occupiedGrounds = {} 
         for ground in self.resourceGrounds():
-            if ground.count(player):
+            if ground.count(activePlayer):
                 occupiedGrounds[ground.abreviation] = ground
         while len(occupiedGrounds):
-            resourceAbr = player.chooseReapingResource("".join(occupiedGrounds.keys()))
-            player.addResources(occupiedGrounds.pop(resourceAbr).reapResources(player))
+            resourceAbr = activePlayer.chooseReapingResource("".join(occupiedGrounds.keys()))
+            activePlayer.addResources(occupiedGrounds.pop(resourceAbr).reapResources(activePlayer))
                    
-        occupiedHuts = [stack[-1] for stack in self.hutStacks if len(stack) > 0 and stack[-1].isOccupiedBy() == player]
-        
+        for card in self.occupiedCards(activePlayer):
+            activePlayer.addCard(card, players, self.cardPile[4:])
+            
+        occupiedHuts = self.occupiedHuts(activePlayer)
         for hut in occupiedHuts:
             hut.removePerson()
-        return occupiedHuts
+            
+        occupiedCards = self.occupiedCards(activePlayer)
+        for card in occupiedCards:
+            card.removePerson()
+        
+        return occupiedHuts, occupiedCards
     
     
     def popHuts(self, huts):
         for hut in huts:
             [stack.pop() for stack in self.hutStacks if len(stack) > 0 and stack[-1] == hut]
         
+    def popCards(self, cards):
+        for card in cards:
+            if card in self.cardPile:
+                self.cardPile.remove(card)
+
     def placeOnHutIndex(self, stackIndex, color):
         self.upperHuts()[stackIndex].placePerson(color)
+
+    def placeOnCardWithPrice(self, price, color):
+        self.cardPile[4 - price].placePerson(color)
 
     def placeOnHut(self, hut, color):
         hut.placePerson(color)
@@ -225,8 +247,9 @@ class Board:
     
     def cardPileStrings(self):
         padding = 5 * " "
-        headingline = [padding.join(["%-15s" % s for s in ("       %d." % p for p in range(4, 0, -1))])]
-        pilestrings = [card.outputStrings() for card in self.cardPile[:4]]
+#         lines = [padString(("%d." % p), self.cardPile[4 - p].suffix() == "") + ("%s" % self.cardPile[4 - p].suffix()) for p in [4, 3, 2, 1])]]] 
+        headingline = [padding.join(["%-15s" % s for s in (padString(("%d." % p), self.cardPile[4 - p].isOccupied()) + ("%s" % self.cardPile[4 - p].suffix()) for p in [4, 3, 2, 1])])]
+        pilestrings = [card.outputStrings() for card in self.openCards()]
 #         print("     ".join(["%s" % s for s in (l[0] for l in pilestrings)]))
         cards = [padding.join(["%s" % s for s in (l[0] for l in pilestrings)]),
                  padding.join(["%s" % s for s in (l[1] for l in pilestrings)])]
@@ -241,6 +264,10 @@ class Board:
         return "\nHut Stacks: \n%s" % self.hutStacksString() + "\n\n" +\
             "Cards: \n%s\n%s\n%s" % (self.cardPileStrings()[0], self.cardPileStrings()[1], self.cardPileStrings()[2]) + "\n\n" +\
             "\n".join(str(ground) for ground in self.grounds) + "\n"
+            
+def padString(target, withSuffix = False, width = 15):
+    length = len(target) + 1 if withSuffix else len(target) 
+    return ((width - length)//2) * " " + target
 
 def main():
     pass

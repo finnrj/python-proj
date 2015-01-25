@@ -77,8 +77,8 @@ class ClayPit(ResourceField):
     def __init__(self):
         ResourceField.__init__(self)        
         self.resource = Resource.clay
-        self.name = "Clay pit (c)"
-        self.abreviation = 'c'
+        self.name = "Clay pit (p)"
+        self.abreviation = 'p'
         
 class Quarry(ResourceField):
     """Class to represent a stone Resource field on the board."""

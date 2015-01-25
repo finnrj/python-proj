@@ -86,6 +86,9 @@ class Card:
             return "OT-tool: %d" % (self.number)
         if self.action == CardAction.roll:
             return "%s for %s" % (self.action.name, Resource.getByValue(self.number))
+        
+    def suffix(self):
+        return self.isOccupied() and self.player.getOutputAbr() or ""
     
 class SymbolCard(Card):
     def __init__(self, symbol, action, number):
