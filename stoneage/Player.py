@@ -108,14 +108,18 @@ class Player():
 
     def buyHut(self, hut, payment):
         self.huts.append(hut)
-        self.executeHutPayment(payment)
+        self.removeResources(payment)
+        self.point += sum(payment)
+
+    def buyCards(self, cards, players, cardPile):
+        return self.strategy.buyCards(self, cards, players, cardPile)
+
+    def buyCard(self, card, players, cardPile, payment):
+        self.addCard(card, players, cardPile)
+        self.removeResources(payment)
 
     def isPayable(self, hut):
         return self.strategy.isPayable(hut, self.joker)
-
-    def executeHutPayment(self, payment):
-        self.removeResources(payment)
-        self.point += sum(payment)
 
     def addCard(self, card, players, cardPile):
         self.cards.append(card)
@@ -198,10 +202,12 @@ class Player():
         return """%s%s%s
 People: %d, Foodtrack: %d, Food: %d, Tools: %s, One-time tools: %s
 Resources: %s
-Hutcount: %d    
+Hutcount: %d
+Cardcount: %d    
 score (cardscore): %d (%d)\n""" % (self.colorOS, self.color.name, self.colorOSnormal, \
                   self.getPersonCount(), self.getFoodTrack(), self.joker.count(Resource.food), self.toolbox, self.oneTimeTools,  
                   Resource.coloredOutput(sorted(self.getNonFood())), 
                   len(self.huts), \
+                  len(self.cards), \
                   self.getScore(), self.getCardScore())
 

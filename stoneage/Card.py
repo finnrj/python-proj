@@ -30,7 +30,8 @@ class Card:
         elif self.action == CardAction.clay:
             activePlayer.addResources([Resource.clay])
         elif self.action == CardAction.extracard:
-            activePlayer.cards.append(cardPile.pop())
+            if len(cardPile) > 4:
+                activePlayer.cards.append(cardPile.pop(4))
         elif self.action == CardAction.foodtrack:
             activePlayer.addResources([Resource.foodtrack])
         elif self.action == CardAction.food:
@@ -44,7 +45,7 @@ class Card:
         elif self.action == CardAction.roll:
             eyes = sum([randint(1, 6) for dice in ["first", "second"]])
             numberOfResources = int((eyes + activePlayer.toolsToUse(self.number, eyes))/self.number)
-            activePlayer.addResources(numberOfResources * [self.number])
+            activePlayer.addResources(numberOfResources * [Resource.getByValue(self.number)])
         elif self.action == CardAction.point:
             activePlayer.addScore (self.number)
         elif self.action == CardAction.stone:
@@ -85,7 +86,7 @@ class Card:
         if self.action == CardAction.onetimetool:
             return "OT-tool: %d" % (self.number)
         if self.action == CardAction.roll:
-            return "%s for %s" % (self.action.name, Resource.getByValue(self.number))
+            return "%s for %s" % (self.action.name, Resource.getByValue(self.number).name)
         
     def suffix(self):
         return self.isOccupied() and self.player.getOutputAbr() or ""

@@ -33,9 +33,9 @@ class Resource(IntEnum):
 
     @classmethod
     def getByValue(clz,value):
-        for name, member in clz.__members__.items():
+        for member in clz.__members__.values():
             if member.value == value:
-                return name
+                return member
         return None
             
 if __name__ == '__main__':

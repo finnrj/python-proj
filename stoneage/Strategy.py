@@ -75,6 +75,9 @@ class StupidBot(Strategy):
             if self.isPayable(hut, nonPlannedResources):
                 return hut
         return None
+
+    def buyCards(self, player, cards, players, cardPile):
+        return cards
     
     def updatePlannedCosts(self, hut, resources):
         self.plannedCosts[hut] = hut.costs(self.nonPlannedResources(resources))
@@ -221,6 +224,28 @@ and the following Resource%s: %s
         nonFood = player.getNonFood()
         print("available Resource%s: %s " % (suffix(nonFood), Resource.coloredOutput(nonFood)))
 
+    def buyCards(self, player, cards, players, cardPile):
+        if cards:
+            print("You have placed on following card%s: " % suffix(cards) + " ".join(str(card[0]) for card in cards))
+        return self.doBuyCards(player, cards, [], players, cardPile)
+    
+    def doBuyCards(self, player, cards, boughtCards, players, cardPile):
+        for card in cards:
+            if self.wantsToBuy("card", card[0]):
+                player.buyCard(card[0], players, cardPile, player.getNonFood()[:card[1]])
+                boughtCards.append(card[0])
+        return boughtCards 
+    
+#         if not payableHuts:
+#             return boughtHuts
+#         else:
+#             self.printResourceStatus(player)
+#             hut = payableHuts.pop()
+#             if self.wantsToBuy(hut):
+#                 self.buyHut(player, hut)
+#                 boughtHuts.append(hut)
+#             return self.doBuyHuts(player, self.filterOutPayableHuts(player, payableHuts), boughtHuts)
+
     def buyHuts(self, player, huts):
         if huts:
             print("You have placed on following hut%s: " % suffix(huts) + " ".join(str(hut) for hut in huts))
@@ -232,13 +257,13 @@ and the following Resource%s: %s
         else:
             self.printResourceStatus(player)
             hut = payableHuts.pop()
-            if self.wantsToBuy(hut):
+            if self.wantsToBuy("hut", hut):
                 self.buyHut(player, hut)
                 boughtHuts.append(hut)
             return self.doBuyHuts(player, self.filterOutPayableHuts(player, payableHuts), boughtHuts)
         
-    def wantsToBuy(self, hut):
-        return fetchConvertedInput("do you want to buy this hut (y|n): %s ? (y) " % str(hut),
+    def wantsToBuy(self, outstring, hutOrCard):
+        return fetchConvertedInput("do you want to buy this %s (y|n): %s ? (y) " % (outstring, str(hutOrCard)),
                                    lambda v: printfString("please answer y(es) or n(o) - not: '%s'", v),
                                    yesNo) 
         
@@ -342,7 +367,7 @@ and the following Resource%s: %s
 
     def chooseChristmas(self, player, presents):
         stringPresents = "%s" % (", ".join([present.name for present in presents]))  
-        promptString = """\nChoose Resource for Christmas from %s, index: 1-%d""" % (stringPresents, len(presents))
+        promptString = """\nChoose Resource for Christmas from %s, index: 1-%d  """ % (stringPresents, len(presents))
         finished = False
         while not finished:
             inputString = input(promptString).lower()

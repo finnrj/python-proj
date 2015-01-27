@@ -14,7 +14,11 @@ class CardTest(unittest.TestCase):
         self.opponentBlue = Player(PlayerColor.Blue, StupidBot())
         self.opponentGreen = Player(PlayerColor.Green, StupidBot())
         
-        self.cardPile = [SymbolCard(CardSymbol.weaving, CardAction.food, 3), SymbolCard(CardSymbol.weaving, CardAction.food, 1)]
+        self.cardPile = [SymbolCard(CardSymbol.weaving, CardAction.food, 3), 
+                         SymbolCard(CardSymbol.weaving, CardAction.food, 1),
+                         MultiplierCard(CardMultiplier.hutcount, 1, CardAction.christmas, 0),
+                         MultiplierCard(CardMultiplier.foodtrack, 1, CardAction.stone, 1),
+                         MultiplierCard(CardMultiplier.personcount, 1, CardAction.stone, 1)]
         
         self.players = [self.activePlayer, self.opponentBlue, self.opponentGreen]
         
@@ -127,13 +131,30 @@ class CardTest(unittest.TestCase):
         self.activePlayer.addCard(self.artCardg, self.players, self.cardPile)
         self.assertTrue(len(self.activePlayer.getNonFood()) > 0)
         self.assertTrue(len(self.activePlayer.getNonFood()) < 3)
-        self.assertTrue(Resource.gold in self.activePlayer.getNonFood())
+        self.assertIn(Resource.gold, self.activePlayer.getNonFood())
+        self.assertIsInstance(self.activePlayer.getNonFood()[0], Resource) 
         
     def testExtraCardCard(self):
         self.assertEqual(0, len(self.activePlayer.cards))
+        self.assertEqual(5, len(self.cardPile))
+        self.assertEqual(0, self.activePlayer.getScore())
+        self.assertEqual(0, len(self.activePlayer.getNonFood()))
         self.activePlayer.addCard(self.writingCard, self.players, self.cardPile)
         self.assertEqual(2, len(self.activePlayer.cards))
+        self.assertEqual(4, len(self.cardPile))
+        # 1 symbolcard + 1 x persons
+        self.assertEqual(6, self.activePlayer.getCardScore())
+        # no stone added from extracard
+        self.assertEqual(0, len(self.activePlayer.getNonFood()))
         
+    def testExtraCardCardWithTooFewCardsLeft(self):
+        self.assertEqual(0, len(self.activePlayer.cards))
+        cardPile = self.cardPile[:4]
+        self.assertEqual(4, len(cardPile))
+        self.activePlayer.addCard(self.writingCard, self.players, cardPile)
+        self.assertEqual(1, len(self.activePlayer.cards))
+        self.assertEqual(4, len(cardPile))
+
     def testHutBuildersCards(self):
         self.activePlayer.huts.append(SimpleHut(Resource.wood, Resource.wood, Resource.clay))
         self.assertEqual(0, self.activePlayer.getCardScore())

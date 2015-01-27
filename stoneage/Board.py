@@ -184,7 +184,7 @@ class Board:
         return self.grounds[-3:]
     
     def occupiedCards(self, player):
-        return [card for card in self.openCards() if card.isOccupiedBy() == player]
+        return [(card, 4 - self.cardPile.index(card)) for card in self.openCards() if card.isOccupiedBy() == player]
     
     def openCards(self):
         return self.cardPile[:4]
@@ -210,16 +210,13 @@ class Board:
             resourceAbr = activePlayer.chooseReapingResource("".join(occupiedGrounds.keys()))
             activePlayer.addResources(occupiedGrounds.pop(resourceAbr).reapResources(activePlayer))
                    
-        for card in self.occupiedCards(activePlayer):
-            activePlayer.addCard(card, players, self.cardPile[4:])
-            
         occupiedHuts = self.occupiedHuts(activePlayer)
         for hut in occupiedHuts:
             hut.removePerson()
             
         occupiedCards = self.occupiedCards(activePlayer)
         for card in occupiedCards:
-            card.removePerson()
+            card[0].removePerson()
         
         return occupiedHuts, occupiedCards
     
@@ -228,7 +225,7 @@ class Board:
         for hut in huts:
             [stack.pop() for stack in self.hutStacks if len(stack) > 0 and stack[-1] == hut]
         
-    def popCards(self, cards):
+    def removeCards(self, cards):
         for card in cards:
             if card in self.cardPile:
                 self.cardPile.remove(card)
@@ -245,15 +242,14 @@ class Board:
     def isFinished(self):
         return [len(stack) for stack in self.hutStacks].count(0) > 0
     
-    def cardPileStrings(self):
-        padding = 5 * " "
-#         lines = [padString(("%d." % p), self.cardPile[4 - p].suffix() == "") + ("%s" % self.cardPile[4 - p].suffix()) for p in [4, 3, 2, 1])]]] 
-        headingline = [padding.join(["%-15s" % s for s in (padString(("%d." % p), self.cardPile[4 - p].isOccupied()) + ("%s" % self.cardPile[4 - p].suffix()) for p in [4, 3, 2, 1])])]
+    def opencardStrings(self):
+        padding6 = 6 * " "
+        headingline = padding6.join(["%s" % s for s in ("%s%d.%s%s" % (padding6, p, self.cardPile[4 - p].suffix(), padding6) for p in [4, 3, 2, 1])])
         pilestrings = [card.outputStrings() for card in self.openCards()]
-#         print("     ".join(["%s" % s for s in (l[0] for l in pilestrings)]))
-        cards = [padding.join(["%s" % s for s in (l[0] for l in pilestrings)]),
-                 padding.join(["%s" % s for s in (l[1] for l in pilestrings)])]
-        return headingline + cards 
+        result = [padding6.join(["%s" % s for s in (line[0] for line in pilestrings)]),
+                 padding6.join(["%s" % s for s in (line[1] for line in pilestrings)])]
+        result.insert(0,headingline)
+        return result 
     
     def hutStacksString(self):
         stackstrings = ["%s" % ("|" * (len(stack)-1) + (str(stack[-1])))  for stack in self.hutStacks if len(stack) > 0]
@@ -262,12 +258,13 @@ class Board:
         
     def __str__(self):
         return "\nHut Stacks: \n%s" % self.hutStacksString() + "\n\n" +\
-            "Cards: \n%s\n%s\n%s" % (self.cardPileStrings()[0], self.cardPileStrings()[1], self.cardPileStrings()[2]) + "\n\n" +\
+            "Cards: \n%s\n%s\n%s" % (self.opencardStrings()[0], self.opencardStrings()[1], self.opencardStrings()[2]) + "\n\n" +\
             "\n".join(str(ground) for ground in self.grounds) + "\n"
             
-def padString(target, withSuffix = False, width = 15):
-    length = len(target) + 1 if withSuffix else len(target) 
-    return ((width - length)//2) * " " + target
+def padString(target, width = 15):
+    length = 2 #len(target)
+    padding = ((width - length)//2) * " " 
+    return "%s%s%s" % (padding, target, padding)
 
 def main():
     pass

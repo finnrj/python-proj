@@ -48,9 +48,12 @@ class Game(object):
                 print (self.board)
             huts, cards = self.board.reapResources(self.players[idx:] + self.players[:idx])
             
+            boughtCards = player.buyCards(cards, self.players, self.board.cardPile)
+            self.board.removeCards(boughtCards)
+            
             boughtHuts = player.buyHuts(huts)
             self.board.popHuts(boughtHuts)
-            self.board.popCards(cards)
+            
             if isinstance(player.strategy, Human):                        
                 print(player)
         
