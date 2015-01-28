@@ -5,6 +5,7 @@ Created on Nov 22, 2012
 '''
 
 from functools import total_ordering
+from itertools import groupby
 from enum import Enum
 
 from Toolbox import Toolbox
@@ -124,29 +125,35 @@ class Player():
     def addCard(self, card, players, cardPile):
         self.cards.append(card)
         card.execute(players, cardPile)
-   
-    def getCardScore(self):
-        symbolList = {}
+        
+    def getSymbolCardLists(self):
+        result = {}
         for card in [c for c in self.cards if isinstance(c, SymbolCard)]:
-            if not card.getSymbol() in symbolList.keys():
-                symbolList[card.getSymbol()] = []
-            symbolList[card.getSymbol()].append(card)
-        
-        points1 = pow(len(symbolList.keys()), 2)
-        points2 = pow(len([lst for lst in symbolList.values() if len(lst) == 2]), 2)
-        
-        mulitplierPoints = 0
-        for card in [c for c in self.cards if isinstance(c, MultiplierCard)]:
-            if card.getSymbol() == CardMultiplier.hutcount:
-                mulitplierPoints += card.getMultiplier() * len(self.huts)
-            elif card.getSymbol() == CardMultiplier.foodtrack:
-                mulitplierPoints += card.getMultiplier() * self.foodtrack
-            elif card.getSymbol() == CardMultiplier.toolsum:
-                mulitplierPoints += card.getMultiplier() * sum(self.toolbox.getTools())
-            elif card.getSymbol() == CardMultiplier.personcount:
-                mulitplierPoints += card.getMultiplier() * self.person
+            if not card.getSymbol() in result.keys():
+                result[card.getSymbol().name] = []
+            result[card.getSymbol().name].append(card)
+        return result
+   
+    def getMultiplierCardsBySymbol(self):
+        return groupby([c for c in self.cards if isinstance(c, MultiplierCard)], lambda c : c.getSymbol())
+    
+    def getCardScore(self):
+        symbolCardLists = self.getSymbolCardLists()
+        points1 = pow(len(symbolCardLists.keys()), 2)
+        points2 = pow(len([lst for lst in symbolCardLists.values() if len(lst) == 2]), 2)
 
-        return points1 + points2 + mulitplierPoints
+        multiplierPoints = 0
+        for symbol, cards in self.getMultiplierCardsBySymbol():
+            factor = sum([c.getMultiplier() for c in cards])
+            if symbol == CardMultiplier.hutcount:
+                multiplierPoints += factor * len(self.huts)
+            elif symbol == CardMultiplier.foodtrack:
+                multiplierPoints += factor * self.foodtrack
+            elif symbol == CardMultiplier.toolsum:
+                multiplierPoints += factor * sum(self.toolbox.getTools())
+            elif symbol == CardMultiplier.personcount:
+                multiplierPoints += factor * self.person
+        return points1 + points2 + multiplierPoints
        
     def addScore(self, score):
         self.point += score
@@ -199,15 +206,22 @@ class Player():
         return "[%s]" % ",".join([resource.getColoredName() for resource in sorted(self.getNonFood())])
     
     def __str__(self):
+        symbolstr = ", ".join([("%d x %s" % (len(l), k)) for k, l in self.getSymbolCardLists().items()])
+        multistrs = []
+        for symbol, cards in self.getMultiplierCardsBySymbol():
+            factor = sum([c.getMultiplier() for c in cards])
+            multistrs.append("%d x %s" % (factor, symbol.name))
         return """%s%s%s
 People: %d, Foodtrack: %d, Food: %d, Tools: %s, One-time tools: %s
 Resources: %s
 Hutcount: %d
-Cardcount: %d    
+Symbolcards: %s
+Multipliercards: %s    
 score (cardscore): %d (%d)\n""" % (self.colorOS, self.color.name, self.colorOSnormal, \
                   self.getPersonCount(), self.getFoodTrack(), self.joker.count(Resource.food), self.toolbox, self.oneTimeTools,  
                   Resource.coloredOutput(sorted(self.getNonFood())), 
                   len(self.huts), \
-                  len(self.cards), \
+                  symbolstr, \
+                  ",".join(multistrs), \
                   self.getScore(), self.getCardScore())
 
