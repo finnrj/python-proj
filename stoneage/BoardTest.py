@@ -91,6 +91,22 @@ class BoardTest(unittest.TestCase):
         
         huts, cards = self.board.reapResources(self.players)
         self.assertEqual([hutForBlue], huts)
+        
+    def testBuyingFirstCard(self):
+        firstCards = self.board.cardPile[:4]
+        nextCards = self.board.cardPile[4:8]
+        self.assertListEqual(firstCards, self.board.openCards())
+        # buy the cheapest card
+        self.board.removeCards([firstCards[0]])
+        self.assertListEqual(firstCards[1:] + nextCards[:1], self.board.openCards())
+
+    def testBuyingFirstAndThirdCard(self):
+        firstCards = self.board.cardPile[:4]
+        nextCards = self.board.cardPile[4:8]
+        # buy the cheapest card
+        self.board.removeCards([firstCards[0], firstCards[2]])
+        self.assertListEqual([firstCards[1], firstCards[3]] + nextCards[:2], self.board.openCards())
+        
 
     def testReapResourcesWithFarm(self):
         self.board.placeOnFarm(self.redPlayer)

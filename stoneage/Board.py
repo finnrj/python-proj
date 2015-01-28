@@ -184,7 +184,7 @@ class Board:
         return self.grounds[-3:]
     
     def occupiedCards(self, player):
-        return [(card, 4 - self.cardPile.index(card)) for card in self.openCards() if card.isOccupiedBy() == player]
+        return [(card, self.cardPile.index(card) + 1) for card in self.openCards() if card.isOccupiedBy() == player]
     
     def openCards(self):
         return self.cardPile[:4]
@@ -234,7 +234,7 @@ class Board:
         self.upperHuts()[stackIndex].placePerson(color)
 
     def placeOnCardWithPrice(self, price, color):
-        self.cardPile[4 - price].placePerson(color)
+        self.cardPile[price - 1].placePerson(color)
 
     def placeOnHut(self, hut, color):
         hut.placePerson(color)
@@ -244,8 +244,8 @@ class Board:
     
     def opencardStrings(self):
         padding6 = 6 * " "
-        headingline = padding6.join(["%s" % s for s in ("%s%d.%s%s" % (padding6, p, self.cardPile[4 - p].suffix(), padding6) for p in [4, 3, 2, 1])])
-        pilestrings = [card.outputStrings() for card in self.openCards()]
+        headingline = padding6.join(["%s" % s for s in ("%s%d.%s%s" % (padding6, p, self.cardPile[p - 1].suffix(), padding6) for p in [4, 3, 2, 1])])
+        pilestrings = [card.outputStrings() for card in reversed(self.openCards())]
         result = [padding6.join(["%s" % s for s in (line[0] for line in pilestrings)]),
                  padding6.join(["%s" % s for s in (line[1] for line in pilestrings)])]
         result.insert(0,headingline)
