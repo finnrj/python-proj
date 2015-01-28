@@ -366,6 +366,8 @@ and the following Resource%s: %s
         return chosenResource if chosenResource else firstOccupied
 
     def chooseChristmas(self, player, presents):
+        # inline sorting
+        presents.sort(reverse = True)
         stringPresents = "%s" % (", ".join([present.name for present in presents]))  
         promptString = """\nChoose Resource for Christmas from %s, index: 1-%d  """ % (stringPresents, len(presents))
         finished = False

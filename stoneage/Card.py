@@ -24,7 +24,7 @@ class Card:
     def executeAction(self, players, cardPile):
         activePlayer = players[0]
         if self.action == CardAction.christmas:
-            presents = [Resource(randint(3, 8)) for dice in range(0, len(players))]
+            presents = [Resource(randint(3, 8)) for dice in range(len(players))]
             for player in players:
                 player.chooseChristmas(presents)
         elif self.action == CardAction.clay:
@@ -45,7 +45,7 @@ class Card:
         elif self.action == CardAction.roll:
             eyes = sum([randint(1, 6) for dice in ["first", "second"]])
             numberOfResources = int((eyes + activePlayer.toolsToUse(self.number, eyes))/self.number)
-            activePlayer.addResources(numberOfResources * [Resource.getByValue(self.number)])
+            activePlayer.addResources(numberOfResources * [Resource(self.number)])
         elif self.action == CardAction.point:
             activePlayer.addScore (self.number)
         elif self.action == CardAction.stone:
@@ -86,7 +86,7 @@ class Card:
         if self.action == CardAction.onetimetool:
             return "OT-tool: %d" % (self.number)
         if self.action == CardAction.roll:
-            return "%s for %s" % (self.action.name, Resource.getByValue(self.number).name)
+            return "%s for %s" % (self.action.name, Resource(self.number).name)
         
     def suffix(self):
         return self.isOccupied() and self.player.getOutputAbr() or ""

@@ -46,9 +46,10 @@ class Game(object):
         for idx, player in enumerate(self.players): # reap resources and buy building tiles
             if isinstance(player.strategy, Human):                                    
                 print (self.board)
-            huts, cards = self.board.reapResources(self.players[idx:] + self.players[:idx])
+            activeFirst = self.players[idx:] + self.players[:idx]
+            huts, cards = self.board.reapResources(activeFirst)
             
-            boughtCards = player.buyCards(cards, self.players, self.board.cardPile)
+            boughtCards = player.buyCards(cards, activeFirst, self.board.cardPile)
             self.board.removeCards(boughtCards)
             
             boughtHuts = player.buyHuts(huts)
@@ -59,7 +60,8 @@ class Game(object):
         
         for player in self.players: # feed and adjust score
             player.feed()
-        
+            
+        # cycle player sequence
         self.players = self.players[1:] + self.players[:1]  
 
     def finished(self):

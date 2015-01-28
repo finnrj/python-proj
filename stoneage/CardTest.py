@@ -102,7 +102,7 @@ class CardTest(unittest.TestCase):
         self.activePlayer.addCard(self.musicCard, self.players, self.cardPile)
         self.assertEqual(4, self.activePlayer.getScore())
         
-    def testCardWithChristmas(self):
+    def testOneCardWithChristmas(self):
         for player in self.players:
             self.assertEqual([], player.getNonFood())
             self.assertEqual(0, player.getFoodTrack())
@@ -111,13 +111,13 @@ class CardTest(unittest.TestCase):
         self.activePlayer.addCard(self.timeCardc, self.players, self.cardPile)
         
         for player in self.players:
-            if player.getNonFood():
+            if player.getNonFood(): # chose a resource
                 self.assertEqual(0, player.getFoodTrack())
                 self.assertEqual([0,0,0], player.getTools())
-            elif [1,0,0] == player.getTools(): 
+            elif [1,0,0] == player.getTools(): # chose a tool
                 self.assertEqual([], player.getNonFood())
                 self.assertEqual(0, player.getFoodTrack())
-            else: # got a food-track
+            else: # chose a food-track
                 self.assertEqual(1, player.getFoodTrack())
                 self.assertEqual([], player.getNonFood())
                 self.assertEqual([0,0,0], player.getTools())
