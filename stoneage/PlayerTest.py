@@ -3,7 +3,7 @@
 import unittest
 
 from Player import Player, PlayerColor
-from Card import SymbolCard
+from Card import SymbolCard, CardSymbol
 from Strategy import StupidBot
 from Resource import Resource
 
@@ -33,7 +33,7 @@ class PlayerTest(unittest.TestCase):
         self.assertEquals(0, self.redPlayer.getScore())
         self.bluePlayer.addResources([Resource.food, Resource.wood, Resource.wood])
         self.assertEquals(2, self.bluePlayer.getScore())
-        self.bluePlayer.addCard(SymbolCard("pottery", "food", 7), [self.bluePlayer, self.redPlayer], None)
+        self.bluePlayer.addCard(SymbolCard(CardSymbol.pottery, "food", 7), [self.bluePlayer, self.redPlayer], None)
         self.assertEquals(3, self.bluePlayer.getScore())
                 
     def testSecondPointCriteria(self):

@@ -1,4 +1,5 @@
 from enum import Enum
+from functools import total_ordering
 from random import randint
 
 from Resource import Resource
@@ -13,6 +14,7 @@ class CardSymbol(Enum):
 class CardMultiplier(Enum):
     hutcount, foodtrack, toolsum, personcount = range(1,5)
     
+@total_ordering    
 class Card:
     
     def __init__(self, symbol, action, number):
@@ -90,6 +92,15 @@ class Card:
         
     def suffix(self):
         return self.isOccupied() and self.player.getOutputAbr() or ""
+    
+    def __lt__(self, other):
+        return  self.symbol.name < other.symbol.name  
+
+    def __eq__(self, other):
+        return self is other
+    
+    def __hash__(self):
+        return hash("".join([o.__str__() for o in [self.symbol, self.action, self.number]]))
     
 class SymbolCard(Card):
     def __init__(self, symbol, action, number):

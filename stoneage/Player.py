@@ -129,13 +129,13 @@ class Player():
     def getSymbolCardLists(self):
         result = {}
         for card in [c for c in self.cards if isinstance(c, SymbolCard)]:
-            if not card.getSymbol() in result.keys():
+            if not card.getSymbol().name in result.keys():
                 result[card.getSymbol().name] = []
             result[card.getSymbol().name].append(card)
         return result
    
     def getMultiplierCardsBySymbol(self):
-        return groupby([c for c in self.cards if isinstance(c, MultiplierCard)], lambda c : c.getSymbol())
+        return groupby(sorted([c for c in self.cards if isinstance(c, MultiplierCard)]), lambda c : c.getSymbol())
     
     def getCardScore(self):
         symbolCardLists = self.getSymbolCardLists()
