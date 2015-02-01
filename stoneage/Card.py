@@ -111,7 +111,8 @@ class SymbolCard(Card):
         return ["\033[%sm%-15s\033[0m" % (self.color,s) for s in (padString(self.actionString()), padString("%s" %  self.symbol.name))]
         
     def __str__(self):
-        return "\033[%sm%s\033[0m" % (self.color, ", ".join(self.outputStrings()))
+        template ="\n%s\n%s"
+        return template % (self.outputStrings()[0], self.outputStrings()[1])
 
 class MultiplierCard(Card):
     def __init__(self, symbol, multiplier, action, number):
@@ -126,7 +127,8 @@ class MultiplierCard(Card):
         return ["\033[%sm%-15s\033[0m" % (self.color,s) for s in (padString(self.actionString()), padString("%d x %s" % (self.multiplier, self.symbol.name)))]
     
     def __str__(self):
-        return "\033[%sm%s\033[0m" % (self.color, ", ".join(self.outputStrings()))
+        template ="\n%s\n%s"
+        return template % (self.outputStrings()[0], self.outputStrings()[1])
     
 def padString(target, width = 15):
     return ((width - len(target))//2) * " " + target

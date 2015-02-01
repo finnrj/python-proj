@@ -47,17 +47,17 @@ class StupidBot(Strategy):
         # check cards
     
         # check huts
-        payableHut = self.fetchPayableHut(board.availableHuts(), player.joker[:])
+        payableHut = self.fetchPayableHut(board.availableHuts(), player.resources[:])
         if payableHut is not None:
             board.placeOnHut(payableHut, player)
-            self.updatePlannedCosts(payableHut, player.joker[:])
+            self.updatePlannedCosts(payableHut, player.resources[:])
             return
         # place on resources
-        if player.joker.count(Resource.wood) < 2 and board.freeForestSlots() > 0:
+        if player.resources.count(Resource.wood) < 2 and board.freeForestSlots() > 0:
             board.addLumberjacks(min(player.personsLeft(board), board.freeForestSlots()) , player)
-        elif player.joker.count(Resource.clay) < 2 and board.freeClayPitSlots() > 0:
+        elif player.resources.count(Resource.clay) < 2 and board.freeClayPitSlots() > 0:
             board.addClayDiggers(min(player.personsLeft(board), board.freeClayPitSlots()), player)
-        elif player.joker.count(Resource.stone) < 2 and board.freeQuarrySlots() > 0:
+        elif player.resources.count(Resource.stone) < 2 and board.freeQuarrySlots() > 0:
             board.addStoneDiggers(min(player.personsLeft(board), board.freeQuarrySlots()), player)
         elif board.freeRiverSlots() > 0:
             board.addGoldDiggers(min(player.personsLeft(board), board.freeRiverSlots()), player)
@@ -186,7 +186,7 @@ and the following Resource%s: %s
     def placePersons(self, player, board):
         personsLeft = player.personsLeft(board)
         try:
-            resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.joker.count(Resource.food), player.getNonFood(), personsLeft)
+            resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.resources.count(Resource.food), player.getNonFood(), personsLeft)
             if not resource in "chfwpsgtab":
                 raise PlacementError("illegal character: " + resource)
             elif resource not in "tab" and number == 0:
@@ -274,7 +274,7 @@ and the following Resource%s: %s
         return payable
 
     def buyHut(self, player, hut):
-        if isinstance(hut, SimpleHut):
+        if isinstance(hut, SimpleHut) and not Resource.joker in player.getNonFood():
             player.buyHut(hut, hut.costs([]))
         else:  # CountHut or AnyHut
             player.buyHut(hut, self.chooseResourecestoPay(player.getNonFood(), hut))
@@ -368,8 +368,8 @@ and the following Resource%s: %s
     def chooseChristmas(self, player, presents):
         # inline sorting
         presents.sort(reverse = True)
-        stringPresents = "%s" % (", ".join([present.name for present in presents]))  
-        promptString = """\nChoose Resource for Christmas from %s, index: 1-%d  """ % (stringPresents, len(presents))
+        stringPresents = "%s" % (", ".join(["(%d) %s" % (idx, present.name) for idx, present in zip(range(1, len(presents) + 1), presents)]))  
+        promptString = """\nChoose Resource for Christmas from %s: (1) """ % stringPresents
         finished = False
         while not finished:
             inputString = input(promptString).lower()

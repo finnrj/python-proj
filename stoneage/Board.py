@@ -205,10 +205,11 @@ class Board:
         occupiedGrounds = {} 
         for ground in self.resourceGrounds():
             if ground.count(activePlayer):
-                occupiedGrounds[ground.abreviation] = ground
+                occupiedGrounds[(ground.resource, ground.abreviation)] = ground
         while len(occupiedGrounds):
-            resourceAbr = activePlayer.chooseReapingResource("".join(occupiedGrounds.keys()))
-            activePlayer.addResources(occupiedGrounds.pop(resourceAbr).reapResources(activePlayer))
+            resourceAbr = activePlayer.chooseReapingResource("".join([k[1] for k in  sorted(occupiedGrounds.keys(), reverse=True)]))
+            toPop = [k for k in occupiedGrounds.keys() if k[1] == resourceAbr][0] 
+            activePlayer.addResources(occupiedGrounds.pop(toPop).reapResources(activePlayer))
                    
         occupiedHuts = self.occupiedHuts(activePlayer)
         for hut in occupiedHuts:
@@ -244,7 +245,7 @@ class Board:
     
     def opencardStrings(self):
         padding6 = 6 * " "
-        headingline = padding6.join(["%s" % s for s in ("%s%d.%s%s" % (padding6, p, self.cardPile[p - 1].suffix(), padding6) for p in [4, 3, 2, 1])])
+        headingline = padding6.join(["%s" % s for s in ("%sc%d.%s%s" % (padding6, p, self.cardPile[p - 1].suffix(), padding6) for p in [4, 3, 2, 1])])
         pilestrings = [card.outputStrings() for card in reversed(self.openCards())]
         result = [padding6.join(["%s" % s for s in (line[0] for line in pilestrings)]),
                  padding6.join(["%s" % s for s in (line[1] for line in pilestrings)])]

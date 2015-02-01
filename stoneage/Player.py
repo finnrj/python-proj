@@ -37,7 +37,7 @@ class Player():
     colorOSnormal  = '\x1b[0m'
 
     def __init__(self, color, strategy):
-        self.joker = 12 * [Resource.food]
+        self.resources = 12 * [Resource.food]
         self.huts = []
         self.cards = []
         self.person = 5
@@ -71,19 +71,19 @@ class Player():
         return self.person
 
     def foodMissing(self):
-        return max(0, (self.person - self.foodtrack) - self.joker.count(Resource.food))
+        return max(0, (self.person - self.foodtrack) - self.resources.count(Resource.food))
     
     def feed(self):
         if self.foodMissing() > 0 :
             self.point += self.hungerPenalty
         for person in range((self.person - self.foodtrack) - self.foodMissing()): 
-            self.joker.remove(Resource.food)
+            self.resources.remove(Resource.food)
 
     def getFood(self):
-        return [resource for resource in self.joker if resource == Resource.food]
+        return [resource for resource in self.resources if resource == Resource.food]
     
     def getNonFood(self):
-        return sorted([resource for resource in self.joker if resource != Resource.food])
+        return sorted([resource for resource in self.resources if resource != Resource.food])
 
     def addResources(self, additionalResources):
         while Resource.tool in additionalResources: 
@@ -95,14 +95,14 @@ class Player():
         while Resource.person in additionalResources: 
             self.person = min(self.maxPersonCount, self.person + 1)
             additionalResources.remove(Resource.person)
-        self.joker.extend(additionalResources)
+        self.resources.extend(additionalResources)
         
     def addOneTimeTool(self, value):
         self.oneTimeTools.append(value)
         
     def removeResources(self, resourcesToRemove):
         for resource in resourcesToRemove:
-            self.joker.remove(resource)
+            self.resources.remove(resource)
         
     def buyHuts(self, huts):
         return self.strategy.buyHuts(self, huts)
@@ -120,7 +120,7 @@ class Player():
         self.removeResources(payment)
 
     def isPayable(self, hut):
-        return self.strategy.isPayable(hut, self.joker)
+        return self.strategy.isPayable(hut, self.resources)
 
     def addCard(self, card, players, cardPile):
         self.cards.append(card)
@@ -206,7 +206,10 @@ class Player():
         return "[%s]" % ",".join([resource.getColoredName() for resource in sorted(self.getNonFood())])
     
     def __str__(self):
-        symbolstr = ", ".join([("%d x %s" % (len(l), k)) for k, l in self.getSymbolCardLists().items()])
+        symbolstr = ", ".join(["%s" %  k for k in sorted(self.getSymbolCardLists().keys())])
+        secondCollection = ["%s" % k for k, l in sorted(self.getSymbolCardLists().items()) if len(l) > 1]
+        if secondCollection:
+            symbolstr += " || " + ", ".join(secondCollection)  
         multistrs = []
         for symbol, cards in self.getMultiplierCardsBySymbol():
             factor = sum([c.getMultiplier() for c in cards])
@@ -218,10 +221,10 @@ Hutcount: %d
 Symbolcards: %s
 Multipliercards: %s    
 score (cardscore): %d (%d)\n""" % (self.colorOS, self.color.name, self.colorOSnormal, \
-                  self.getPersonCount(), self.getFoodTrack(), self.joker.count(Resource.food), self.toolbox, self.oneTimeTools,  
+                  self.getPersonCount(), self.getFoodTrack(), self.resources.count(Resource.food), self.toolbox, self.oneTimeTools,  
                   Resource.coloredOutput(sorted(self.getNonFood())), 
                   len(self.huts), \
                   symbolstr, \
-                  ",".join(multistrs), \
+                  ", ".join(multistrs), \
                   self.getScore(), self.getCardScore())
 
