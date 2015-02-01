@@ -87,13 +87,13 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.redPlayer.addResources([Resource.wood, Resource.wood, Resource.wood, Resource.wood, Resource.wood, Resource.clay, Resource.clay, Resource.stone, Resource.gold,])
         firstHut = CountHut(4, 2)
 
-        self.redPlayer.strategy.updatePlannedCosts(firstHut, self.redPlayer.joker)
+        self.redPlayer.strategy.updatePlannedCosts(firstHut, self.redPlayer.resources)
         
         self.assertDictEqual({firstHut : [Resource.wood,Resource.clay,Resource.wood,Resource.wood]}, self.redPlayer.strategy.plannedCosts)
         
         secondHut = CountHut(4, 3)
         self.assertTrue(self.redPlayer.isPayable(secondHut))
-        self.redPlayer.strategy.updatePlannedCosts(secondHut, self.redPlayer.joker)
+        self.redPlayer.strategy.updatePlannedCosts(secondHut, self.redPlayer.resources)
 
         self.assertDictEqual({firstHut : [Resource.wood,Resource.clay,Resource.wood,Resource.wood], secondHut : [Resource.wood,Resource.clay,Resource.stone,Resource.wood]}, self.redPlayer.strategy.plannedCosts)
         
