@@ -119,6 +119,9 @@ class Board:
     
     def availableHuts(self):
         return [hut for hut in self.upperHuts() if not hut.isOccupied()]
+
+    def availableCards(self):
+        return [(card, self.cardPile.index(card) + 1) for card in self.openCards() if not card.isOccupied()]
     
     def addHunters(self, count, player):
         self.huntingGrounds.addPerson(count, player)
@@ -237,8 +240,11 @@ class Board:
     def placeOnCardWithPrice(self, price, color):
         self.cardPile[price - 1].placePerson(color)
 
-    def placeOnHut(self, hut, color):
-        hut.placePerson(color)
+    def placeOnHut(self, hut, player):
+        hut.placePerson(player)
+
+    def placeOnCard(self, card, player):
+        card.placePerson(player)
         
     def isFinished(self):
         return [len(stack) for stack in self.hutStacks].count(0) > 0

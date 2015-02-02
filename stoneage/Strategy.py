@@ -1,4 +1,5 @@
-from Hut import AnyHut, CountHut, SimpleHut
+from Hut import Hut, AnyHut, CountHut, SimpleHut
+from Card import Card
 from Board import PlacementError
 from Resource import Resource
 
@@ -29,6 +30,7 @@ class StupidBot(Strategy):
     def __init__(self):
         self.plannedCosts = {}
         
+    
     def placePersons(self, player, board):
         if player.isNewRound(board):
             self.plannedCosts = {}
@@ -45,6 +47,11 @@ class StupidBot(Strategy):
             return
         
         # check cards
+        payableCard = self.fetchPayableCard(board.availableCards(), player.resources[:])
+        if payableCard is not None:
+            board.placeOnCard(payableCard[0], player)
+            self.plannedCosts[payableCard[0]] = payableCard[1] * [Resource.wood]
+            return
     
         # check huts
         payableHut = self.fetchPayableHut(board.availableHuts(), player.resources[:])
@@ -65,7 +72,7 @@ class StupidBot(Strategy):
             board.addHunters(player.personsLeft(board), player)
         
     def buyHuts(self, player, huts):
-        for hut, payment in self.plannedCosts.items():
+        for hut, payment in [(h,p) for h,p in self.plannedCosts.items() if isinstance(h, Hut)]:
             player.buyHut(hut, payment)
         return huts
 
@@ -77,8 +84,17 @@ class StupidBot(Strategy):
         return None
 
     def buyCards(self, player, cards, players, cardPile):
+        for card, payment in [(c,p) for c,p in self.plannedCosts.items() if isinstance(c, Card)]:
+            player.buyCard(card, players, cardPile, payment)
         return cards
     
+    def fetchPayableCard(self, availableCards, resources):
+        nonPlannedResources = self.nonPlannedResources(resources)
+        for card in availableCards:
+            if nonPlannedResources.count(Resource.wood) >= card[1]:
+                return card
+        return None
+
     def updatePlannedCosts(self, hut, resources):
         self.plannedCosts[hut] = hut.costs(self.nonPlannedResources(resources))
         
@@ -226,7 +242,7 @@ and the following Resource%s: %s
 
     def buyCards(self, player, cards, players, cardPile):
         if cards:
-            print("You have placed on following card%s: " % suffix(cards) + " ".join(str(card[0]) for card in cards))
+            print("You have placed on following card%s: " % suffix(cards) + "\n".join(str(card[0]) for card in cards))
         return self.doBuyCards(player, cards, [], players, cardPile)
     
     def doBuyCards(self, player, cards, boughtCards, players, cardPile):
@@ -236,16 +252,6 @@ and the following Resource%s: %s
                 boughtCards.append(card[0])
         return boughtCards 
     
-#         if not payableHuts:
-#             return boughtHuts
-#         else:
-#             self.printResourceStatus(player)
-#             hut = payableHuts.pop()
-#             if self.wantsToBuy(hut):
-#                 self.buyHut(player, hut)
-#                 boughtHuts.append(hut)
-#             return self.doBuyHuts(player, self.filterOutPayableHuts(player, payableHuts), boughtHuts)
-
     def buyHuts(self, player, huts):
         if huts:
             print("You have placed on following hut%s: " % suffix(huts) + " ".join(str(hut) for hut in huts))
