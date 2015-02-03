@@ -51,9 +51,9 @@ class SimpleHut(Hut):
                 clone.remove(res)
             except:
                 missing.append(res)
-        while Resource.joker in clone:
+        while Resource.joker in clone and len(missing) > 0:
             clone.remove(Resource.joker)
-            missing.pop()
+            missing.pop()   
         return missing
 
     def __str__(self):

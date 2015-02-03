@@ -53,6 +53,12 @@ class HutTest(unittest.TestCase):
                 
         self.assertEqual([Resource.wood], hut.missing(resources))
 
+    def testSimpleHutPayableWithoutJoker(self):
+        hut = SimpleHut(Resource.wood,Resource.wood,Resource.clay)
+        resources = [Resource.food,Resource.wood,Resource.wood,Resource.clay,Resource.joker]
+                
+        self.assertEqual([], hut.missing(resources))
+
     def testPlacePerson(self):
         hut = SimpleHut(Resource.wood,Resource.wood,Resource.clay)
         self.assertFalse(hut.isOccupied())
