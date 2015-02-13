@@ -74,7 +74,6 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.assertEqual(0, self.redPlayer.foodMissing())
         self.redPlayer.feed()
         self.assertEqual(3, self.redPlayer.foodMissing())
-        
     
     def testFeedingWithFoodStack(self):
         self.redPlayer.feed()
@@ -287,6 +286,34 @@ class StupidBotStrategyTest(unittest.TestCase):
         self.assertEqual([], self.redPlayer.getNonFood())
         self.assertListEqual([Resource.wood], self.redPlayer.chooseChristmas([Resource.wood, Resource.clay]))
         self.assertEqual([Resource.clay], self.redPlayer.getNonFood())
+        
+    def testBuyingCard(self):
+        someSimpleHut = SimpleHut(Resource.wood, Resource.wood, Resource.clay)
+        self.board = Board([someSimpleHut, someSimpleHut, someSimpleHut, someSimpleHut])
+        self.redPlayer.addResources([Resource.wood, Resource.wood])
+        self.assertEqual(0, len(self.redPlayer.cards))
+        
+        # occupying the village with blue player
+        self.board.placeOnFarm(self.bluePlayer)
+        self.assertEqual(1, self.board.person(self.bluePlayer))
+        self.assertTrue(self.board.farmOccupied())
+         
+        self.board.placeOnToolSmith(self.bluePlayer)
+        self.assertEqual(2, self.board.person(self.bluePlayer))
+        self.assertTrue(self.board.toolSmithOccupied())
+        
+        self.board.placeOnBreedingHut(self.bluePlayer)
+        self.assertEqual(4, self.board.person(self.bluePlayer))
+        self.assertTrue(self.board.breedingHutOccupied())
+        
+        self.redPlayer.placePersons(self.board)
+        
+        redPlayerOccupiedCards = self.board.reapResources([self.redPlayer])[1]
+        self.assertEqual(1, len(redPlayerOccupiedCards))
+        boughtCards = self.redPlayer.buyCards(redPlayerOccupiedCards, [self.redPlayer], self.board.cardPile)
+        
+        self.assertEqual(1, len(boughtCards))        
+        self.assertEqual(1, len(self.redPlayer.cards))
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(StupidBotStrategyTest)

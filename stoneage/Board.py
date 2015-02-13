@@ -121,6 +121,8 @@ class Board:
         return [hut for hut in self.upperHuts() if not hut.isOccupied()]
 
     def availableCards(self):
+        """returns list of (card, card-price) tuples for non occupied cards"""
+        
         return [(card, self.cardPile.index(card) + 1) for card in self.openCards() if not card.isOccupied()]
     
     def addHunters(self, count, player):
@@ -231,8 +233,10 @@ class Board:
         
     def removeCards(self, cards):
         for card in cards:
-            if card in self.cardPile:
+            try:
                 self.cardPile.remove(card)
+            except ValueError:
+                print("trying to remove %s from %s" % (card, self.cardPile))
 
     def placeOnHutIndex(self, stackIndex, color):
         self.upperHuts()[stackIndex].placePerson(color)

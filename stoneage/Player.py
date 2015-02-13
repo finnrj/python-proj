@@ -113,6 +113,7 @@ class Player():
         self.point += sum(payment)
 
     def buyCards(self, cards, players, cardPile):
+        print("player")
         return self.strategy.buyCards(self, cards, players, cardPile)
 
     def buyCard(self, card, players, cardPile, payment):

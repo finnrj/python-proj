@@ -42,7 +42,8 @@ class Game(object):
                 if isinstance(player.strategy, Human):                
                     print (self.board)  
                 player.placePersons(self.board)
-
+                
+        print("Player: %-6s to reap resources " % (player.getOutputColor()))
         for idx, player in enumerate(self.players): # reap resources and buy building tiles
             if isinstance(player.strategy, Human):                                    
                 print (self.board)

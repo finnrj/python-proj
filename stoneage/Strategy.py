@@ -46,18 +46,18 @@ class StupidBot(Strategy):
             board.placeOnToolSmith(player)
             return
         
-        # check cards
-        payableCard = self.fetchPayableCard(board.availableCards(), player.resources[:])
-        if payableCard is not None:
-            board.placeOnCard(payableCard[0], player)
-            self.plannedCosts[payableCard[0]] = payableCard[1] * [Resource.wood]
-            return
-    
         # check huts
         payableHut = self.fetchPayableHut(board.availableHuts(), player.resources[:])
         if payableHut is not None:
             board.placeOnHut(payableHut, player)
             self.updatePlannedCosts(payableHut, player.resources[:])
+            return
+        
+        # check cards
+        payableCard = self.fetchPayableCard(board.availableCards(), player.resources[:])
+        if payableCard is not None:
+            board.placeOnCard(payableCard[0], player)
+            self.plannedCosts[payableCard[0]]  = payableCard[1] * [Resource.wood]
             return
         # place on resources
         if player.resources.count(Resource.wood) < 2 and board.freeForestSlots() > 0:
@@ -86,7 +86,7 @@ class StupidBot(Strategy):
     def buyCards(self, player, cards, players, cardPile):
         for card, payment in [(c,p) for c,p in self.plannedCosts.items() if isinstance(c, Card)]:
             player.buyCard(card, players, cardPile, payment)
-        return cards
+        return [card[0] for card in cards]
     
     def fetchPayableCard(self, availableCards, resources):
         nonPlannedResources = self.nonPlannedResources(resources)
@@ -103,7 +103,10 @@ class StupidBot(Strategy):
         plannedResources = [cost for costs in self.plannedCosts.values() for cost in costs]
         
         for resource in plannedResources:
-            usableResources.remove(resource)
+            try:
+                usableResources.remove(resource)
+            except ValueError:
+                print("trying to remove %s from %s" % (resource.name, usableResources))
         return sorted(usableResources)
     
 
@@ -276,7 +279,7 @@ and the following Resource%s: %s
     def filterOutPayableHuts(self, player, huts):
         notPayable, payable = [hut for hut in huts if not player.isPayable(hut)], [hut for hut in huts if player.isPayable(hut)]
         if notPayable:
-            printError("you can't afford the following hut%s: " % suffix(notPayable), " ".join([str(hut) for hut in notPayable]))
+            printError("with available resources: %s you can't afford the following hut%s: " % (Resource.coloredOutput(player.getNonFood()) , suffix(notPayable)), " ".join([str(hut) for hut in notPayable]))
         return payable
 
     def buyHut(self, player, hut):
