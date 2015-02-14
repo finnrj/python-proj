@@ -138,11 +138,15 @@ class Player():
     def getMultiplierCardsBySymbol(self):
         return groupby(sorted([c for c in self.cards if isinstance(c, MultiplierCard)]), lambda c : c.getSymbol())
     
-    def getCardScore(self):
+
+    def symbolCardPoints(self):
         symbolCardLists = self.getSymbolCardLists()
         points1 = pow(len(symbolCardLists.keys()), 2)
         points2 = pow(len([lst for lst in symbolCardLists.values() if len(lst) == 2]), 2)
+        return points1 + points2
 
+
+    def multiplierCardPoints(self):
         multiplierPoints = 0
         for symbol, cards in self.getMultiplierCardsBySymbol():
             factor = sum([c.getMultiplier() for c in cards])
@@ -154,7 +158,10 @@ class Player():
                 multiplierPoints += factor * sum(self.toolbox.getTools())
             elif symbol == CardMultiplier.personcount:
                 multiplierPoints += factor * self.person
-        return points1 + points2 + multiplierPoints
+        return multiplierPoints
+
+    def getCardScore(self):
+        return self.symbolCardPoints() + self.multiplierCardPoints()
        
     def addScore(self, score):
         self.point += score
@@ -219,13 +226,13 @@ class Player():
 People: %d, Foodtrack: %d, Food: %d, Tools: %s, One-time tools: %s
 Resources: %s
 Hutcount: %d
-Symbolcards: %s
-Multipliercards: %s    
+Symbolcards: %s (%d)
+Multipliercards: %s (%d)   
 score (cardscore): %d (%d)\n""" % (self.colorOS, self.color.name, self.colorOSnormal, \
                   self.getPersonCount(), self.getFoodTrack(), self.resources.count(Resource.food), self.toolbox, self.oneTimeTools,  
                   Resource.coloredOutput(sorted(self.getNonFood())), 
                   len(self.huts), \
-                  symbolstr, \
-                  ", ".join(multistrs), \
+                  symbolstr, self.symbolCardPoints(), \
+                  ", ".join(multistrs), self.multiplierCardPoints(),\
                   self.getScore(), self.getCardScore())
 

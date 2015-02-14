@@ -279,7 +279,7 @@ and the following Resource%s: %s
     def filterOutPayableHuts(self, player, huts):
         notPayable, payable = [hut for hut in huts if not player.isPayable(hut)], [hut for hut in huts if player.isPayable(hut)]
         if notPayable:
-            printError("with available resources: %s you can't afford the following hut%s: " % (Resource.coloredOutput(player.getNonFood()) , suffix(notPayable)), " ".join([str(hut) for hut in notPayable]))
+            printError("with available resources: %s\nyou can't afford the following hut%s: " % (Resource.coloredOutput(player.getNonFood()) , suffix(notPayable)), " ".join([str(hut) for hut in notPayable]))
         return payable
 
     def buyHut(self, player, hut):
