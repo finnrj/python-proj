@@ -32,10 +32,9 @@ class Game(object):
     def allPersonsPlaced(self):
         return sum([player.personsLeft(self.board) for player in self.players]) == 0
     
-    def processRound(self, round):
+    def processRound(self):
         for player in self.players:
             player.newRound()
-        print("\nRound: %d" % (round))
         while not self.allPersonsPlaced():
             for player in [p for p in self.players if p.personsLeft(self.board) > 0]:
 #                 print("Player: %-6s to place persons" % (player.getOutputColor()))                
@@ -90,16 +89,17 @@ def main():
     game = Game()
     game.addPlayer(Player(PlayerColor.Red, StupidBot()))
     game.addPlayer(Player(PlayerColor.Blue,  StupidBot()))
-    game.addPlayer(Player(PlayerColor.Green,  Human()))
+    game.addPlayer(Player(PlayerColor.Green,  Human(game.printScores)))
     game.addPlayer(Player(PlayerColor.Yellow,  StupidBot()))
     shuffle(game.players)
     game.printPlayers()
-    round = 1
+    gameRound = 1
     try:
         while not game.finished():
             input("Press the return key to proceed to the next round....")
-            game.processRound(round)
-            round +=1
+            print("\nRound: %d" % (gameRound))
+            game.processRound()
+            gameRound +=1
             game.printScores()
         game.printFinalScores()
     except KeyboardInterrupt:

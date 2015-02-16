@@ -201,6 +201,9 @@ and the following Resource%s: %s
 #            and 'number' is the index of the hut (1-4)
 #            
 #    """
+
+    def __init__(self, printPlayersFunc = None):
+        self.printPlayersFunc = printPlayersFunc
    
     def placePersons(self, player, board):
         personsLeft = player.personsLeft(board)
@@ -225,7 +228,8 @@ and the following Resource%s: %s
     def fetchPlacePersonsInput(self, people, foodtrack, food, resources, personsLeft):
         return fetchConvertedInput(self.prompt % (people, foodtrack, food, suffix(resources), Resource.coloredOutput(resources), personsLeft, suffix(personsLeft), suffix(personsLeft)),
                                    lambda v: printfString("'%s' does not seem to be of format <Resource><number>!", v),
-                                   stringAndNumber)
+                                   stringAndNumber,
+                                   self.printPlayersFunc)
         
     def processPlacePersonsInput(self, resource, number, player, board):
         if   resource == "f": board.addHunters(number, player)
@@ -250,7 +254,9 @@ and the following Resource%s: %s
     
     def doBuyCards(self, player, cards, boughtCards, players, cardPile):
         for card in cards:
-            if self.wantsToBuy("card", card[0]):
+            if len(player.getNonFood()) < card[1]: 
+                print("with available resources: %s you can't afford the following card:\nprice %d%s\n " % (Resource.coloredOutput(player.getNonFood()), card[1], str(card[0])))
+            elif self.wantsToBuy("card", player.getNonFood(), card[0]):
                 player.buyCard(card[0], players, cardPile, player.getNonFood()[:card[1]])
                 boughtCards.append(card[0])
         return boughtCards 
@@ -266,15 +272,16 @@ and the following Resource%s: %s
         else:
             self.printResourceStatus(player)
             hut = payableHuts.pop()
-            if self.wantsToBuy("hut", hut):
+            if self.wantsToBuy("hut", player.getNonFood(), hut):
                 self.buyHut(player, hut)
                 boughtHuts.append(hut)
             return self.doBuyHuts(player, self.filterOutPayableHuts(player, payableHuts), boughtHuts)
         
-    def wantsToBuy(self, outstring, hutOrCard):
-        return fetchConvertedInput("do you want to buy this %s (y|n): %s ? (y) " % (outstring, str(hutOrCard)),
+    def wantsToBuy(self, outstring, nonFoodResources, hutOrCard):
+        return fetchConvertedInput("with available resources: %s\ndo you want to buy this %s (y|n): %s ? (y) " % (Resource.coloredOutput(nonFoodResources),outstring, str(hutOrCard)),
                                    lambda v: printfString("please answer y(es) or n(o) - not: '%s'", v),
-                                   yesNo) 
+                                   yesNo,
+                                   self.printPlayersFunc) 
         
     def filterOutPayableHuts(self, player, huts):
         notPayable, payable = [hut for hut in huts if not player.isPayable(hut)], [hut for hut in huts if player.isPayable(hut)]
@@ -296,7 +303,8 @@ and the following Resource%s: %s
         while not finished:
             chosenResources = fetchConvertedInput(promptString,
                                                  lambda v: printfString("the input '%s' does not consist of only numbers!", v),
-                                                 mapToResources)
+                                                 mapToResources,
+                                                 self.printPlayersFunc)
             if not chosenResources:
                 chosenResources = nonFoodResources
             finished = all([self.chosenItemsAvailable(nonFoodResources, chosenResources),
@@ -344,7 +352,8 @@ and the following Resource%s: %s
             while not finished:
                 chosenTools = fetchConvertedInput(promptString,
                                                  lambda v: printfString("the input '%s' does not consist of only numbers!", v),
-                                                 mapToNumbers)
+                                                 mapToNumbers,
+                                                 self.printPlayersFunc)
                 finished = self.chosenItemsAvailable(unusedTools + oneTimeTools, chosenTools)
                 
             for tool in chosenTools[:]:
@@ -436,13 +445,17 @@ def mapToResources(inputString):
 def printfString(string, values):
     return string % values
 
-def fetchConvertedInput(promptMsg, errorMsgFunc, convertFunc):
+def fetchConvertedInput(promptMsg, errorMsgFunc, convertFunc, printPlayersFunc):
     inputString = input(promptMsg).lower()
     finished = False
     while not finished:
         try:
-            result = convertFunc(inputString)
-            finished = True
+            while inputString.startswith("!"):
+                printPlayersFunc()
+                inputString = input(promptMsg).lower()
+            else: 
+                result = convertFunc(inputString)
+                finished = True
         except:
             printError(errorMsgFunc(inputString))
             inputString = input(promptMsg).lower()

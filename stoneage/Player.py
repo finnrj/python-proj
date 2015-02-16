@@ -102,7 +102,10 @@ class Player():
         
     def removeResources(self, resourcesToRemove):
         for resource in resourcesToRemove:
-            self.resources.remove(resource)
+            if resource in self.resources:
+                self.resources.remove(resource)
+            else:
+                print("trying to remove resource: %s from resources: %s" % (resource.name, Resource.coloredOutput(self.resources))) 
         
     def buyHuts(self, huts):
         return self.strategy.buyHuts(self, huts)
