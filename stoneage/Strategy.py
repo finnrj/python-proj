@@ -209,8 +209,10 @@ and the following Resource%s: %s
         personsLeft = player.personsLeft(board)
         try:
             resource, number = self.fetchPlacePersonsInput(player.getPersonCount(), player.getFoodTrack(), player.resources.count(Resource.food), player.getNonFood(), personsLeft)
+            if not resource:
+                raise PlacementError("empty input")
             if not resource in "chfwpsgtab":
-                raise PlacementError("illegal character: " + resource)
+                raise PlacementError("illegal character: '%s'" % resource)
             elif resource not in "tab" and number == 0:
                 raise PlacementError("please place at least one person")
             elif resource == "b" and personsLeft < 2:
@@ -221,7 +223,7 @@ and the following Resource%s: %s
                 raise PlacementError("hut index/card price has to be between 1 - 4, not %d" % (number))
             self.processPlacePersonsInput(resource, number, player, board)
         except PlacementError as e:
-            printError("ERROR: " + str(e))
+            printError("ERROR: %s" % str(e))
             print (board)
             self.placePersons(player, board)
     
@@ -356,12 +358,10 @@ and the following Resource%s: %s
                                                  self.printPlayersFunc)
                 finished = self.chosenItemsAvailable(unusedTools + oneTimeTools, chosenTools)
                 
-            for tool in chosenTools[:]:
-                if not tool in unusedTools:
-                    oneTimeTools.remove(tool)
-                    chosenTools.remove(tool)
-                    
-            self.useTools(toolbox, chosenTools[:])
+            nonPermanentTools = self.useTools(toolbox, chosenTools[:])
+            for tool in nonPermanentTools:
+                oneTimeTools.remove(tool)
+
             return sum(chosenTools)
     
     def useTools(self, toolbox, toolsToUse):
@@ -369,6 +369,7 @@ and the following Resource%s: %s
             if tool in toolsToUse:
                 toolbox.use(tool)
                 toolsToUse.remove(tool)
+        return toolsToUse
 
     def chooseReapingResource(self, occupiedResources):
         firstOccupied = occupiedResources[0]
