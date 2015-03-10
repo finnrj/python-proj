@@ -18,18 +18,17 @@ class Small_Map_tmx_Test(unittest.TestCase):
     def testObjectgroup(self):
         self.assertEqual(3, len(self.map.objectgroups))
         self.assertIsNotNone(self.map.objectgroups["background"])
-        self.assertEqual("enemies", self.map.objectgroups["enemies"].name)
-        self.assertEqual(13, len(self.map.objectgroups["walls"].objects))
+        self.assertEqual(13, len(self.map.objectgroups["walls"]))
          
     def testObject(self):
-        objectgroup = self.map.objectgroups["walls"];
-        o = objectgroup.objects[0]
+        objects = self.map.objectgroups["walls"];
+        o = objects[0]
         self.assertEqual(7, o.id)
         self.assertEqual(2, o.gid)
         self.assertEqual(0, o.x)
         self.assertEqual(320, o.y)
         
-        o = objectgroup.objects[10]
+        o = objects[10]
         self.assertEqual(20, o.id)
         self.assertEqual(2, o.gid)
         self.assertEqual(96, o.x)

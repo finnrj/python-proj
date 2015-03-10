@@ -15,7 +15,7 @@ class TiledMap:
         assert os.path.exists(pathToTmxFile), "the tmx-file could not be found! Have dir and tmx-file the same name?"
         etree = xml.etree.ElementTree.parse(open(pathToTmxFile))
         
-        self.objectgroups = dict((og.name, og) for og in  [ObjectGroup(e) for e in etree.findall("objectgroup")])
+        self.objectgroups = dict((og.attrib["name"], [Object(o) for o in og.findall("object")]) for og in etree.findall("objectgroup"))
         self.images = self.createImageMap(levelDir, etree.findall("tileset"))
         
     def createImageMap(self, levelDir, tilesetElements):
@@ -26,12 +26,6 @@ class TiledMap:
             images[int(e.attrib["firstgid"])] = pygame.image.load(pathToImage)
         
         return images
-    
-class ObjectGroup:
-    
-    def __init__(self, element):
-        self.name = element.attrib["name"]
-        self.objects = [Object(e) for e in element.findall("object")]
  
 class Object:
     
