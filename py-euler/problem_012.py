@@ -14,9 +14,10 @@ def triangle(maximum):
     
 if __name__ == '__main__':
     for i in triangle(10000):
-#         print(i)
+        print(i)
         divisors = [j for j in range(1, i // 2 + 1) if i % j == 0]
-        if len(divisors) >= 500:
+        divisors.append([i])
+        if len(divisors) > 500:
             print(i, divisors)
             break;
 
