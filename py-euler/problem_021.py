@@ -12,8 +12,8 @@ from math import factorial
 #             s += x / i
 #     return s
 
-def divisors(i):
-    return [j for j in range(1, i // 2 + 1) if i % j == 0]
+def divisors(x):
+    return [j for j in range(1, x // 2 + 1) if x % j == 0]
 
 if __name__ == '__main__':
     amicablesNumbers = []
