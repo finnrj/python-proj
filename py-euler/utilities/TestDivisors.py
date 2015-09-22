@@ -4,9 +4,10 @@ Created on Sep 16, 2015
 @author: expert
 '''
 import unittest
-from utilities.divisors import getFactorization
+
 from utilities.divisors import countDivisors
 from utilities.divisors import getDivisors
+from utilities.divisors import getFactorization
 
 
 class Test(unittest.TestCase):

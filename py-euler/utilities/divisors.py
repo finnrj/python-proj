@@ -4,12 +4,15 @@ Created on Sep 10, 2015
 @author: expert
 '''
 
-import os.path
-from operator import mul
+from _functools import reduce
 from itertools import product
+from operator import mul
+import os.path
 
 pathToPrimesFile = os.path.join(os.path.dirname(__file__), "primes.txt")  # contains first 1.000.000 primes
 assert os.path.isfile(pathToPrimesFile), pathToPrimesFile + " does not exist!"
+with open(pathToPrimesFile) as fil:
+    allPrimes = set([int(p) for line in fil.readlines()[2:-1:2] for p in line.split()]) 
 linesOfPrimes = open(pathToPrimesFile).readlines()[2:-1:2]
     
 def getFactorization(x):
@@ -40,7 +43,13 @@ def getDivisors(x):
         divisorsOfFactor = [factor[0] ** i for i in range(1, factor[1] + 1)]
         result += [a * b for a, b in list(product(result, divisorsOfFactor))]
     
-    return result    
+    return result  
+
+def getPrimes(maximum):
+    return [int(p) for line in linesOfPrimes for p in line.split() if int(p) <= maximum]
+
+def isPrime(candidate):
+    return candidate in allPrimes
 
 def getDivisors2(x):
     result = [1]
@@ -53,3 +62,7 @@ def getDivisors2(x):
             factor[1] -= 1
     
     return result
+
+
+if __name__ == '__main__':
+    print(getPrimes(100))
