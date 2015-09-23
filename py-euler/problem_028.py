@@ -6,32 +6,31 @@ Created on Jun 2, 2015
 from math import sqrt
 
 def prettyPrint(f):
+    offset = len((str(len(f) ** 2)))  # length of the biggest number
+    
     for y in range(len(f)):
         for x in range(len(f)):
-            print(f[x][y], end=" ")
+            i = str(f[x][y])
+            print(" "*(offset - len(i)) + i, end=" ")
+        
         print()
+    
+    print()
         
 if __name__ == '__main__':
-    n = 49
+    n = 121
     sqrtN = int(sqrt(n))
     f = [[0] * sqrtN for x in range(sqrtN)]
-    print(f)
     
+    x = sqrtN // 2
+    y = sqrtN // 2
     i = 1
-    xMiddle = sqrtN // 2
-    yMiddle = sqrtN // 2
-    f[xMiddle][yMiddle] = i
-    
-    i = 9
-    x = xMiddle + 1
-    y = yMiddle - 1
-    offset = 4
-    
+    f[x][y] = i
+
+    offset = 2
     while i < n:
-        prettyPrint(f)
         x += 1
         i += 1
-        print(i)
         f[x][y] = i
         
         for _ in range(1, offset):
@@ -50,6 +49,7 @@ if __name__ == '__main__':
             x += 1
             i += 1
             f[x][y] = i  
-    offset += 2
+            
+        offset += 2
 
     prettyPrint(f)
