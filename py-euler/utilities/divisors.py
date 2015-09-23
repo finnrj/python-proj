@@ -13,7 +13,6 @@ pathToPrimesFile = os.path.join(os.path.dirname(__file__), "primes.txt")  # cont
 assert os.path.isfile(pathToPrimesFile), pathToPrimesFile + " does not exist!"
 with open(pathToPrimesFile) as fil:
     allPrimes = set([int(p) for line in fil.readlines()[2:-1:2] for p in line.split()]) 
-linesOfPrimes = open(pathToPrimesFile).readlines()[2:-1:2]
     
 def getFactorization(x):
     """ Returns a list which represents factorization of x:
@@ -22,15 +21,14 @@ def getFactorization(x):
     """
     
     result = []
-    for i in range(len(linesOfPrimes)):
-        for p in [int(p) for p in linesOfPrimes[i].split()]:
-            power = 0
-            while x % p == 0:
-                power += 1
-                x = x / p
-            result.append([p, power])
-            
-            if x == 1: return result
+    for p in allPrimes:
+        power = 0
+        while x % p == 0:
+            power += 1
+            x = x / p
+        result.append([p, power])
+        
+        if x == 1: return result
             
     raise Exception("not enough primes in " + pathToPrimesFile + " for factorization of " + str(x))
 
@@ -46,7 +44,7 @@ def getDivisors(x):
     return result  
 
 def getPrimes(maximum):
-    return [int(p) for line in linesOfPrimes for p in line.split() if int(p) <= maximum]
+    return [p for p in allPrimes if p <= maximum]
 
 def isPrime(candidate):
     return candidate in allPrimes

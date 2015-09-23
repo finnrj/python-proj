@@ -5,24 +5,19 @@ Created on Jun 2, 2015
 '''
 from math import sqrt
 
-def tuesdayVersion():
-    n = 49
+def tuesdayVersionCorrected():
+    n = 121
     sqrtN = int(sqrt(n))
-    f = [[0] * sqrtN for x in range(sqrtN)]
-    print(f)
+    f = [[0] * sqrtN for _ in range(sqrtN)]
+    x = sqrtN // 2
+    y = sqrtN // 2
     i = 1
-    xMiddle = sqrtN // 2
-    yMiddle = sqrtN // 2
-    f[xMiddle][yMiddle] = i
-    i = 9
-    x = xMiddle + 1
-    y = yMiddle - 1
-    offset = 4
+    f[x][y] = i
+
+    offset = 2
     while i < n:
-        prettyPrint(f)
         x += 1
         i += 1
-        print(i)
         f[x][y] = i
         for _ in range(1, offset):
             y += 1
@@ -42,11 +37,21 @@ def tuesdayVersion():
         for _ in range(1, offset + 1):
             x += 1
             i += 1
-            f[x][y] = i
-    
-    offset += 2
+            f[x][y] = i  
+            
+        offset += 2
     prettyPrint(f)
 
+def prettyPrint(f):
+    offset = len((str(len(f) ** 2)))  # length of the biggest number
+    
+    for y in range(len(f)):
+        for x in range(len(f)):
+            i = str(f[x][y])
+            print(" "*(offset - len(i)) + i, end=" ")
+        print()
+    print()
+        
 tupleAdd = lambda t1, t2 : (t1[0] + t2[0], t1[1] + t2[1])
 right, left, up, down = (1, 0), (-1, 0), (0, -1), (0, 1)
 
@@ -78,14 +83,8 @@ def wednesdayVersion(squareSize):
     prettyPrint(f)
     print("diagonal sum: %d" % diagonalSum)
 
-def prettyPrint(f):
-    for y in range(len(f)):
-        for x in range(len(f)):
-            print("% 5d" % f[x][y], end=" ")
-        print()
-        
 if __name__ == '__main__':
-#     tuesdayVersion()
-    wednesdayVersion(5)
+    tuesdayVersionCorrected()
+    wednesdayVersion(11)
     
 
