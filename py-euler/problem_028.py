@@ -85,6 +85,6 @@ def wednesdayVersion(squareSize):
 
 if __name__ == '__main__':
     tuesdayVersionCorrected()
-    wednesdayVersion(11)
+    wednesdayVersion(1001)
     
 
