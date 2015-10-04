@@ -11,6 +11,7 @@ It is possible to make £2 in the following way:
 How many different ways can £2 be made using any number of coins?
 
 Others guy solution which looks so smart but I don't understand -.-
+
 public class problem31 {
     final static int TOTAL = 200;
 
@@ -27,6 +28,15 @@ public class problem31 {
     }
 }
 
+---------------------- Theme: DYNAMIC PROGRAMMING :-D -----------------------
+   lets say we have an array: arr of length 201, where arr[i] is the number of
+   ways the amount: i can be paid with 1,2 and 5 cent coins. If we also have a 
+   coin worth 10 cent, how could we fit it into the array?
+   Beginning at index = 10 (coin value) we can now add all the known combinations
+   for index = 0 (because we can add a 10 cent coin to each of them). For index = 11
+   we can add all known combinations for index = 1 (because we can add a 10 cent coin
+   to each of them) and so on......  
+----------------------- EO: Theme: DYNAMIC PROGRAMMING :-D ---------------------    
 '''
 
 coinsPrime = [1, 2, 5, 10, 20, 50, 100, 200]
@@ -35,6 +45,8 @@ coins = coinsPrime[::-1]
 targetSum = 200
 
 def helper(i, s):
+    """looks like some heavy tree-recursion!? :-)
+    Could you find some better variable names - please :-) """
     if i >= len(coins):
         return 0
     
