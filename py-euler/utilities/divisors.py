@@ -43,7 +43,7 @@ def getDivisors(x):
     
     return result  
 
-def getPrimes(maximum):
+def getPrimes(maximum=15485863):
     return [p for p in allPrimes if p <= maximum]
 
 def isPrime(candidate):
