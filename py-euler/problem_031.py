@@ -39,29 +39,24 @@ public class problem31 {
 ----------------------- EO: Theme: DYNAMIC PROGRAMMING :-D ---------------------    
 '''
 
-coinsPrime = [1, 2, 5, 10, 20, 50, 100, 200]
-coins = coinsPrime[::-1]
 
-targetSum = 200
-
-def helper(i, s):
-    """looks like some heavy tree-recursion!? :-)
-    Could you find some better variable names - please :-) """
+def getCombinations(moneyTaken=0, targetSum=200, coins=[1, 2, 5, 10, 20, 50, 100, 200], i=0):
     if i >= len(coins):
         return 0
     
-    if s + coins[i] == 200:
-        return 1 + helper(i + 1, s)
+    if moneyTaken + coins[i] > targetSum:
+        return getCombinations(i=i + 1, moneyTaken=moneyTaken)
+
+    if moneyTaken + coins[i] == targetSum:
+        return 1 + getCombinations(i=i + 1, moneyTaken=moneyTaken)
+   
     
-    if s + coins[i] > 200:
-        return helper(i + 1, s)
-    
-    # s < targetSum
-    #                    take coin    take not
-    return helper(i, s + coins[i]) + helper(i + 1, s)
+    # moneyTaken < targetSum
+    #                        take coin                                        take not
+    return getCombinations(i=i, moneyTaken=moneyTaken + coins[i]) + getCombinations(i=i + 1, moneyTaken=moneyTaken)
 
 if __name__ == '__main__':
-    print(helper(0, 0))
+    print(getCombinations())
     
     
         
