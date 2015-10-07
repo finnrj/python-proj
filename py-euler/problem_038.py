@@ -15,14 +15,9 @@ What is the largest 1 to 9 pandigital 9-digit number that can be formed as the c
 of an integer with (1,2, ... , n) where n > 1?
 
 '''
+from utilities.pandigital import isPandigital
 
 NUMBERS = "123456789"
-
-def isPandigital(n, numbers):
-    s = str(n)
-    if len(s) != len(numbers):
-        return False
-    return all(c in s for c in numbers)
 
 if __name__ == '__main__':
     print([str(x) + str(2 * x) for x in range(9183, 10000) if isPandigital(int(str(x) + str(2 * x)), NUMBERS)])
