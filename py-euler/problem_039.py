@@ -18,10 +18,16 @@ def solutions(p):
 def solutions2(p):
     return len([1 for a in range(p // 3) for b in range(a, p // 2) if a * b % 12 == 0 and isRightAngleTriangle(a, b, p)])
 
+def solutions3(p):
+    return len([1 for a in range(p // 3) for b in range(a, (p - a) // 2) if a * b % 12 == 0 and isRightAngleTriangle(a, b, p)])
+
 if __name__ == '__main__':
     firstSolution = 'print(max([(solutions(p), p) for p in range(3, 1001)]))'
     print(timeit.timeit(firstSolution, setup='from __main__ import solutions', number=3))
-
+ 
     secondSolution = 'print(max([(solutions2(p), p) for p in range(3, 1001)]))'
     print(timeit.timeit(secondSolution, setup='from __main__ import solutions2', number=3))
+    
+    thirdSolution = 'print(max([(solutions3(p), p) for p in range(3, 1001)]))'
+    print(timeit.timeit(thirdSolution, setup='from __main__ import solutions3', number=3))
     
