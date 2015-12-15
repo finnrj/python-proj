@@ -5,11 +5,12 @@ Created on Oct 20, 2015
 '''
 
 from html.parser import HTMLParser
-import urllib.request
 import os.path
+import urllib.request
+
 
 baseProblemSite = "https://projecteuler.net/problem="
-targetProblems = [41, 42, 43]
+targetProblems = [44]
 
 class EulerProblemHTMLParser(HTMLParser):
     def __init__(self):

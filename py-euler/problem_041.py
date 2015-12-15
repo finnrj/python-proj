@@ -7,6 +7,14 @@ also prime.
 What is the largest n-digit pandigital prime that exists? 
 
 '''
+from itertools import permutations
+from string import digits
+
+from utilities.divisors import isPrime
+
 
 if __name__ == '__main__':
-	pass
+	for to in range(9, 1, -1):
+		candidates = ([int("".join(p)) for p in list(permutations([i for i in digits[1:to]]))
+				if isPrime(int("".join(p)))])
+		print(max(candidates) if candidates else "empty")

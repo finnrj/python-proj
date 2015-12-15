@@ -25,5 +25,15 @@ Find the sum of all 0 to 9 pandigital numbers with this property.
 
 '''
 
+from itertools import permutations
+
+from utilities.divisors import getPrimes
+
+primes = getPrimes(17)
+
+def hasProperty(pandigital):
+	return all([int(pandigital[i:i + 3]) % primes[i - 1] == 0 for i in range(1, 8)])
+
 if __name__ == '__main__':
-	pass
+	print(sum([int("".join(p)) for p in permutations("0123456789") if hasProperty("".join(p))]))
+			

@@ -16,5 +16,15 @@ words?
 
 '''
 
+def getCHarValue(word):
+    return sum([charVals[ch] for ch in word])
+
+from string import ascii_uppercase
+
 if __name__ == '__main__':
-	pass
+	with open("p042_words.txt") as fil:
+		words = [name[1:-1] for line in fil.readlines() for name in line.split(",")]
+		charVals = dict(zip(ascii_uppercase, range(1, len(ascii_uppercase) + 1)))
+
+		triangleNumbers = set(0.5 * n * (n + 1) for n in range(1, 1000))
+		print(len([w for w in words if getCHarValue(w) in triangleNumbers]))
