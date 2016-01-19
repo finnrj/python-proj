@@ -14,7 +14,7 @@ D?
 
 '''
 
-def getPentagonals(count=100):
+def getPentagonals(count=10000):
 	n = 1
 	while n < count:
 		yield n * (3 * n - 1) // 2
@@ -27,4 +27,6 @@ def hasProperty(p1, p2):
 	return (p1 + p2) in pentagonals and (abs(p1 - p2) in pentagonals)
 		
 if __name__ == '__main__':
-	print([i for i in range(len(pentagonals) - 1) if hasProperty(pentagonals[i], pentagonals[i + 1])])
+	n = len(pentagonals) - 1
+# 	print([i for i in range(len(pentagonals) - 1) if hasProperty(pentagonals[i], pentagonals[i + 1])])
+	print([(pentagonall[i + dist] - pentagonall[i]) for dist in range(1, n) for i in range(n - dist) if hasProperty(pentagonall[i], pentagonall[i + dist])])

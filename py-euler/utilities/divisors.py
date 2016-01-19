@@ -12,21 +12,24 @@ import os.path
 pathToPrimesFile = os.path.join(os.path.dirname(__file__), "primes.txt")  # contains first 1.000.000 primes
 assert os.path.isfile(pathToPrimesFile), pathToPrimesFile + " does not exist!"
 with open(pathToPrimesFile) as fil:
-    allPrimes = set([int(p) for line in fil.readlines()[2:-1:2] for p in line.split()]) 
+    allPrimesList = list([int(p) for line in fil.readlines()[2:-1:2] for p in line.split()])
+    allPrimes = set(allPrimesList)
     
 def getFactorization(x):
     """ Returns a list which represents factorization of x:
         The "tuples" in the list have the form [prime, powerOfPrime].
         For Example getFactorization(50) returns [[2, 1], [3, 0], [5, 2]] = 2^1*3^0*5^2 = 50
     """
-    
+    if(x == 0):
+        return []
     result = []
-    for p in allPrimes:
+    for p in allPrimesList:
         power = 0
         while x % p == 0:
             power += 1
             x = x / p
-        result.append([p, power])
+        if(power > 0):
+            result.append([p, power])
         
         if x == 1: return result
             
