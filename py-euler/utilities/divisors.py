@@ -13,23 +13,24 @@ pathToPrimesFile = os.path.join(os.path.dirname(__file__), "primes.txt")  # cont
 assert os.path.isfile(pathToPrimesFile), pathToPrimesFile + " does not exist!"
 with open(pathToPrimesFile) as fil:
     allPrimesList = list([int(p) for line in fil.readlines()[2:-1:2] for p in line.split()])
+    biggestPrime = allPrimesList[-1]
     allPrimes = set(allPrimesList)
     
 def getFactorization(x):
     """ Returns a list which represents factorization of x:
         The "tuples" in the list have the form [prime, powerOfPrime].
-        For Example getFactorization(50) returns [[2, 1], [3, 0], [5, 2]] = 2^1*3^0*5^2 = 50
+        For Example getFactorization(50) returns [[2, 1], [5, 2]] = 2^1 * 5^2 = 50
     """
-    if(x == 0):
-        return []
+    assert isinstance(x, int) and x > 0, "Factorization is only defined for integer numbers greater than 0"
+    
     result = []
-    for p in allPrimesList:
+    for prime in allPrimesList:  # it is imported that the primes are ordered according to their size
         power = 0
-        while x % p == 0:
+        while x % prime == 0:
             power += 1
-            x = x / p
+            x = x / prime
         if(power > 0):
-            result.append([p, power])
+            result.append([prime, power])
         
         if x == 1: return result
             
@@ -47,23 +48,14 @@ def getDivisors(x):
     return result  
 
 def getPrimes(maximum=15485863):
+    if(maximum > biggestPrime):
+        raise Exception("maximum is bigger than the biggest prime in " + pathToPrimesFile)
+    
     return [p for p in allPrimes if p <= maximum]
 
 def isPrime(candidate):
+    if(candidate > biggestPrime):
+        raise Exception("candidate is bigger than the biggest prime in " + pathToPrimesFile)
+    
     return candidate in allPrimes
 
-def getDivisors2(x):
-    result = [1]
-    for factor in getFactorization(x):
-        noDoubleBorder = len(result)
-        borderMovement = 0
-        while factor[1] > 0:
-            result += [i * factor[0] for i in result[noDoubleBorder * borderMovement: ]]
-            borderMovement += 1
-            factor[1] -= 1
-    
-    return result
-
-
-if __name__ == '__main__':
-    print(getPrimes(100))

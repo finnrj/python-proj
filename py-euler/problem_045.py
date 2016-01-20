@@ -16,11 +16,11 @@ Hn=n(2n−1)
 It can be verified that T285 = P165 = H143 = 40755. 
 Find the next triangle number that is also pentagonal and hexagonal. 
 '''
-from utilities.specialNumbers import generatefromLambda
+from utilities.specialNumbers import generateFromLambda
 
 if __name__ == '__main__':
-	pentas = set(list(generatefromLambda(lambda n: n * (3 * n - 1) // 2, 100000)))
-	hexas = set(list(generatefromLambda(lambda n: n * (2 * n - 1), 100000)))
+	pentas = set(list(generateFromLambda(lambda n: n * (3 * n - 1) // 2, 100000)))
+	hexas = set(list(generateFromLambda(lambda n: n * (2 * n - 1), 100000)))
 	print([i for i in pentas if i in hexas])
 	
-# 	pentas = set(list(generatefromLambda(lambda n: n*(3n-1)//2))
+# 	pentas = set(list(generateFromLambda(lambda n: n*(3n-1)//2))

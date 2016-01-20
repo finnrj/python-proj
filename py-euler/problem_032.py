@@ -10,20 +10,15 @@ as a 1 through 9 pandigital.
 HINT: Some products can be obtained in more than one way so be sure to only include 
 it once in your sum.
 '''
+from utilities.specialNumbers import isPandigital
 
-def isPandigital(a, b, c):
-    s = str(a) + str(b) + str(c)
-    if len(s) != 9:
-        return False
-    for c in "123456789":
-        if c not in s:
-            return False
-    return True
+def myConcat(a, b):
+    return int(str(a) + str(b) + str(a * b))
 
 if __name__ == '__main__':
-  oneXfour = [(a, b, a * b) for a in range(1, 10) for b in range(1000, 10000) if isPandigital(a, b, a * b)]
-  twoXthree = [(a, b, a * b) for a in range(10, 100) for b in range(100, 1000) if isPandigital(a, b, a * b)]
-  print(oneXfour)
-  print (len([t[2] for t in oneXfour + twoXthree]), len(set([t[2] for t in oneXfour + twoXthree])),
-         sum(set([t[2] for t in oneXfour + twoXthree])))
-  print([t[2] for t in oneXfour + twoXthree]) 
+    oneXfour = [(a, b, a * b) for a in range(1, 10) for b in range(1000, 10000) if isPandigital(myConcat(a, b))]
+    twoXthree = [(a, b, a * b) for a in range(10, 100) for b in range(100, 1000) if isPandigital(myConcat(a, b))]
+    print(oneXfour)
+    print (len([t[2] for t in oneXfour + twoXthree]), len(set([t[2] for t in oneXfour + twoXthree])),
+           sum(set([t[2] for t in oneXfour + twoXthree])))
+    print([t[2] for t in oneXfour + twoXthree]) 
