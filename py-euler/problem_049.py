@@ -12,6 +12,12 @@ sequence?
 
 '''
 from utilities.specialNumbers import isPandigital
+from utilities.divisors import isPrime
+
+def hasProperty(x):
+	s = str(x)
+	return isPandigital(x + 3330, s) and isPandigital(x + 2 * 3330, s) \
+		and isPrime(x) and isPrime(x + 3330) and isPrime(x + 2 * 3330)
 
 if __name__ == '__main__':
-	print([isPandigital(n, str(1487)) for n in [4817, 8147, 5000]])
+	print([str(i) + str(i + 3330) + str(i + 2 * 3330) for i in range(1487, 10000) if hasProperty(i)])
