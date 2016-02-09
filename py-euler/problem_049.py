@@ -11,12 +11,13 @@ What 12-digit number do you form by concatenating the three terms in this
 sequence? 
 
 '''
-from utilities.specialNumbers import isPandigital
 from utilities.divisors import isPrime
+from utilities.specialNumbers import isPermutation
+
 
 def hasProperty(x):
 	s = str(x)
-	return isPandigital(x + 3330, s) and isPandigital(x + 2 * 3330, s) \
+	return isPermutation(x + 3330, s) and isPermutation(x + 2 * 3330, s) \
 		and isPrime(x) and isPrime(x + 3330) and isPrime(x + 2 * 3330)
 
 if __name__ == '__main__':
