@@ -61,7 +61,6 @@ def hasProperty(candidate, targetNumber, digitCount):
 			return True
 		
 	return False
-# 	return targetNumber <= len([1 for i in string.digits for t in candidate[1] if isPrime(int(rep(candidate[0], t, i)))])
 	
 if __name__ == '__main__':
 	replacements = 3
