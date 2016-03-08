@@ -16,5 +16,13 @@ n!r!(n−r)!
 
 '''
 
+def pascals(maximum=100):
+	i = 1
+	pascal = [1]
+	while i <= maximum:
+		yield pascal
+		pascal = [1] + [pascal[n] + pascal[n + 1] for n in range(len(pascal) - 1)] + [1]
+		i += 1
+
 if __name__ == '__main__':
-	pass
+	print(len([n for p in pascals(101) for n in p if n > 1000000]))

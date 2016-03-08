@@ -34,9 +34,9 @@ class EulerProblemHTMLParser(HTMLParser):
             self.probDescription += data
             
 
-    def shortenLines(self, lines, maxLineLength=80):
+    def shortenLines(self, hands, maxLineLength=80):
         result = []
-        for line in lines:
+        for line in hands:
             lineLength = 0
             shortenedLine = ""
             words = line.split(" ")

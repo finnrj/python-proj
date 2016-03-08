@@ -33,7 +33,7 @@ def getPossiblePos(p, replacements):
 	result = []
 	sp = str(p)
 	for ch in set(sp):
-		if sp.count(ch) >= 2:
+		if sp.count(ch) >= 3:
 			start = 0
 			r = []
 			while sp.find(ch, start, len(sp)) >= 0:

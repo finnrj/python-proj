@@ -40,7 +40,68 @@ Hand Player 1 Player 2 Winner
 
 1 5H 5C 6S 7S KDPair of Fives 
 
+8C TS KC 9H 4S 7D 2S 5D 3S AC
+5C AD 5D AC 9C 7C 5H 8D TD KS
+3H 7H 6S KC JS QH TD JC 2D 8S
+TH 8H 5C QS TC 9H 4D JC KS JS
+7C 5H KC QH JD AS KH 4C AD 4S
+5H KS 9C 7D 9H 8D 3S 5D 5C AH
+6H 4H 5C 3H 2H 3S QH 5S 6S AS
+TD 8C 4H 7C TC KC 4C 3H 7S KS
+7C 9C 6D KD 3H 4C QS QC AC KH
+JC 6S 5H 2H 2D KD 9D 7C AS JS
+
 '''
+import string
+import unittest
+
+
+class Hand:
+	ranks = dict(zip(string.digits[2:] + "TJQKA", range(2, 15))) 
+	
+	def __init__(self, cards):
+		self.values = sorted([self.ranks[card[0]] for card in cards], reverse=True)
+		self.colors = [card[1] for card in cards]	
+	
+	def __str__(self):
+		return "%s, %s" % (self.values, self.colors)
+
+def hasPair(hand):
+	return len(set(hand.values)) == 4
 
 if __name__ == '__main__':
-	pass
+	with open("utilities/poker.txt") as fil:
+		hands = [(Hand(line.strip().split()[:5]), Hand(line.strip().split()[5:]))  for line in fil.readlines()]
+		print ([str(h) for h in hands[0]])
+
+
+def hasStraight(hand):
+	return hand.values[0] - hand.values[-1] == 4 and len(set(hand.values)) == 5 	
+
+def hasRoyalFlush(hand):
+	return len(set(hand.colors)) == 1 and hasStraight(hand)
+
+def hasFullHouse(hand):
+	someValue = hand.values.count(hand.values[0])
+	return len(set(hand.values)) == 2 and someValue >= 2 and someValue <= 3
+
+class TestCase(unittest.TestCase):
+
+	def testHasPair(self):
+		self.assertTrue(hasPair(Hand(['8C', 'TS', 'KC', '8H', '4S'])))
+		self.assertFalse(hasPair(Hand(['9C', 'TS', 'KC', '8H', '4S'])))	
+
+	def testHasRoyalFlush(self):
+		self.assertTrue(hasRoyalFlush(Hand(['AC', 'KC', 'QC', 'TC', 'JC'])))
+		self.assertFalse(hasRoyalFlush(Hand(['AC', 'KC', 'QC', '9C', 'JC'])))	
+
+	def testHasFullHouse(self):
+		self.assertFalse(hasFullHouse(Hand(['AC', 'AH', 'AS', '8C', 'JC'])))
+		self.assertFalse(hasFullHouse(Hand(['AC', 'AH', 'AS', 'AD', 'JC'])))
+		self.assertTrue(hasFullHouse(Hand(['AC', 'AH', 'AS', '8C', '8H'])))
+		
+	if __name__ == '__main__':
+		unittest.main()
+	
+		
+		
