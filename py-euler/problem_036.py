@@ -6,11 +6,10 @@ Find the sum of all numbers, less than one million, which are palindromic in bas
 (Please note that the palindromic number, in either base, may not include leading zeros.)
 
 '''
+from utilities.specialNumbers import isPalindrome
 
 
 
-def isPalindrome(x):
-    return str(x) == str(x)[::-1]
 
 if __name__ == '__main__':
     print(sum([n for n in range(1, 1000000, 2) if isPalindrome(n) and isPalindrome(str(bin(n))[2:])]))

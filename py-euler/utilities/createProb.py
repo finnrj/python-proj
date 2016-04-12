@@ -10,7 +10,7 @@ import urllib.request
 
 
 baseProblemSite = "https://projecteuler.net/problem="
-targetProblems = range(51, 55)
+targetProblems = range(55, 60)
 
 class EulerProblemHTMLParser(HTMLParser):
     def __init__(self):

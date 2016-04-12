@@ -60,14 +60,12 @@ class Hand:
 	ranks = dict(zip(string.digits[2:] + "TJQKA", range(2, 15))) 
 	
 	def __init__(self, cards):
-		'''	cards = ([2H, 3D, KH, TS, 4C] ''' 
-# ToDo better algorithm		
+		'''	cards = ([2H, 3D, KH, TS, 4C] ''' 		
 		values = [self.ranks[card[0]] for card in cards]
-		self.values = sorted(values, reverse=True)
+		self.values = sorted(values, key=lambda val: (values.count(val), val), reverse=True)
 		self.colors = [card[1] for card in cards]	
 	
 	def __str__(self):
-# 		return "%s, %s" % (self.values, self.colors)
 		return "%s" % (self.values)
 
 def hasPair(hand):
@@ -110,16 +108,6 @@ rankMethods = [
 			hasPair]
 
 def valuesToInt(hand):
-	if hasFullHouse(hand):
-		return int(hand.values[2])
-	
-	if hasTwoPairs(hand):
-		return
-	if hasPair(hand):
-		return
-	
-# 	spaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaass
-	
 	return int("".join(["%02d" % val for val in hand.values]))	
 	
 def getWinner(hands):
@@ -130,7 +118,6 @@ def getWinner(hands):
 			return 0
 		if rankMethod(hand1) and not rankMethod(hand0):
 			return 1
-# 	print(hand0, hand1, 0 if valuesToInt(hand0) > valuesToInt(hand1) else 1)
 	return 0 if valuesToInt(hand0) > valuesToInt(hand1) else 1
 
 if __name__ == '__main__':
@@ -148,7 +135,7 @@ class TestCase(unittest.TestCase):
 	fourOfAKind = Hand(['8C', '8D', '8S', '8H', '4S'])
 	fullHouse = Hand(['AC', 'AH', 'AS', '8C', 'JC'])
 	threeOfAKind = Hand(['8C', '8D', 'KC', '8H', '4S'])
-	twoPairs = Hand(['8C', 'TS', 'TC', '8H', '4S'])
+	twoPairs = Hand(['8C', 'TS', 'TC', '8H', 'JS'])
 	pair = Hand(['8C', 'TS', 'KC', '8H', '4S'])
 		
 	def testHasPair(self):
@@ -200,7 +187,9 @@ class TestCase(unittest.TestCase):
 		self.assertEqual(1, getWinner((Hand(['9C', 'KD', 'QC', 'TS', '2C']), self.pair)))
 		self.assertEqual(1, getWinner((Hand(['9C', '4D', '6C', '7S', '2C']), Hand(['9D', '3D', '5C', '8S', '2C']))))
 		self.assertEqual(0, getWinner((Hand(['9C', '9H', '9D', '2S', '2C']), Hand(['8D', '8C', '8H', 'AS', 'AC']))))
+		print(Hand(['QC', 'TH', 'TD', '8S', '5C']), Hand(['JD', 'JC', '8H', '6S', '2C']))
 		self.assertEqual(1, getWinner((Hand(['QC', 'TH', 'TD', '8S', '5C']), Hand(['JD', 'JC', '8H', '6S', '2C']))))
+	
 	if __name__ == '__main__':
 		unittest.main()
 	

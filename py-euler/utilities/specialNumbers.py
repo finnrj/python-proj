@@ -16,6 +16,10 @@ def generateFromLambda(f, count=10000):
         yield f(n)
         n += 1
         
+def isPalindrome(x):
+    return str(x) == str(x)[::-1]
+
+        
 if __name__ == '__main__':
     print(list(generateFromLambda(lambda n: n * (n + 1) // 2, 20)))
             
