@@ -10,7 +10,7 @@ contain the same digits.
 from utilities.specialNumbers import isPermutation
 
 def hasProperty(x):
-	return all([isPermutation(i * x, numbers=str(x)) for i in range(2, 7)])
+	return all([isPermutation(i * x, encryptedChars=str(x)) for i in range(2, 7)])
 	
 if __name__ == '__main__':
 	i = 99

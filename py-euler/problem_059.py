@@ -26,17 +26,38 @@ file containing the encrypted ASCII codes, and the knowledge that the plain
 text must contain common English words, decrypt the message and find the sum of 
 the ASCII values in the original text. 
 
-'''
- 
-import enchant
-import os.path
 
-# with open(os.path.join(os.path.dirname(__file__), "cipher.txt")) as fil:
-# 	print(fil.read())
+
+'''
+
+import itertools
+import string
+
+import enchant
+
+
+with open("cipher.txt") as fil:
+	line = fil.readlines()[0]
+	encryptedChars = line.split(',')[:-1]
 	
+def fetchChars():
+	return [encryptedChars[count:count + 3] for count in range(0, len(encryptedChars) // 3, 3)]
+		
+def decryptTriple(key, triple):
+	result = [chr(int(triple[i]) ^ key[i]) for i in range(3)]
+	return "".join(result)
+				
+def fetchDecryptedWords(key, tripleCount):
+	return ("".join([decryptTriple(key, triple) for triple in fetchChars()])).split()
+
 if __name__ == '__main__':
 	d = enchant.Dict("en_US")
-	print(d.check("hi"))
-	print(ord(" "))
-	print(ord("a"))
-	print("ab" + str(chr(0)) + "ab")
+	
+	for key in itertools.product(string.ascii_lowercase, repeat=3):
+		ords = [ord(ch) for ch in key]
+		words = fetchDecryptedWords(ords, 30)
+		if len(words) > 5 and  d.check(words[0]):  #  all(d.check(word) for word in words[:5])):
+			print(key)
+			print(words)		
+ 	
+ 	

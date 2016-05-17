@@ -4,11 +4,11 @@ Created on Oct 7, 2015
 @author: expert
 '''
 
-def isPermutation(n, numbers="123456789"):
+def isPermutation(n, encryptedChars="123456789"):
     s = str(n)
-    if len(s) != len(numbers):
+    if len(s) != len(encryptedChars):
         return False
-    return all(c in numbers and numbers.count(c) == s.count(c) for c in s)
+    return all(c in encryptedChars and encryptedChars.count(c) == s.count(c) for c in s)
 
 def generateFromLambda(f, count=10000):
     n = 1

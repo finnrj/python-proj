@@ -29,7 +29,7 @@ def getMax(s, column, row, n=ns):
         
 if __name__ == '__main__':
     
-    numbers = [[int(i) for i in s.split()] for s in triangle.split("\n") ]
+    encryptedChars = [[int(i) for i in s.split()] for s in triangle.split("\n") ]
     print(getMax(75, 0, 1))
     
     with open("p018_triangle.txt") as fil:
