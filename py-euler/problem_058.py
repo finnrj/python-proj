@@ -13,7 +13,9 @@ spiral with side length 7 is formed.
 
 41 20  7  8  9 10 27 
 
-42 21 22 23 24 25 2643 44 45 46 47 48 49 
+42 21 22 23 24 25 26
+
+43 44 45 46 47 48 49 
 
 It is interesting to note that the odd squares lie along the bottom right 
 diagonal, but what is more interesting is that 8 out of the 13 numbers lying 
@@ -40,7 +42,7 @@ if __name__ == '__main__':
 	ratio = 1
 	while ratio >= 0.1:
 		sideLength, primeCountInDiagonales = extendSquareSpiral(sideLength , primeCountInDiagonales)
-		diagonalElements = sideLength * 2. - 1
+		diagonalElements = sideLength * 2 - 1
 		ratio = primeCountInDiagonales / diagonalElements
 		print(ratio, sideLength)
 	print(sideLength , primeCountInDiagonales)
