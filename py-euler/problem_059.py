@@ -27,6 +27,16 @@ text must contain common English words, decrypt the message and find the sum of
 the ASCII values in the original text. 
 
 '''
+ 
+import enchant
+import os.path
 
+# with open(os.path.join(os.path.dirname(__file__), "cipher.txt")) as fil:
+# 	print(fil.read())
+	
 if __name__ == '__main__':
-	pass
+	d = enchant.Dict("en_US")
+	print(d.check("hi"))
+	print(ord(" "))
+	print(ord("a"))
+	print("ab" + str(chr(0)) + "ab")

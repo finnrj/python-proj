@@ -25,6 +25,22 @@ side length of the square spiral for which the ratio of primes along both
 diagonals first falls below 10%? 
 
 '''
+from utilities.divisors import isPrime
+
+def extendSquareSpiral(sideLength, primeCountInDiagonales):
+	edgeNumber = sideLength ** 2 
+	for _ in range(4):
+		edgeNumber += sideLength + 1
+		if isPrime(edgeNumber):
+			primeCountInDiagonales += 1
+	return sideLength + 2, primeCountInDiagonales
 
 if __name__ == '__main__':
-	pass
+	sideLength , primeCountInDiagonales = 1, 0
+	ratio = 1
+	while ratio >= 0.1:
+		sideLength, primeCountInDiagonales = extendSquareSpiral(sideLength , primeCountInDiagonales)
+		diagonalElements = sideLength * 2. - 1
+		ratio = primeCountInDiagonales / diagonalElements
+		print(ratio, sideLength)
+	print(sideLength , primeCountInDiagonales)

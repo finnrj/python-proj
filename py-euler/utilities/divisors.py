@@ -9,12 +9,26 @@ from itertools import product
 from operator import mul
 import os.path
 
-pathToPrimesFile = os.path.join(os.path.dirname(__file__), "primes.txt")  # contains first 1.000.000 primes
+lastPrimeFileNotParsed = 1
+primeFolder = "primes"
+
+pathToPrimesFile = os.path.join(os.path.dirname(__file__), primeFolder + "/primes.txt")  # contains first 1.000.000 primes
 assert os.path.isfile(pathToPrimesFile), pathToPrimesFile + " does not exist!"
 with open(pathToPrimesFile) as fil:
     allPrimesList = list([int(p) for line in fil.readlines()[2:-1:2] for p in line.split()])
     biggestPrime = allPrimesList[-1]
     allPrimes = set(allPrimesList)
+    
+def parseNewPrimes():
+    global lastPrimeFileNotParsed, biggestPrime, allPrimesList, allPrimes
+    lastPrimeFileNotParsed += 1
+    pathToPrimesFile = os.path.join(os.path.dirname(__file__), primeFolder + "/primes" + str(lastPrimeFileNotParsed) + ".txt")
+    assert os.path.isfile(pathToPrimesFile), pathToPrimesFile + " does not exist!"
+    with open(pathToPrimesFile) as fil:
+        newPrimesAsList = [int(p) for line in fil.readlines()[2:] for p in line.split() if line]
+        allPrimesList.extend(newPrimesAsList)
+        biggestPrime = allPrimesList[-1]
+        allPrimes.update(set(newPrimesAsList))
     
 def getFactorization(x):
     """ Returns a list which represents factorization of x:
@@ -54,8 +68,10 @@ def getPrimes(maximum=15485863):
     return [p for p in allPrimes if p <= maximum]
 
 def isPrime(candidate):
-    if(candidate > biggestPrime):
-        raise Exception("candidate is bigger than the biggest prime in " + pathToPrimesFile)
+    print(candidate, biggestPrime)
+    while(candidate > biggestPrime):
+        print("parsing next 1.000.000 primes (from 'primes" + str(lastPrimeFileNotParsed + 1) + ".txt')")
+        parseNewPrimes()
     
     return candidate in allPrimes
 

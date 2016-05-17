@@ -17,8 +17,6 @@ class Test(unittest.TestCase):
         self.assertEqual(False, isPrime(1))
         self.assertEqual(False, isPrime(0))
         
-        self.assertRaises(Exception, isPrime, divisors.biggestPrime + 1)
-        
     def testGetPrimes(self):
         self.assertEqual([], getPrimes(0))
         self.assertEqual([2, 3, 5, 7], getPrimes(7))
