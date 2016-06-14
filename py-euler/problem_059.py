@@ -32,32 +32,50 @@ the ASCII values in the original text.
 
 import itertools
 import string
+import unittest
 
 import enchant
 
 
 with open("cipher.txt") as fil:
-	line = fil.readlines()[0]
-	encryptedChars = line.split(',')[:-1]
+	line = fil.readlines()[0][:-1]
+	encryptedChars = line.split(',')
 	
-def fetchChars():
-	return [encryptedChars[count:count + 3] for count in range(0, len(encryptedChars) // 3, 3)]
+def fetchChars(tripleCount, cipher):
+	maximumTriples = min(tripleCount, len(cipher) // 3 + 1) 
+	return [cipher[count * 3:(count + 1) * 3] for count in range(0, maximumTriples)]
 		
 def decryptTriple(key, triple):
-	result = [chr(int(triple[i]) ^ key[i]) for i in range(3)]
+	result = [chr(int(triple[i]) ^ key[i]) for i in range(len(triple))]
 	return "".join(result)
 				
-def fetchDecryptedWords(key, tripleCount):
-	return ("".join([decryptTriple(key, triple) for triple in fetchChars()])).split()
+def fetchDecryptedWords(key, tripleCount, cipher=encryptedChars):
+	return ("".join([decryptTriple(key, triple) for triple in fetchChars(tripleCount, cipher)])).split()
 
 if __name__ == '__main__':
 	d = enchant.Dict("en_US")
-	
 	for key in itertools.product(string.ascii_lowercase, repeat=3):
 		ords = [ord(ch) for ch in key]
-		words = fetchDecryptedWords(ords, 30)
-		if len(words) > 5 and  d.check(words[0]):  #  all(d.check(word) for word in words[:5])):
+		words = fetchDecryptedWords(ords, 900)
+		m = 7
+		if len(words) > m and d.check(words[m - 1]) and d.check(words[m]):
 			print(key)
-			print(words)		
- 	
- 	
+			print(" ".join(words))
+			print(sum([ord(c) for c in " ".join(words)]))
+	print("finished")
+
+class TestCase(unittest.TestCase):
+	
+	def encrypt(self, key, text):
+		cycledKey = key * (len(text) // 3 + 1)
+		return [(ord(t[0]) ^ ord(t[1])) for t in zip(cycledKey, text)]
+	
+	def testEncryptLength(self):
+		pass
+		
+	def testSanityTest(self):
+		plain = "hubba dubba und eine Gurke"
+		key = "bbc"
+		encrypted = self.encrypt(key, plain)
+		self.assertEquals(len(plain), len(encrypted))
+		self.assertEqual(plain, " ".join(fetchDecryptedWords([ord(ch) for ch in key], 900, encrypted)))
