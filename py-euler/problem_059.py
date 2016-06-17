@@ -36,6 +36,7 @@ import unittest
 
 import enchant
 
+dict = enchant.Dict("en_US")
 
 with open("cipher.txt") as fil:
 	line = fil.readlines()[0][:-1]
@@ -52,16 +53,36 @@ def decryptTriple(key, triple):
 def fetchDecryptedWords(key, tripleCount, cipher=encryptedChars):
 	return ("".join([decryptTriple(key, triple) for triple in fetchChars(tripleCount, cipher)])).split()
 
+def checkWord(word):
+	if dict.check(word):
+		return True
+	if len(word) < 2:
+		return False
+	
+	if not word[-1].isalpha():
+		word = word[:-1]
+		if dict.check(word):
+			return True
+	if not word[0].isalpha():
+		word = word[1:]
+	if len(word) == 0:
+		return False
+	return dict.check(word)
+		
 if __name__ == '__main__':
-	d = enchant.Dict("en_US")
 	for key in itertools.product(string.ascii_lowercase, repeat=3):
 		ords = [ord(ch) for ch in key]
 		words = fetchDecryptedWords(ords, 900)
-		m = 7
-		if len(words) > m and d.check(words[m - 1]) and d.check(words[m]):
+		m = len(words)
+		if len(words) < m:
+			m = len(words)
+# 	They did a typo -.- God.14 - missing space!!!
+# 	allow up to 5% false words
+		if [checkWord(w) for w in words[0:m]].count(False) / m < 0.05:
 			print(key)
 			print(" ".join(words))
 			print(sum([ord(c) for c in " ".join(words)]))
+
 	print("finished")
 
 class TestCase(unittest.TestCase):
