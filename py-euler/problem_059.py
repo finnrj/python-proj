@@ -100,3 +100,6 @@ class TestCase(unittest.TestCase):
 		encrypted = self.encrypt(key, plain)
 		self.assertEquals(len(plain), len(encrypted))
 		self.assertEqual(plain, " ".join(fetchDecryptedWords([ord(ch) for ch in key], 900, encrypted)))
+		
+	def testCheckWord(self):
+		self.assertTrue(checkWord("(John)"))

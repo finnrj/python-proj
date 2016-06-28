@@ -68,7 +68,6 @@ def getPrimes(maximum=15485863):
     return [p for p in allPrimes if p <= maximum]
 
 def isPrime(candidate):
-    print(candidate, biggestPrime)
     while(candidate > biggestPrime):
         print("parsing next 1.000.000 primes (from 'primes" + str(lastPrimeFileNotParsed + 1) + ".txt')")
         parseNewPrimes()
