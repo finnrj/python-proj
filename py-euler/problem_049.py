@@ -15,10 +15,10 @@ from utilities.divisors import isPrime
 from utilities.specialNumbers import isPermutation
 
 
-def hasProperty(x):
+def foursHasProperty(x):
 	s = str(x)
 	return isPermutation(x + 3330, s) and isPermutation(x + 2 * 3330, s) \
 		and isPrime(x) and isPrime(x + 3330) and isPrime(x + 2 * 3330)
 
 if __name__ == '__main__':
-	print([str(i) + str(i + 3330) + str(i + 2 * 3330) for i in range(1487, 10000) if hasProperty(i)])
+	print([str(i) + str(i + 3330) + str(i + 2 * 3330) for i in range(1487, 10000) if foursHasProperty(i)])

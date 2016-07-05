@@ -49,7 +49,7 @@ def rep(s, t, i):
 		r = r[:j] + i + r[j + 1:]
 	return r
 
-def hasProperty(candidate, targetNumber, digitCount):
+def foursHasProperty(candidate, targetNumber, digitCount):
 	for t in candidate[1]:
 		result = []
 		for i in string.digits:
@@ -67,4 +67,4 @@ if __name__ == '__main__':
 	digitCount = 6 
 	candidates = getCandidates(digitCount, replacements)
 	l = [(str(p), getPossiblePos(p, replacements)) for p in candidates]
-	print(sorted([p for p in l if hasProperty(p, 8, digitCount)]))
+	print(sorted([p for p in l if foursHasProperty(p, 8, digitCount)]))

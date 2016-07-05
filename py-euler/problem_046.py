@@ -16,7 +16,7 @@ and twice a square?
 from math import sqrt, ceil
 from utilities.divisors import isPrime
 
-def hasProperty(x):
+def foursHasProperty(x):
 	for i in range(1, ceil(sqrt(x / 2))):
 		print(x, i, x - 2 * i ** 2)
 		if isPrime(x - 2 * i ** 2):
@@ -27,6 +27,6 @@ if __name__ == '__main__':
 	i = 1
 	while True:
 		i = i + 2 
-		if not isPrime(i) and not hasProperty(i):
+		if not isPrime(i) and not foursHasProperty(i):
 			print(i)
 			break

@@ -23,10 +23,10 @@ def getPentagonals(count=10000):
 pentagonall = list(getPentagonals())
 pentagonals = set(pentagonall)
 
-def hasProperty(p1, p2):
-	return (p1 + p2) in pentagonals and (abs(p1 - p2) in pentagonals)
+def foursHasProperty(pair1, pair2):
+	return (pair1 + pair2) in pentagonals and (abs(pair1 - pair2) in pentagonals)
 		
 if __name__ == '__main__':
 	n = len(pentagonals) - 1
-# 	print([i for i in range(len(pentagonals) - 1) if hasProperty(pentagonals[i], pentagonals[i + 1])])
-	print([(pentagonall[i + dist] - pentagonall[i]) for dist in range(1, n) for i in range(n - dist) if hasProperty(pentagonall[i], pentagonall[i + dist])])
+# 	print([i for i in range(len(pentagonals) - 1) if foursHasProperty(pentagonals[i], pentagonals[i + 1])])
+	print([(pentagonall[i + dist] - pentagonall[i]) for dist in range(1, n) for i in range(n - dist) if foursHasProperty(pentagonall[i], pentagonall[i + dist])])

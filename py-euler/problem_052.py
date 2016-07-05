@@ -9,14 +9,14 @@ contain the same digits.
 '''
 from utilities.specialNumbers import isPermutation
 
-def hasProperty(x):
+def foursHasProperty(x):
 	return all([isPermutation(i * x, encryptedChars=str(x)) for i in range(2, 7)])
 	
 if __name__ == '__main__':
 	i = 99
 	while True:
 		i = i + 3
-		if(int(str(i)[:2]) < 17 and hasProperty(i)):
+		if(int(str(i)[:2]) < 17 and foursHasProperty(i)):
 			print ("found the bloody thing: %d" % i)
 			break
 		print(i)

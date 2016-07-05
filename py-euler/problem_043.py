@@ -31,9 +31,9 @@ from utilities.divisors import getPrimes
 
 primes = getPrimes(17)
 
-def hasProperty(pandigital):
+def foursHasProperty(pandigital):
 	return all([int(pandigital[i:i + 3]) % primes[i - 1] == 0 for i in range(1, 8)])
 
 if __name__ == '__main__':
-	print(sum([int("".join(p)) for p in permutations("0123456789") if hasProperty("".join(p))]))
+	print(sum([int("".join(p)) for p in permutations("0123456789") if foursHasProperty("".join(p))]))
 			

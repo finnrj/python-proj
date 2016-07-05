@@ -37,11 +37,11 @@ def generateSquareExpand(maximum=1000):
 		f = Fraction(1, 2 + f)
 		maximum -= 1
 
-def hasProperty(fraction):
+def foursHasProperty(fraction):
 	return len(str(fraction.numerator)) > len(str(fraction.denominator))		 
 
 if __name__ == '__main__':
- 	result = [i for i in generateSquareExpand() if hasProperty(i)]
+ 	result = [i for i in generateSquareExpand() if foursHasProperty(i)]
  	print(len(result), result)
 
 
