@@ -25,57 +25,55 @@ each polygonal type: triangle, square, pentagonal, hexagonal, heptagonal, and
 octagonal, is represented by a different number in the set. 
 
 '''
-import itertools
 
 from utilities.specialNumbers import generateFromLambda
 
 
-def createNumbers(f):
-	return [str(i) for i in  list(generateFromLambda(f, 159)) if 999 < i and i < 10000]
+def createNumbers(f, numberType):
+	return [(str(i), numberType) for i in  list(generateFromLambda(f, 159)) if 999 < i and i < 10000]
 
-def solveInOrder(numbers):
-	for ns in numbers:
-		start = ""
-		result = []
-		for n in ns:
-			if start == "" or n[:2] == start:
-				result.append(n)
-				start = n[2:]
-				break
-			
-		if len(result) == 6:
-			print(result)
+def isAvailableType(number, usedTypes):
+	return not number[1] in usedTypes
 
-			
+def isSearchedContinuation(number, searchedPrefix):
+	return len(searchedPrefix) == 0 or number[0][:2] == searchedPrefix
 
-def hasProperty():
-	numbers = [tetras, pentas, hexas, heptas, octas]
-	candidates = []  # [([numbers], [visited numbers]]
-# 	for n in trias:
-# 		neighbors = []
-# 		for ns in numbers:
-# 			for n2 in ns:
-# 				if(neighbors(n,n2)):
-# 					neighbors.append((n2, (numbers - ns)) )
-	
+def isPossibleContinuation(number, usedTypes, searchedPrefix):
+	return isAvailableType(number, usedTypes) and isSearchedContinuation(number, searchedPrefix)
+
+def isSolutionFound(usedNumbers, usedTypes, number):
+	return len(usedTypes) == 6 and usedNumbers[0][0][:2] == number[0][2:]
+
+def solveRecursively(usedNumbers, usedTypes, searchedPrefix, numberCandidates):
+	for number in numberCandidates:
+		if isPossibleContinuation(number, usedTypes, searchedPrefix): 
+			usedNumbers.append(number)
+			usedTypes = usedTypes + number[1]
+			newCandidates = numberCandidates[:]
+			newCandidates.remove(number)
+			if isSolutionFound(usedNumbers, usedTypes, number):
+				print("Solution found:", usedNumbers)
+				print("searched sum:", sum(int(n[0]) for n in usedNumbers))
+				return None
+			result = solveRecursively(usedNumbers, usedTypes, number[0][2:], newCandidates)
+			if result == None:
+				return None
+			else:
+				usedNumbers.remove(number)
+				usedTypes = usedTypes[:-1]
+	return usedNumbers
 
 if __name__ == '__main__':
-	trias = createNumbers(lambda n: n * (n + 1) // 2)
-	tetras = createNumbers(lambda n: n * n)
-	pentas = createNumbers(lambda n: n * (3 * n - 1) // 2)
-	hexas = createNumbers(lambda n: n * (2 * n - 1))
-	heptas = createNumbers(lambda n: n * (5 * n - 3) // 2)
-	octas = createNumbers(lambda n: n * (3 * n - 2))
+	trias = createNumbers(lambda n: n * (n + 1) // 2, "3")
+	tetras = createNumbers(lambda n: n * n, "4")
+	pentas = createNumbers(lambda n: n * (3 * n - 1) // 2, "5")
+	hexas = createNumbers(lambda n: n * (2 * n - 1), "6")
+	heptas = createNumbers(lambda n: n * (5 * n - 3) // 2, "7")
+	octas = createNumbers(lambda n: n * (3 * n - 2), "8")
 
-	print(trias)
-	print(tetras) 
-	print(pentas) 
-	print(hexas)
+	numbers = trias + tetras + pentas + hexas + heptas + octas
 	
-	numbers = [tetras, trias, pentas, hexas, heptas, octas]
-	
-	for ns in itertools.combinations(numbers, len(numbers)):
-		solveInOrder(ns)
-	
+	if solveRecursively([], "", "", numbers) != None:
+		print("no solution")
 	print("finished")
 
