@@ -38,7 +38,7 @@ def isSearchedContinuation(numberPolygonal, usedNumbers):
 	return len(usedNumbers) == 0 or numberPolygonal[0][:2] == searchedPrefix(usedNumbers)
 
 def isPossibleContinuation(numberPolygonal, usedNumbers):
-	return isAvailableType(numberPolygonal, usedNumbers) and isSearchedContinuation(numberPolygonal, usedNumbers)
+	return len(usedNumbers) < 6 and isAvailableType(numberPolygonal, usedNumbers) and isSearchedContinuation(numberPolygonal, usedNumbers)
 
 def isSolutionFound(numberPolygonal, usedNumbers):
 	return len(usedNumbers) == 6 and usedNumbers[0][0][:2] == numberPolygonal[0][2:]
@@ -51,16 +51,15 @@ def usedTypes(usedNumbers):
 
 def solveRecursively(usedNumbers, candidates):
 	for numberPolygonal in candidates:
-		if isPossibleContinuation(numberPolygonal, usedNumbers): 
-			usedNumbers.append(numberPolygonal)
-			if isSolutionFound(numberPolygonal, usedNumbers):
-				return usedNumbers
-			if len(usedNumbers) < 6: 
-				result = solveRecursively(usedNumbers, [n for n in candidates if n != numberPolygonal])
-				if len(result) == 6:
-					return result
-			usedNumbers.remove(numberPolygonal)
-	return usedNumbers
+		if not isPossibleContinuation(numberPolygonal, usedNumbers):
+			continue 
+		usedNumbers.append(numberPolygonal)
+		if isSolutionFound(numberPolygonal, usedNumbers):
+			return True
+		if solveRecursively(usedNumbers, [n for n in candidates if n != numberPolygonal]):
+			return True
+		usedNumbers.remove(numberPolygonal)
+	return False
 
 if __name__ == '__main__':
 	trias = createNumbers(lambda n: n * (n + 1) // 2, "3")
@@ -72,8 +71,8 @@ if __name__ == '__main__':
 
 	numbers = trias + tetras + pentas + hexas + heptas + octas
 	
-	result = solveRecursively([], numbers)
-	if len(result) == 6:
+	result = []
+	if solveRecursively(result, numbers):
 		print("Solution found:", result)
 		print("searched sum:", sum(int(n[0]) for n in result))
 		print("finished")
