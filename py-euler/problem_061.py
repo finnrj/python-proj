@@ -28,38 +28,38 @@ octagonal, is represented by a different number in the set.
 
 from utilities.specialNumbers import generateFromLambda
 
-
 def createNumbers(f, polygonal):
 	return [(str(i), polygonal) for i in  list(generateFromLambda(f, 159)) if 999 < i and i < 10000]
 
-def isAvailableType(numberPolygonal, usedTypes):
-	return not numberPolygonal[1] in usedTypes
+def isAvailableType(numberPolygonal, usedNumbers):
+	return not numberPolygonal[1] in usedTypes(usedNumbers)
 
-def isSearchedContinuation(numberPolygonal, searchedPrefix):
-	return len(searchedPrefix) == 0 or numberPolygonal[0][:2] == searchedPrefix
+def isSearchedContinuation(numberPolygonal, usedNumbers):
+	return len(usedNumbers) == 0 or numberPolygonal[0][:2] == searchedPrefix(usedNumbers)
 
-def isPossibleContinuation(numberPolygonal, usedTypes, searchedPrefix):
-	return isAvailableType(numberPolygonal, usedTypes) and isSearchedContinuation(numberPolygonal, searchedPrefix)
+def isPossibleContinuation(numberPolygonal, usedNumbers):
+	return isAvailableType(numberPolygonal, usedNumbers) and isSearchedContinuation(numberPolygonal, usedNumbers)
 
-def isSolutionFound(usedNumbers, usedTypes, numberPolygonal):
-	return len(usedTypes) == 6 and usedNumbers[0][0][:2] == numberPolygonal[0][2:]
+def isSolutionFound(numberPolygonal, usedNumbers):
+	return len(usedNumbers) == 6 and usedNumbers[0][0][:2] == numberPolygonal[0][2:]
 
-def solveRecursively(usedNumbers, usedTypes, searchedPrefix, candidates):
+def searchedPrefix(usedNumbers):
+	return usedNumbers[-1][0][2:]
+
+def usedTypes(usedNumbers):
+	return [np[1] for np in usedNumbers]
+
+def solveRecursively(usedNumbers, candidates):
 	for numberPolygonal in candidates:
-		if isPossibleContinuation(numberPolygonal, usedTypes, searchedPrefix): 
+		if isPossibleContinuation(numberPolygonal, usedNumbers): 
 			usedNumbers.append(numberPolygonal)
-			usedTypes = usedTypes + numberPolygonal[1]
-			newCandidates = [n for n in candidates if n != numberPolygonal]
-			if isSolutionFound(usedNumbers, usedTypes, numberPolygonal):
-				print("Solution found:", usedNumbers)
-				print("searched sum:", sum(int(n[0]) for n in usedNumbers))
-				return None
-			result = solveRecursively(usedNumbers, usedTypes, numberPolygonal[0][2:], newCandidates)
-			if result == None:
-				return None
-			else:
-				usedNumbers.remove(numberPolygonal)
-				usedTypes = usedTypes[:-1]
+			if isSolutionFound(numberPolygonal, usedNumbers):
+				return usedNumbers
+			if len(usedNumbers) < 6: 
+				result = solveRecursively(usedNumbers, [n for n in candidates if n != numberPolygonal])
+				if len(result) == 6:
+					return result
+			usedNumbers.remove(numberPolygonal)
 	return usedNumbers
 
 if __name__ == '__main__':
@@ -72,5 +72,12 @@ if __name__ == '__main__':
 
 	numbers = trias + tetras + pentas + hexas + heptas + octas
 	
-	print("finished" if solveRecursively([], "", "", numbers) == None else "no solution") 
+	result = solveRecursively([], numbers)
+	if len(result) == 6:
+		print("Solution found:", result)
+		print("searched sum:", sum(int(n[0]) for n in result))
+		print("finished")
+	else: 
+		print("no solution")
+ 
 
