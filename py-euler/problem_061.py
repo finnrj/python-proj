@@ -71,10 +71,10 @@ if __name__ == '__main__':
 
 	numbers = trias + tetras + pentas + hexas + heptas + octas
 	
-	result = []
-	if solveRecursively(result, numbers):
-		print("Solution found:", result)
-		print("searched sum:", sum(int(n[0]) for n in result))
+	accumulator = []
+	if solveRecursively(accumulator, numbers):
+		print("Solution found:", accumulator)
+		print("searched sum:", sum(int(n[0]) for n in accumulator))
 		print("finished")
 	else: 
 		print("no solution")
