@@ -27,18 +27,14 @@ def getMagicNumbers(count=10):
 	return result
 
 def magic2(magicNumbers):
-	reduce(lambda fHinten, f2: Fraction(), list(reversed(magicNumbers)))
-	
+	return magicNumbers[0] + reduce(lambda f1, f2: Fraction(1, f2 + f1), list(reversed(magicNumbers[1:])), 0)
 	
 def magic(magicNumbers):
 	if len(magicNumbers) == 1:
 		return Fraction(1, magicNumbers[0])
-	
 	return Fraction(1, magicNumbers[0] + magic(magicNumbers[1:]))
 
 if __name__ == '__main__':
-	print(getMagicNumbers())
 	print(magic2(getMagicNumbers()))
-# 	print(sum([int(ch) for ch in str((2 + magic(getMagicNumbers(1000)[1:])).numerator)]))
-# 	print(produceFraction([1, 2], []))
+	print(sum([int(ch) for ch in str(magic2(getMagicNumbers(100)).numerator)]))
 	
