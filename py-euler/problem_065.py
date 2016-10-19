@@ -27,10 +27,11 @@ def getMagicNumbers(count=10):
 	return result
 
 def magic(magicNumbers):
-	return magicNumbers[0] + reduce(
-								lambda accumulator, nextMagicNumber: Fraction(1, nextMagicNumber + accumulator),
-								reversed(magicNumbers[1:]),
-								0)
+	return magicNumbers[0] + \
+		reduce(
+		lambda accumulator, nextMagicNumber: Fraction(1, nextMagicNumber + accumulator),
+									reversed(magicNumbers[1:]),
+									0)
 	
 def oldMagic(magicNumbers):
 	if len(magicNumbers) == 1:
