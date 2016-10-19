@@ -26,15 +26,18 @@ def getMagicNumbers(count=10):
 		result = result + [1, 2 * (a + 1)]
 	return result
 
-def magic2(magicNumbers):
-	return magicNumbers[0] + reduce(lambda f1, f2: Fraction(1, f2 + f1), list(reversed(magicNumbers[1:])), 0)
-	
 def magic(magicNumbers):
+	return magicNumbers[0] + reduce(
+								lambda accumulator, nextMagicNumber: Fraction(1, nextMagicNumber + accumulator),
+								reversed(magicNumbers[1:]),
+								0)
+	
+def oldMagic(magicNumbers):
 	if len(magicNumbers) == 1:
 		return Fraction(1, magicNumbers[0])
 	return Fraction(1, magicNumbers[0] + magic(magicNumbers[1:]))
 
 if __name__ == '__main__':
-	print(magic2(getMagicNumbers()))
-	print(sum([int(ch) for ch in str(magic2(getMagicNumbers(100)).numerator)]))
+	print(magic(getMagicNumbers()))
+	print(sum([int(ch) for ch in str(magic(getMagicNumbers(100)).numerator)]))
 	
