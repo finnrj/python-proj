@@ -13,6 +13,7 @@ The square root of 2 can be written as an infinite continued fraction.
 
 from _functools import reduce
 from fractions import Fraction
+from utilities.RegularContinuedFraction import regularContinuedFractionToFraction
 
 
 def getMagicNumbers(count=10):
@@ -39,6 +40,8 @@ def oldMagic(magicNumbers):
 	return Fraction(1, magicNumbers[0] + magic(magicNumbers[1:]))
 
 if __name__ == '__main__':
+	print(sum([int(ch) for ch in str(regularContinuedFractionToFraction(getMagicNumbers(100)).numerator)]))
+	
 	print(magic(getMagicNumbers()))
 	print(sum([int(ch) for ch in str(magic(getMagicNumbers(100)).numerator)]))
 	

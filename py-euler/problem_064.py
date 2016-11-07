@@ -75,6 +75,7 @@ def isIrrationalSquare(x):
     return not(floor(sqrt(x)) - sqrt(x) == 0)
 
 if __name__ == '__main__':
+    print([i for i in getAllFractions(3)])
     lenOfPeriods = [len(getAllFractions(i)) for i in range(2, 10001) if isIrrationalSquare(i)]
     print("max period is: %d" % max(lenOfPeriods))
     print("solution is: %d" % sum([l % 2 for l in lenOfPeriods]))
