@@ -23,9 +23,9 @@ or
 
 [a_0; a_1, a_2, ..., a_k]
 '''
-from math import floor, sqrt
 from fractions import Fraction
 from functools import reduce
+from math import floor, sqrt
 
 
 def getRegularContinuedFraction(fraction):
@@ -57,12 +57,12 @@ def regularContinuedFractionToFraction(regContFrac):
         return regContFrac[0]
     
     return regContFrac[0] + reduce(
-        lambda acc, a_i: Fraction(acc.denominator, a_i*acc.denominator+acc.numerator),
+        lambda acc, a_i: Fraction(acc.denominator, a_i * acc.denominator + acc.numerator),
         reversed(regContFrac[1:-1]),
         Fraction(1, regContFrac[-1]))
     
 def getRepeatingRegContFrac(sqrtX):
-    ''' Every √x can be written through a repeating continues fraction. For example:
+    ''' Every √x can be written through a repeating continued fraction. For example:
         √3 = 1 + √3 - 1
            = 1 + (√3 - 1) * 1
            = 1 + (√3 - 1) * (√3 + 1) / (√3 + 1) 
@@ -80,4 +80,4 @@ def getRepeatingRegContFrac(sqrtX):
         return [1, 1, 2] meaning the next number would have been already in there
     '''
     
-    return pass
+    pass
