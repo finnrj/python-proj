@@ -23,7 +23,7 @@ or
 
 [a_0; a_1, a_2, ..., a_k]
 '''
-from _pydecimal import _sqrt_nearest
+# from _pydecimal import _sqrt_nearest
 from fractions import Fraction
 from functools import reduce
 from math import floor, sqrt
@@ -86,5 +86,5 @@ def getRepeatingRegContFrac(sqrtArg):
     
     return [a for (m, d, a) in magic]
 
-print(getRepeatingRegContFrac(2))    
-print(getRepeatingRegContFrac(14))
+# print(getRepeatingRegContFrac(2))    
+# print(getRepeatingRegContFrac(14))

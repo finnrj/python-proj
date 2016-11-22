@@ -1,3 +1,4 @@
+
 '''
 
 Consider the following "magic" 3-gon ring, filled with the numbers 1 to 6, and 
