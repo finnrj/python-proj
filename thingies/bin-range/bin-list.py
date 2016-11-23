@@ -35,43 +35,43 @@ def compactRanges(cardtype, rangeBorders):
         if isBeginningOfRange(borderValue):
             counter = country2counter.get(country, (0, borderValue))
             newCount = counter[0] + 1
-            if newCount == 1: # new range begin for this country
+            if newCount == 1:  # new range begin for this country
                 country2counter[country] = (newCount, borderValue)
-                if len(countryStack) > 0 : # at least one other country range was started
+                if len(countryStack) > 0 :  # at least one other country range was started
                     previousCountry = countryStack[-1]
                     counter = country2counter.get(previousCountry)
                     print("appending at range beginning: " + str((counter[1], borderValue - 1, cardtype, previousCountry))) 
-                    compactedRanges.append((counter[1], borderValue - 1, cardtype, previousCountry)) # end the started range
-            else: # at least one range is already started for this country
-                previousCountry = countryStack[-1] # country stack cannot be empty
+                    compactedRanges.append((counter[1], borderValue - 1, cardtype, previousCountry))  # end the started range
+            else:  # at least one range is already started for this country
+                previousCountry = countryStack[-1]  # country stack cannot be empty
                 if previousCountry == country:
                     country2counter[country] = (newCount, counter[1])
-                else: # end the started range for the previous country
+                else:  # end the started range for the previous country
                     country2counter[country] = (newCount, borderValue)
                     previousCounter = country2counter.get(previousCountry)
                     print("appending at range beginning: " + str((previousCounter[1], borderValue - 1, cardtype, previousCountry))) 
-                    compactedRanges.append((previousCounter[1], borderValue - 1, cardtype, previousCountry)) # end the started range
+                    compactedRanges.append((previousCounter[1], borderValue - 1, cardtype, previousCountry))  # end the started range
             countryStack.append(country)
             if newCount > maxCount[0]:
                 maxCount = (newCount, country)
-        else: # it is a range end
+        else:  # it is a range end
             if not country in country2counter.keys():
                 print("Houston - we've got a border problem: " + str(border))
                 exit(1)
             counter = country2counter.get(country)
             newCount = counter[0] - 1
-            if newCount == 0: # we might have to finish a range for this country
-                if countryStack[-1] == country: # country stack cannot be empty
+            if newCount == 0:  # we might have to finish a range for this country
+                if countryStack[-1] == country:  # country stack cannot be empty
                     print("appending at range end: " + str((counter[1], borderValue - 1.5, cardtype, country))) 
                     compactedRanges.append((counter[1], borderValue - 1.5, cardtype, country))
-                    if len(countryStack) > 1 and not countryStack[-2] == country: # restart range for this country
+                    if len(countryStack) > 1 and not countryStack[-2] == country:  # restart range for this country
                         country2counter[countryStack[-2]] = (country2counter.get(countryStack[-2])[0], borderValue - 0.5) 
                 del(country2counter[country])
-            else: # the range is not finished for this country yet
-                if not countryStack[-2] == country: # finish this range
+            else:  # the range is not finished for this country yet
+                if not countryStack[-2] == country:  # finish this range
                     print("appending at range end: " + str((counter[1], borderValue - 1.5, cardtype, country))) 
                     compactedRanges.append((counter[1], borderValue - 1.5, cardtype, country))
-                    if len(countryStack) > 1 and not countryStack[-2] == country: # restart range for this country
+                    if len(countryStack) > 1 and not countryStack[-2] == country:  # restart range for this country
                         country2counter[countryStack[-2]] = (country2counter.get(countryStack[-2])[0], borderValue - 0.5) 
                 country2counter[country] = (newCount, counter[1])
             countryStack.pop(lastIndex(countryStack, country))
@@ -226,29 +226,25 @@ class bin_list_test(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
-    
-    # lines = [line.split(';')[:4] for line in open('/home/finn/python/misc/bin_liste_concardis_gesamt-20160902.csv', encoding='latin-1', errors='ignore').readlines()[1:]]
-    # linesCount = len(lines)
-    # print("bin lines read: %d" % linesCount)
-    # cardtype2rangeBorder = makeCardtype2RangeBorder(lines)
-    # # print(list((cardtype,  cardtype2rangeBorder[cardtype][:5]) for cardtype in CARDTYPES))
-    # CARDTYPES = cardtype2rangeBorder.keys()
-    # print("cardtype :  count")
-    # for cardtype in CARDTYPES:
-    #     print("%5s    :%7d" % (cardtype, len(cardtype2rangeBorder[cardtype])//2))
-    # print()
-
-    # for cardtype in CARDTYPES:
-    #     cardtype2rangeBorder[cardtype] = compactRanges(cardtype, cardtype2rangeBorder[cardtype])
-
-    # rangeCount = sum(len(cardtype2rangeBorder[cardtype]) for cardtype in CARDTYPES)
-    # print("\nAfter contraction of ranges:")
-    # print("range count: %d" % rangeCount) 
-    # print("cardtype :  count")
-    # for cardtype in CARDTYPES:
-    #     print("%5s    :%7d" % (cardtype, len(cardtype2rangeBorder[cardtype])//2))
-
-    # print("contraction in %% = %0.2f%%" % (100 - (rangeCount/linesCount * 100)))
-    # print()
+#     unittest.main()
+    lines = [line.split(';')[:4] for line in open('bin_liste_concardis_gesamt-20160902.csv', encoding='latin-1', errors='ignore').readlines()[1:]]
+    linesCount = len(lines)
+    print("bin lines read: %d" % linesCount)
+    cardtype2rangeBorder = makeCardtype2RangeBorder(lines)
+    # print(list((cardtype,  cardtype2rangeBorder[cardtype][:5]) for cardtype in CARDTYPES))
+    CARDTYPES = cardtype2rangeBorder.keys()
+    print("cardtype :  count")
+    for cardtype in CARDTYPES:
+        print("%5s    :%7d" % (cardtype, len(cardtype2rangeBorder[cardtype]) // 2))
+    print()
+    for cardtype in CARDTYPES:
+        cardtype2rangeBorder[cardtype] = compactRanges(cardtype, cardtype2rangeBorder[cardtype])
+    rangeCount = sum(len(cardtype2rangeBorder[cardtype]) for cardtype in CARDTYPES)
+    print("\nAfter contraction of ranges:")
+    print("range count: %d" % rangeCount) 
+    print("cardtype :  count")
+    for cardtype in CARDTYPES:
+        print("%5s    :%7d" % (cardtype, len(cardtype2rangeBorder[cardtype]) // 2))
+    print("contraction in %% = %0.2f%%" % (100 - (rangeCount / linesCount * 100)))
+    print()
     
