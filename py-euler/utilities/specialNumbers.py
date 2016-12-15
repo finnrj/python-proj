@@ -8,7 +8,12 @@ def isPermutation(n, encryptedChars="123456789"):
     s = str(n)
     if len(s) != len(encryptedChars):
         return False
-    return all(c in encryptedChars and encryptedChars.count(c) == s.count(c) for c in s)
+#     return all(c in encryptedChars and encryptedChars.count(c) == s.count(c) for c in s)
+    result = True
+    for c in s:
+        if not c in encryptedChars or encryptedChars.count(c) != s.count(c):
+            return False
+    return result
 
 def generateFromLambda(f, count=10000):
     n = 1
