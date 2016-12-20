@@ -1,7 +1,7 @@
 '''
 
-Consider the fraction, n/d, where n and d are positive integers. If nd and 
-HCF(n,d)=1, it is called a reduced proper fraction. 
+Consider the fraction, primes/d, where primes and d are positive integers. If nd and 
+HCF(primes,d)=1, it is called a reduced proper fraction. 
 
 If we list the set of reduced proper fractions for d ≤ 8 in ascending order of 
 size, we get: 
@@ -15,6 +15,25 @@ How many elements would be contained in the set of reduced proper fractions for
 d ≤ 1,000,000? 
 
 '''
+from fractions import Fraction
+from utilities.divisors import getFactorization, isPrime
 
+
+def phi(n):
+	result = n
+	if isPrime(n):
+		return n - 1
+	for p in getFactorization(n):
+		result *= (1 - 1 / p[0])
+	return result	
+
+def find_solution(maxi):
+	return sum(phi(n) for n in range(2, maxi))
+	
 if __name__ == '__main__':
-	pass
+# 	maxi = 10 ** 6
+# 	print(sum(phi(n) for n in range(2, maxi)))
+	
+	import cProfile
+	cProfile.run('find_solution(10**5)')	
+

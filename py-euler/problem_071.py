@@ -16,6 +16,21 @@ order of size, find the numerator of the fraction immediately to the left of
 3/7. 
 
 '''
+from fractions import Fraction
 
 if __name__ == '__main__':
-	pass
+	closestTo3_7 = 0
+	three_seven = Fraction(3, 7)
+
+	for d in range(1, 10 ** 6 + 1):
+		n = int(3 * d / 7)
+		n_d = Fraction(n, d)
+		if n_d == three_seven:
+			continue
+		
+		if three_seven - n_d < three_seven - closestTo3_7:
+			closestTo3_7 = n_d
+			print(closestTo3_7)
+			
+	print(closestTo3_7)
+	print("finish")
