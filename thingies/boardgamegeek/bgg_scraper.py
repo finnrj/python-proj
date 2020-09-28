@@ -1,5 +1,7 @@
+import pickle
 import re
 from functools import reduce
+import json
 
 import requests
 from bs4 import BeautifulSoup
@@ -48,12 +50,6 @@ class BGGRow:
         return template % (self.rank, self.rank_marker,
                            self.name, self.rating, self.votes)
 
-def main_soup():
-    target_url = "https://boardgamegeek.com/browse/boardgame"
-    html_text = requests.get(target_url).text
-    soup = BeautifulSoup(html_text, 'html.parser')
-    rs = [child for row in soup.find_all(id='row_')[:] for child in row.children]
-    print(rs)
 
 
 def main():
@@ -87,6 +83,9 @@ def main():
         if e.rank <= 3:
             print(k)
             print(e)
+
+    with open("target.pickle", 'wb') as fil:
+        pickle.dump(data, fil)
 
 
 def fetch_rating(rows):
@@ -123,3 +122,11 @@ def fetch_names(rows):
 
 if __name__ == '__main__':
     main()
+
+
+# def main_soup():
+#     target_url = "https://boardgamegeek.com/browse/boardgame"
+#     html_text = requests.get(target_url).text
+#     soup = BeautifulSoup(html_text, 'html.parser')
+#     rs = [child for row in soup.find_all(id='row_')[:] for child in row.children]
+#     print(rs)
