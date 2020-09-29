@@ -1,10 +1,7 @@
 import pickle
 import re
 from functools import reduce
-import json
-
-import requests
-from bs4 import BeautifulSoup
+from urllib import request
 
 
 class BGGRow:
@@ -17,6 +14,7 @@ class BGGRow:
         self.rating = float(rating)
         self.rating_marker = ""
         self.votes = int(votes)
+        self.votes_marker = ""
 
     def update(self, other):
         self.set_rank_marker(other.rank)
@@ -27,13 +25,19 @@ class BGGRow:
             self.description = other.description
         if not self.image_link is other.image_link:
             self.image_link = other.image_link
+        self.set_votes_marker(other.votes)
         self.votes = other.votes
+
+    def set_votes_marker(self, new_votes):
+        difference = new_votes - self.votes
+        prefix = "+" if difference > 0 else ""
+        self.votes_marker = "(" + prefix + ("%4d" % difference) + ")"
 
     def set_rank_marker(self, new_rank):
         if new_rank > self.rank:
-            self.rank_marker = '(^^)'
+            self.rank_marker = '(vv%2d)' % (new_rank - self.rank)
         elif new_rank < self.rank:
-            self.rank_marker = '(vv)'
+            self.rank_marker = '(^^%2d)' % (self.rank - new_rank)
         else:
             self.rank_marker = ""
 
@@ -46,24 +50,57 @@ class BGGRow:
             self.rating_marker = ""
 
     def __str__(self):
-        template = "%3d %4s,%-30s, %2.3f, %7d"
+        template = "%3d %-6s,%-30s, %2.3f, %7d %s"
         return template % (self.rank, self.rank_marker,
-                           self.name, self.rating, self.votes)
-
+                           self.name, self.rating, self.votes, self.votes_marker)
 
 
 def main():
-    target_url = "https://boardgamegeek.com/browse/boardgame"
-    # with request.urlopen(target_url) as resp:
-    #     with tempfile.NamedTemporaryFile(delete=False) as fil:
-    #         shutil.copyfileobj(resp, fil)
-    #         filename = fil.name
+    data = fetch_actual_data()
+    with open("target.pickle", 'rb') as fil:
+        old_data = pickle.load(fil)
 
-    target_lines = open("target.html").readlines()[274:]
+    update_scoring(data, old_data)
+
+    row: BGGRow
+    for row in sorted(old_data.values(), key=lambda e: e.rank):
+        print(row)
+
+    with open("target.pickle", 'wb') as fil:
+        pickle.dump(old_data, fil)
+
+
+def update_scoring(data, old_data):
+    outdated_elements = []
+    for k, e in old_data.items():
+        if not (k in data):
+            outdated_elements.append(old_data.pop(k, None))
+        else:
+            e.update(data[k])
+    print(outdated_elements)
+
+
+def fetch_actual_data():
+    rows = load_actual_page()
+    keys, names = fetch_names(rows)
+    elements = list(zip(fetch_ranks(rows), names, fetch_description(rows), fetch_image_links(rows),
+                        fetch_rating(rows), fetch_votes(rows)))
+    elements = [BGGRow(rank, name, description, image_link, rating, votes) for
+                rank, name, description, image_link, rating, votes in elements]
+    data = dict(zip(keys, elements))
+    return data
+
+
+def load_actual_page():
+    target_url = "https://boardgamegeek.com/browse/boardgame"
+    with request.urlopen(target_url) as resp:
+        target_lines = [l.decode() for l in resp.readlines()[274:]]
     target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip()) > 0]
+    print(target_lines)
     rows = []
     append = False
     for idx, line in enumerate(target_lines):
+        row = None
         if line.startswith("<tr id='row_'>"):
             append = True
             row = []
@@ -72,20 +109,7 @@ def main():
         if line.startswith("</tr>") and append is True:
             append = False
             rows.append(row)
-
-    keys, names = fetch_names(rows)
-    elements = list(zip(fetch_ranks(rows), names, fetch_description(rows), fetch_image_links(rows),
-                        fetch_rating(rows), fetch_votes(rows)))
-    elements = [BGGRow(rank, name, description, image_link, rating, votes) for rank, name, description, image_link, rating, votes in elements]
-    data = dict(zip(keys, elements))
-    print(data)
-    for k,e in data.items():
-        if e.rank <= 3:
-            print(k)
-            print(e)
-
-    with open("target.pickle", 'wb') as fil:
-        pickle.dump(data, fil)
+    return rows
 
 
 def fetch_rating(rows):
@@ -122,7 +146,6 @@ def fetch_names(rows):
 
 if __name__ == '__main__':
     main()
-
 
 # def main_soup():
 #     target_url = "https://boardgamegeek.com/browse/boardgame"
