@@ -21,9 +21,9 @@ class BGGRow:
         self.rank = other.rank
         self.set_rating_marker(other.rating)
         self.rating = other.rating
-        if not self.description is other.description:
+        if self.description is not other.description:
             self.description = other.description
-        if not self.image_link is other.image_link:
+        if self.image_link is not other.image_link:
             self.image_link = other.image_link
         self.set_votes_marker(other.votes)
         self.votes = other.votes
@@ -31,40 +31,50 @@ class BGGRow:
     def set_votes_marker(self, new_votes):
         difference = new_votes - self.votes
         prefix = "+" if difference > 0 else ""
-        self.votes_marker = "(" + prefix + ("%4d" % difference) + ")"
+        self.votes_marker = "(" + prefix + ("%d" % difference) + ")"
 
     def set_rank_marker(self, new_rank):
         if new_rank > self.rank:
-            self.rank_marker = '(vv%2d)' % (new_rank - self.rank)
+            self.rank_marker = '(v%2d)' % (new_rank - self.rank)
         elif new_rank < self.rank:
-            self.rank_marker = '(^^%2d)' % (self.rank - new_rank)
+            self.rank_marker = '(^%2d)' % (self.rank - new_rank)
         else:
             self.rank_marker = ""
 
     def set_rating_marker(self, new_rating):
-        if new_rating > self.rank:
-            self.rating_marker = '(++)'
-        elif new_rating < self.rank:
-            self.rating_marker = '(--)'
+        diff = abs(new_rating - self.rating)
+        if new_rating > self.rating:
+            self.rating_marker = '(+%2.3f)' % diff
+        elif new_rating < self.rating:
+            self.rating_marker = '(-%2.3f)' % diff
         else:
-            self.rating_marker = ""
+            self.rating_marker = '     '
 
     def __str__(self):
-        template = "%3d %-6s,%-30s, %2.3f, %7d %s"
+        template = "%3d %-6s, %-40s, %2.3f %s, %7d %s"
         return template % (self.rank, self.rank_marker,
-                           self.name, self.rating, self.votes, self.votes_marker)
+                           self.name[:37]+"..." if len(self.name) > 37 else self.name,
+                           self.rating, self.rating_marker,
+                           self.votes, self.votes_marker)
 
 
 def main():
-    data = fetch_actual_data()
+    # data = fetch_actual_data()
     with open("target.pickle", 'rb') as fil:
         old_data = pickle.load(fil)
 
-    update_scoring(data, old_data)
+    # outdated = update_scoring(data, old_data)
+    # if len(outdated) > 0:
+    #     print("Outdated\n")
+    #     for o in outdated:
+    #         print(0)
 
-    row: BGGRow
-    for row in sorted(old_data.values(), key=lambda e: e.rank):
-        print(row)
+    with open("latest-ratings", 'w') as fil:
+        row: BGGRow
+        for row in sorted(old_data.values(), key=lambda e: e.rank):
+            print(row)
+            fil.write(str(row))
+            fil.write("\n")
 
     with open("target.pickle", 'wb') as fil:
         pickle.dump(old_data, fil)
@@ -77,7 +87,9 @@ def update_scoring(data, old_data):
             outdated_elements.append(old_data.pop(k, None))
         else:
             e.update(data[k])
-    print(outdated_elements)
+    for new_key in [k for k in data if not k in old_data]:
+        old_data[new_key] = data[new_key]
+    return outdated_elements
 
 
 def fetch_actual_data():
@@ -96,17 +108,15 @@ def load_actual_page():
     with request.urlopen(target_url) as resp:
         target_lines = [l.decode() for l in resp.readlines()[274:]]
     target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip()) > 0]
-    print(target_lines)
     rows = []
     append = False
     for idx, line in enumerate(target_lines):
-        row = None
         if line.startswith("<tr id='row_'>"):
             append = True
             row = []
         if append:
             row.append(line)
-        if line.startswith("</tr>") and append is True:
+        if line.startswith("</tr>") and append:
             append = False
             rows.append(row)
     return rows
