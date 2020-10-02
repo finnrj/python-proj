@@ -50,6 +50,23 @@ class BGGRow:
         else:
             self.rating_marker = len('(+22.333)') * ' '
 
+    def html_str(self):
+        return '''<tr">
+        <td>%3d %-6s</td>
+        <td>
+            <img alt="%-40s" src="%s"/>
+        </td>
+        <td>
+            <p style="margin: 2px 0 0 0;">%s</p>
+        </td>
+        <td>%2.3f %s</td>        
+        <td>%7d %s</td>
+    </tr>''' % (self.rank, self.rank_marker,
+                self.name[:37] + "..." if len(self.name) > 37 else self.name, self.image_link,
+                self.description,
+                self.rating, self.rating_marker,
+                self.votes, self.votes_marker)
+
     def __str__(self):
         template = "%3d %-6s, %-40s, %2.3f %s, %7d %s"
         return template % (self.rank, self.rank_marker,
@@ -134,15 +151,15 @@ def fetch_names(rows):
 
 
 def main():
-    data = fetch_actual_data()
+    # data = fetch_actual_data()
     with open("target.pickle", 'rb') as fil:
         old_data = pickle.load(fil)
 
-    outdated = update_scoring(data, old_data)
-    if len(outdated):
-        print("Outdated")
-        for o in outdated:
-            print(o)
+    # outdated = update_scoring(data, old_data)
+    # if len(outdated):
+    #     print("Outdated")
+    #     for o in outdated:
+    #         print(o)
 
     with open("latest-ratings", 'w') as fil:
         row: BGGRow
@@ -150,6 +167,29 @@ def main():
             print(row)
             fil.write(str(row))
             fil.write("\n")
+    html_template_prefix = '''<html>
+        <body>
+            <table width="100%" cellspacing="1" cellpadding="0" border="1">
+                <tbody>
+                    <tr>
+                        <th>Board Game Rank</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Rating</th>
+                        <th>Votes</th>
+                    </tr>'''
+    html_template_suffix = '''</tbody>
+            </table>
+        </body>
+    </html>'''
+
+    with open("latest-ratings.html", 'w') as fil:
+        fil.write(html_template_prefix)
+        row: BGGRow
+        for row in sorted(old_data.values(), key=lambda e: e.rank):
+            fil.write(row.html_str())
+            fil.write("\n")
+        fil.write(html_template_suffix)
 
     with open("target.pickle", 'wb') as fil:
         pickle.dump(old_data, fil)
