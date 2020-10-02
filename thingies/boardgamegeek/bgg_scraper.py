@@ -7,7 +7,7 @@ from urllib import request
 class BGGRow:
     def __init__(self, rank, name, description, image_link, rating, votes):
         self.rank = int(rank)
-        self.rank_marker = ""
+        self.rank_marker = "NEW!!"
         self.name = name
         self.description = description
         self.image_link = image_link
@@ -48,46 +48,25 @@ class BGGRow:
         elif new_rating < self.rating:
             self.rating_marker = '(-%2.3f)' % diff
         else:
-            self.rating_marker = '     '
+            self.rating_marker = len('(+22.333)') * ' '
 
     def __str__(self):
         template = "%3d %-6s, %-40s, %2.3f %s, %7d %s"
         return template % (self.rank, self.rank_marker,
-                           self.name[:37]+"..." if len(self.name) > 37 else self.name,
+                           self.name[:37] + "..." if len(self.name) > 37 else self.name,
                            self.rating, self.rating_marker,
                            self.votes, self.votes_marker)
-
-
-def main():
-    # data = fetch_actual_data()
-    with open("target.pickle", 'rb') as fil:
-        old_data = pickle.load(fil)
-
-    # outdated = update_scoring(data, old_data)
-    # if len(outdated) > 0:
-    #     print("Outdated\n")
-    #     for o in outdated:
-    #         print(0)
-
-    with open("latest-ratings", 'w') as fil:
-        row: BGGRow
-        for row in sorted(old_data.values(), key=lambda e: e.rank):
-            print(row)
-            fil.write(str(row))
-            fil.write("\n")
-
-    with open("target.pickle", 'wb') as fil:
-        pickle.dump(old_data, fil)
 
 
 def update_scoring(data, old_data):
     outdated_elements = []
     for k, e in old_data.items():
         if not (k in data):
-            outdated_elements.append(old_data.pop(k, None))
+            outdated_elements.append(k)
         else:
             e.update(data[k])
-    for new_key in [k for k in data if not k in old_data]:
+    outdated_elements = [old_data.pop(k, None) for k in outdated_elements]
+    for new_key in [k for k in data if k not in old_data]:
         old_data[new_key] = data[new_key]
     return outdated_elements
 
@@ -152,6 +131,28 @@ def fetch_names(rows):
     tuples = [name_regex.findall(line) for line in name_lines]
     dd = reduce(lambda l1, l2: l1 + l2, tuples)
     return zip(*dd)
+
+
+def main():
+    data = fetch_actual_data()
+    with open("target.pickle", 'rb') as fil:
+        old_data = pickle.load(fil)
+
+    outdated = update_scoring(data, old_data)
+    if len(outdated):
+        print("Outdated")
+        for o in outdated:
+            print(o)
+
+    with open("latest-ratings", 'w') as fil:
+        row: BGGRow
+        for row in sorted(old_data.values(), key=lambda e: e.rank):
+            print(row)
+            fil.write(str(row))
+            fil.write("\n")
+
+    with open("target.pickle", 'wb') as fil:
+        pickle.dump(old_data, fil)
 
 
 if __name__ == '__main__':
