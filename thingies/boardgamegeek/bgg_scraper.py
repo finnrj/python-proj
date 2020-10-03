@@ -3,12 +3,29 @@ import re
 from functools import reduce
 from urllib import request
 
+html_template_prefix = '''<html>
+        <body>
+            <table width="100%" cellspacing="1" cellpadding="0" border="1">
+                <tbody>
+                    <tr>
+                        <th>Board Game Rank</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Rating</th>
+                        <th>Votes</th>
+                    </tr>'''
+html_template_suffix = '''</tbody>
+            </table>
+        </body>
+    </html>'''
+
 
 class BGGRow:
-    def __init__(self, rank, name, description, image_link, rating, votes):
+    def __init__(self, rank, name, year, description, image_link, rating, votes):
         self.rank = int(rank)
         self.rank_marker = "NEW!!"
         self.name = name
+        self.year = year
         self.description = description
         self.image_link = image_link
         self.rating = float(rating)
@@ -57,20 +74,24 @@ class BGGRow:
             <img alt="%-40s" src="%s"/>
         </td>
         <td>
+            <div style="z-index:1000;">%s<span>%s</span>
+            </div>
             <p style="margin: 2px 0 0 0;">%s</p>
         </td>
         <td>%2.3f %s</td>        
         <td>%7d %s</td>
     </tr>''' % (self.rank, self.rank_marker,
                 self.name[:37] + "..." if len(self.name) > 37 else self.name, self.image_link,
+                self.year,
                 self.description,
                 self.rating, self.rating_marker,
                 self.votes, self.votes_marker)
 
     def __str__(self):
-        template = "%3d %-6s, %-40s, %2.3f %s, %7d %s"
+        template = "%3d %-6s, %-40s %s, %2.3f %s, %7d %s"
         return template % (self.rank, self.rank_marker,
                            self.name[:37] + "..." if len(self.name) > 37 else self.name,
+                           self.year,
                            self.rating, self.rating_marker,
                            self.votes, self.votes_marker)
 
@@ -91,10 +112,10 @@ def update_scoring(data, old_data):
 def fetch_actual_data():
     rows = load_actual_page()
     keys, names = fetch_names(rows)
-    elements = list(zip(fetch_ranks(rows), names, fetch_description(rows), fetch_image_links(rows),
+    elements = list(zip(fetch_ranks(rows), names, fetch_year(rows), fetch_description(rows), fetch_image_links(rows),
                         fetch_rating(rows), fetch_votes(rows)))
-    elements = [BGGRow(rank, name, description, image_link, rating, votes) for
-                rank, name, description, image_link, rating, votes in elements]
+    elements = [BGGRow(rank, name, year, description, image_link, rating, votes) for
+                rank, name, year, description, image_link, rating, votes in elements]
     data = dict(zip(keys, elements))
     return data
 
@@ -104,6 +125,10 @@ def load_actual_page():
     with request.urlopen(target_url) as resp:
         target_lines = [l.decode() for l in resp.readlines()[274:]]
     target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip()) > 0]
+    return extract_tablerows(target_lines)
+
+
+def extract_tablerows(target_lines):
     rows = []
     append = False
     for idx, line in enumerate(target_lines):
@@ -142,6 +167,11 @@ def fetch_image_links(rows):
     return [image_regex.findall(r[5])[0] for r in rows]
 
 
+def fetch_year(rows):
+    rank_regex = re.compile(r'.*(\(\d+\))</span>')
+    return [rank_regex.findall(r[2])[0] for r in rows]
+
+
 def fetch_names(rows):
     name_lines = [line[13] for line in rows]
     name_regex = re.compile(r'href="(.*)".*>(.*)</a>')
@@ -167,21 +197,6 @@ def main():
             print(row)
             fil.write(str(row))
             fil.write("\n")
-    html_template_prefix = '''<html>
-        <body>
-            <table width="100%" cellspacing="1" cellpadding="0" border="1">
-                <tbody>
-                    <tr>
-                        <th>Board Game Rank</th>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>Rating</th>
-                        <th>Votes</th>
-                    </tr>'''
-    html_template_suffix = '''</tbody>
-            </table>
-        </body>
-    </html>'''
 
     with open("latest-ratings.html", 'w') as fil:
         fil.write(html_template_prefix)
