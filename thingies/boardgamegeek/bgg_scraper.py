@@ -36,6 +36,7 @@ class BGGRow:
     def update(self, other):
         self.set_rank_marker(other.rank)
         self.rank = other.rank
+        self.year = other.year
         self.set_rating_marker(other.rating)
         self.rating = other.rating
         if self.description is not other.description:
@@ -61,11 +62,11 @@ class BGGRow:
     def set_rating_marker(self, new_rating):
         diff = abs(new_rating - self.rating)
         if new_rating > self.rating:
-            self.rating_marker = '(+%2.3f)' % diff
+            self.rating_marker = '(+%1.3f)' % diff
         elif new_rating < self.rating:
-            self.rating_marker = '(-%2.3f)' % diff
+            self.rating_marker = '(-%1.3f)' % diff
         else:
-            self.rating_marker = len('(+22.333)') * ' '
+            self.rating_marker = len('(+1.333)') * ' '
 
     def html_str(self):
         return '''<tr">
@@ -82,7 +83,7 @@ class BGGRow:
         <td>%7d %s</td>
     </tr>''' % (self.rank, self.rank_marker,
                 self.name[:37] + "..." if len(self.name) > 37 else self.name, self.image_link,
-                self.year,
+                self.name, self.year,
                 self.description,
                 self.rating, self.rating_marker,
                 self.votes, self.votes_marker)
@@ -169,7 +170,7 @@ def fetch_image_links(rows):
 
 def fetch_year(rows):
     rank_regex = re.compile(r'.*(\(\d+\))</span>')
-    return [rank_regex.findall(r[2])[0] for r in rows]
+    return [rank_regex.findall(r[14])[0] for r in rows]
 
 
 def fetch_names(rows):
@@ -181,15 +182,15 @@ def fetch_names(rows):
 
 
 def main():
-    # data = fetch_actual_data()
+    data = fetch_actual_data()
     with open("target.pickle", 'rb') as fil:
         old_data = pickle.load(fil)
 
-    # outdated = update_scoring(data, old_data)
-    # if len(outdated):
-    #     print("Outdated")
-    #     for o in outdated:
-    #         print(o)
+    outdated = update_scoring(data, old_data)
+    if len(outdated):
+        print("Outdated")
+        for o in outdated:
+            print(o)
 
     with open("latest-ratings", 'w') as fil:
         row: BGGRow
