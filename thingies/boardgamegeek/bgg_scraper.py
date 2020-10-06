@@ -4,16 +4,20 @@ from functools import reduce
 from urllib import request
 
 html_template_prefix = '''<html>
+        <head> <link rel="stylesheet" href="table.css">
+        </head>
         <body>
-            <table width="100%" cellspacing="1" cellpadding="0" border="1">
-                <tbody>
+            <table class="zui-table">
+                <thead>
                     <tr>
-                        <th>Board Game Rank</th>
+                        <th>Rank</th>
                         <th>Title</th>
                         <th>Description</th>
                         <th>Rating</th>
                         <th>Votes</th>
-                    </tr>'''
+                    </tr>
+                </thead>                    
+                <tbody>'''
 html_template_suffix = '''</tbody>
             </table>
         </body>
@@ -182,22 +186,22 @@ def fetch_names(rows):
 
 
 def main():
-    data = fetch_actual_data()
+    # data = fetch_actual_data()
     with open("target.pickle", 'rb') as fil:
         old_data = pickle.load(fil)
 
-    outdated = update_scoring(data, old_data)
-    if len(outdated):
-        print("Outdated")
-        for o in outdated:
-            print(o)
+    # outdated = update_scoring(data, old_data)
+    # if len(outdated):
+    #     print("Outdated")
+    #     for o in outdated:
+    #         print(o)
 
-    with open("latest-ratings", 'w') as fil:
-        row: BGGRow
-        for row in sorted(old_data.values(), key=lambda e: e.rank):
-            print(row)
-            fil.write(str(row))
-            fil.write("\n")
+    # with open("latest-ratings", 'w') as fil:
+    #     row: BGGRow
+    #     for row in sorted(old_data.values(), key=lambda e: e.rank):
+    #         print(row)
+    #         fil.write(str(row))
+    #         fil.write("\n")
 
     with open("latest-ratings.html", 'w') as fil:
         fil.write(html_template_prefix)
