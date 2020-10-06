@@ -19,3 +19,21 @@
     padding: 10px;
     text-shadow: 1px 1px 1px #fff;
 }
+
+.zui-table tbody td.up-rank {
+    background-color:lightgreen;
+}
+
+.zui-table tbody td.down-rank {
+    background-color:lightpink;
+}
+
+.zui-table tbody td.new-rank {
+    background-color:lightyellow;
+}
+
+.zui-table tbody td img {
+    display: block;
+    height: 100%;
+    width: 100%;
+}

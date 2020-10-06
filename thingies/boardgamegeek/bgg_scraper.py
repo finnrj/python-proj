@@ -72,9 +72,21 @@ class BGGRow:
         else:
             self.rating_marker = len('(+1.333)') * ' '
 
+
+    def rank_class(self):
+        if "^" in self.rank_marker:
+            return ' class="up-rank">'
+        elif "v" in self.rank_marker:
+            return ' class="down-rank">'
+        elif "NEW" in self.rank_marker:
+            return ' class="new-rank">'
+        else:
+            return '>'
+
+
     def html_str(self):
         return '''<tr">
-        <td>%3d %-6s</td>
+        <td%s%3d %-6s</td>
         <td>
             <img alt="%-40s" src="%s"/>
         </td>
@@ -85,7 +97,7 @@ class BGGRow:
         </td>
         <td>%2.3f %s</td>        
         <td>%7d %s</td>
-    </tr>''' % (self.rank, self.rank_marker,
+    </tr>''' % (self.rank_class(), self.rank, self.rank_marker,
                 self.name[:37] + "..." if len(self.name) > 37 else self.name, self.image_link,
                 self.name, self.year,
                 self.description,
