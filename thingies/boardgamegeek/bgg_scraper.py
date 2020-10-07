@@ -88,7 +88,12 @@ class BGGRow:
         return '''<tr">
         <td%s%3d %-6s</td>
         <td>
-            <img alt="%-40s" src="%s"/>
+            <div class="container">
+                <img alt="%-40s" src="%s"/>
+                <div class="overlay">
+                    <div>%s</div>
+                </div>
+            </div>
         </td>
         <td>
             <div style="z-index:1000;">%s<span>%s</span>
@@ -98,7 +103,9 @@ class BGGRow:
         <td>%2.3f %s</td>        
         <td>%7d %s</td>
     </tr>''' % (self.rank_class(), self.rank, self.rank_marker,
-                self.name[:37] + "..." if len(self.name) > 37 else self.name, self.image_link,
+                self.name[:37] + "..." if len(self.name) > 37 else self.name,
+                self.image_link,
+                self.name[:37] + "..." if len(self.name) > 37 else self.name,
                 self.name, self.year,
                 self.description,
                 self.rating, self.rating_marker,

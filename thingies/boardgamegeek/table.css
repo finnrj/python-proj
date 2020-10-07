@@ -1,10 +1,17 @@
 .zui-table {
-    width: 100%;
-    border: solid 1px #DDEEEE;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    border: solid 2px #DDEEEE;
     border-collapse: collapse;
     border-spacing: 0;
     font: normal 16px Arial, sans-serif;
 }
+
+.zui-table tr:nth-child(even){background-color: #f2f2f2;}
+
+.zui-table tr:hover {background-color: #ddd;}
+
 .zui-table thead th {
     background-color: #DDEFEF;
     border: solid 1px #DDEEEE;
@@ -34,6 +41,34 @@
 
 .zui-table tbody td img {
     display: block;
-    height: 100%;
+    height: auto;
     width: 100%;
 }
+
+table.zui-table tbody tr td div.overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: .5s ease;
+    background-color: aquamarine;
+}
+
+table.zui-table tbody tr td div.container {
+    position: relative;
+    width: 50%;
+}
+
+.container:hover .overlay {
+    opacity: 1;
+}
+
+/*<div class="container">*/
+/*  <img src="img_avatar.png" alt="Avatar" class="image">*/
+/*  <div class="overlay"> <div class="text">Hello World</div>*/
+/*  </div>*/
+/*</div>*/
