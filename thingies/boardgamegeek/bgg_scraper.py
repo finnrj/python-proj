@@ -72,7 +72,6 @@ class BGGRow:
         else:
             self.rating_marker = len('(+1.333)') * ' '
 
-
     def rank_class(self):
         if "^" in self.rank_marker:
             return ' class="up-rank">'
@@ -83,14 +82,13 @@ class BGGRow:
         else:
             return '>'
 
-
     def html_str(self):
         return '''<tr">
         <td%s%3d %-6s</td>
         <td>
-            <div class="container">
+            <div class="container"> 
                 <img alt="%-40s" src="%s"/>
-                <div class="overlay">
+                <div class="overlay text">
                     <div>%s</div>
                 </div>
             </div>
@@ -205,33 +203,50 @@ def fetch_names(rows):
 
 
 def main():
-    # data = fetch_actual_data()
     with open("target.pickle", 'rb') as fil:
         old_data = pickle.load(fil)
 
-    # outdated = update_scoring(data, old_data)
-    # if len(outdated):
-    #     print("Outdated")
-    #     for o in outdated:
-    #         print(o)
-
+    outdated = []
+    # outdated = update_scoring(fetch_actual_data(), old_data)
+    #
     # with open("latest-ratings", 'w') as fil:
-    #     row: BGGRow
-    #     for row in sorted(old_data.values(), key=lambda e: e.rank):
-    #         print(row)
-    #         fil.write(str(row))
-    #         fil.write("\n")
+    #     write_file(fil, old_data, outdated)
 
     with open("latest-ratings.html", 'w') as fil:
-        fil.write(html_template_prefix)
-        row: BGGRow
-        for row in sorted(old_data.values(), key=lambda e: e.rank):
-            fil.write(row.html_str())
-            fil.write("\n")
-        fil.write(html_template_suffix)
+        if outdated:
+            write_html(fil, outdated)
+        write_html(fil, old_data)
 
     with open("target.pickle", 'wb') as fil:
         pickle.dump(old_data, fil)
+
+
+def write_file(fil, old_data, outdated):
+    write_outdated(fil, outdated)
+    row: BGGRow
+    for row in sorted(old_data.values(), key=lambda e: e.rank):
+        print(row)
+        fil.write(str(row))
+        fil.write("\n")
+
+
+def write_html(fil, old_data):
+    fil.write(html_template_prefix)
+    row: BGGRow
+    for row in sorted(old_data.values(), key=lambda e: e.rank):
+        fil.write(row.html_str())
+        fil.write("\n")
+    fil.write(html_template_suffix)
+
+
+def write_outdated(fil, outdated):
+    if len(outdated):
+        fil.write("Outdated:")
+        fil.write("\n")
+        for o in outdated:
+            fil.write(str(o))
+            fil.write("\n")
+        fil.write("\n")
 
 
 if __name__ == '__main__':

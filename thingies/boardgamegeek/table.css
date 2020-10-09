@@ -1,16 +1,30 @@
+body {
+    background-color: #ffd;
+    color: black;
+}
+
 .zui-table {
     width: 90%;
     margin-left: auto;
     margin-right: auto;
-    border: solid 2px #DDEEEE;
+    border: solid 4px #DDEEEE;
     border-collapse: collapse;
     border-spacing: 0;
     font: normal 16px Arial, sans-serif;
 }
 
-.zui-table tr:nth-child(even){background-color: #f2f2f2;}
+.zui-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
 
-.zui-table tr:hover {background-color: #ddd;}
+.zui-table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.zui-table tr:hover {
+    background-color: #ddd;
+}
+
 
 .zui-table thead th {
     background-color: #DDEFEF;
@@ -20,6 +34,7 @@
     text-align: left;
     text-shadow: 1px 1px 1px #fff;
 }
+
 .zui-table tbody td {
     border: solid 1px #DDEEEE;
     color: #333;
@@ -28,15 +43,15 @@
 }
 
 .zui-table tbody td.up-rank {
-    background-color:lightgreen;
+    background-color: lightgreen;
 }
 
 .zui-table tbody td.down-rank {
-    background-color:lightpink;
+    background-color: lightpink;
 }
 
 .zui-table tbody td.new-rank {
-    background-color:lightyellow;
+    background-color: lightyellow;
 }
 
 .zui-table tbody td img {
@@ -55,8 +70,20 @@ table.zui-table tbody tr td div.overlay {
     width: 100%;
     opacity: 0;
     transition: .5s ease;
-    background-color: aquamarine;
+    background-color: #DDEFEF;
 }
+
+table.zui-table tbody tr td div.text{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 30px;
+    color: black;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    white-space: nowrap;
+}
+
 
 table.zui-table tbody tr td div.container {
     position: relative;
