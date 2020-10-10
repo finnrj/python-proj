@@ -18,6 +18,24 @@ html_template_prefix = '''<html>
                     </tr>
                 </thead>                    
                 <tbody>'''
+
+html_row_template_format = '''<tr">
+        <td%s%3d %-6s</td>
+        <td>
+            <div class="container">
+                <img  class="image" alt="%-40s" src="%s">
+                <span class="tooltiptext">%s</span>
+            </div>
+        </td>
+        <td>
+            <div style="z-index:1000;">%s<span>%s</span>
+            </div>
+            <p style="margin: 2px 0 0 0;">%s</p>
+        </td>
+        <td>%2.3f %s</td>        
+        <td>%7d %s</td>
+    </tr>'''
+
 html_template_suffix = '''</tbody>
             </table>
         </body>
@@ -83,31 +101,14 @@ class BGGRow:
             return '>'
 
     def html_str(self):
-        return '''<tr">
-        <td%s%3d %-6s</td>
-        <td>
-            <div class="container"> 
-                <img alt="%-40s" src="%s"/>
-                <div class="overlay text">
-                    <div>%s</div>
-                </div>
-            </div>
-        </td>
-        <td>
-            <div style="z-index:1000;">%s<span>%s</span>
-            </div>
-            <p style="margin: 2px 0 0 0;">%s</p>
-        </td>
-        <td>%2.3f %s</td>        
-        <td>%7d %s</td>
-    </tr>''' % (self.rank_class(), self.rank, self.rank_marker,
-                self.name[:37] + "..." if len(self.name) > 37 else self.name,
-                self.image_link,
-                self.name[:37] + "..." if len(self.name) > 37 else self.name,
-                self.name, self.year,
-                self.description,
-                self.rating, self.rating_marker,
-                self.votes, self.votes_marker)
+        return html_row_template_format % (self.rank_class(), self.rank, self.rank_marker,
+                                           self.name[:37] + "..." if len(self.name) > 37 else self.name,
+                                           self.image_link,
+                                           self.name,
+                                           self.name, self.year,
+                                           self.description,
+                                           self.rating, self.rating_marker,
+                                           self.votes, self.votes_marker)
 
     def __str__(self):
         template = "%3d %-6s, %-40s %s, %2.3f %s, %7d %s"
@@ -202,25 +203,6 @@ def fetch_names(rows):
     return zip(*dd)
 
 
-def main():
-    with open("target.pickle", 'rb') as fil:
-        old_data = pickle.load(fil)
-
-    outdated = []
-    # outdated = update_scoring(fetch_actual_data(), old_data)
-    #
-    # with open("latest-ratings", 'w') as fil:
-    #     write_file(fil, old_data, outdated)
-
-    with open("latest-ratings.html", 'w') as fil:
-        if outdated:
-            write_html(fil, outdated)
-        write_html(fil, old_data)
-
-    with open("target.pickle", 'wb') as fil:
-        pickle.dump(old_data, fil)
-
-
 def write_file(fil, old_data, outdated):
     write_outdated(fil, outdated)
     row: BGGRow
@@ -247,6 +229,24 @@ def write_outdated(fil, outdated):
             fil.write(str(o))
             fil.write("\n")
         fil.write("\n")
+
+
+def main():
+    with open("target.pickle", 'rb') as fil:
+        old_data = pickle.load(fil)
+
+    # outdated = update_scoring(fetch_actual_data(), old_data)
+    # with open("latest-ratings", 'w') as fil:
+    #     write_file(fil, old_data, outdated)
+
+    outdated = []
+    with open("latest-ratings.html", 'w') as fil:
+        if outdated:
+            write_html(fil, outdated)
+        write_html(fil, old_data)
+
+    with open("target.pickle", 'wb') as fil:
+        pickle.dump(old_data, fil)
 
 
 if __name__ == '__main__':
