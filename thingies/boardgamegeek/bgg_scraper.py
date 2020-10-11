@@ -24,13 +24,13 @@ html_row_template_format = '''<tr">
         <td>
             <div class="container">
                 <img  class="image" alt="%-40s" src="%s">
-                <span class="tooltiptext">%s</span>
+                <span class="img-tooltiptext">%s</span>
             </div>
         </td>
         <td>
-            <div style="z-index:1000;">%s<span>%s</span>
+            <div class="tooltip">%s<span> %s</span>
+            <span class="tooltiptext">%s</span>
             </div>
-            <p style="margin: 2px 0 0 0;">%s</p>
         </td>
         <td>%2.3f %s</td>        
         <td>%7d %s</td>
@@ -105,7 +105,7 @@ class BGGRow:
                                            self.name[:37] + "..." if len(self.name) > 37 else self.name,
                                            self.image_link,
                                            self.name,
-                                           self.name, self.year,
+                                           self.name[:37] + "..." if len(self.name) > 37 else self.name, self.year,
                                            self.description,
                                            self.rating, self.rating_marker,
                                            self.votes, self.votes_marker)

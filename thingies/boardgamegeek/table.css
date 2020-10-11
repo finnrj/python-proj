@@ -25,7 +25,6 @@ body {
     background-color: #ddd;
 }
 
-
 .zui-table thead th {
     background-color: #DDEFEF;
     border: solid 1px #DDEEEE;
@@ -54,6 +53,8 @@ body {
     background-color: lightyellow;
 }
 
+/* tooltips for images */
+
 .container {
     position: relative;
     width: 100%;
@@ -62,11 +63,11 @@ body {
 
 .image {
     display: block;
-    height: auto;
-    width: 100%;
+    height: 80%;
+    width: 80%;
 }
 
-.image + .tooltiptext {
+.image + .img-tooltiptext {
     visibility: hidden;
     background-color: black;
     color: #fff;
@@ -76,17 +77,17 @@ body {
     padding: 5px 10px;
     position: absolute;
     z-index: 1;
-    top: -8px;
-    left: 110%;
-    font-size: 150%;
+    top: -10px;
+    left: 90%;
+    font-size: 100%;
     font-family: Arial;
 
-    /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+    /* Fade in tooltip - takes 1 second to go from 0% to 100% opacity: */
     opacity: 0;
     transition: opacity 1s;
 }
 
-.image + .tooltiptext::after {
+.image + .img-tooltiptext::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -96,8 +97,51 @@ body {
     border-style: solid;
     border-color: transparent black transparent transparent;
 }
-.image:hover + .tooltiptext {
+.image:hover + .img-tooltiptext {
     visibility: visible;
     opacity: 1;
 }
 
+/* EO tooltips for images */
+
+/* tooltips for Title with description */
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    font-weight: bold;
+    z-index: 1000;
+}
+
+.tooltip .tooltiptext {
+    top: 150%;
+    left: 50%;
+    margin-left: -50%;
+    /* Use half of the width, to center the tooltip */
+
+    visibility: hidden;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: 6px;
+    padding: 5px 10px;
+    position: absolute;
+}
+
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;  /* At the top of the tooltip */
+    left: 3%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+/* EO tooltips for Title with description */
