@@ -53,6 +53,10 @@ body {
     background-color: lightyellow;
 }
 
+.zui-table tbody td.rating-gap {
+    background-color: lightblue;
+}
+
 /* tooltips for images */
 
 .container {

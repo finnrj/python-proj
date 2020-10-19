@@ -32,7 +32,7 @@ html_row_template_format = '''<tr">
             <span class="tooltiptext">%s</span>
             </div>
         </td>
-        <td>%2.3f %s</td>        
+        <td%s>%2.3f %s</td>        
         <td>%7d %s</td>
     </tr>'''
 
@@ -100,14 +100,14 @@ class BGGRow:
         else:
             return '>'
 
-    def html_str(self):
+    def html_str(self, rating_bg=""):
         return html_row_template_format % (self.rank_class(), self.rank, self.rank_marker,
                                            self.name[:37] + "..." if len(self.name) > 37 else self.name,
                                            self.image_link,
                                            self.name,
                                            self.name[:37] + "..." if len(self.name) > 37 else self.name, self.year,
                                            self.description,
-                                           self.rating, self.rating_marker,
+                                           rating_bg, self.rating, self.rating_marker,
                                            self.votes, self.votes_marker)
 
     def __str__(self):
@@ -206,7 +206,8 @@ def fetch_names(rows):
 def write_file(fil, old_data, outdated):
     write_outdated(fil, outdated)
     row: BGGRow
-    for row in sorted(old_data.values(), key=lambda e: e.rank):
+    rank_sorted = sorted(old_data.values(), key=lambda e: e.rank)
+    for row in rank_sorted:
         print(row)
         fil.write(str(row))
         fil.write("\n")
@@ -214,11 +215,22 @@ def write_file(fil, old_data, outdated):
 
 def write_html(fil, old_data):
     fil.write(html_template_prefix)
+    rank_sorted = sorted(old_data.values(), key=lambda e: e.rank)
+    largest_diff = largest_rating_diff(rank_sorted)
     row: BGGRow
-    for row in sorted(old_data.values(), key=lambda e: e.rank):
-        fil.write(row.html_str())
+    for row in rank_sorted:
+        rating_class = ' class="rating-gap"' if row.name in largest_diff else ""
+        fil.write(row.html_str(rating_class))
         fil.write("\n")
     fil.write(html_template_suffix)
+
+
+def largest_rating_diff(rank_sorted):
+    largest_diff = [t[1] for t in
+                    sorted([(rank_sorted[idx].rating - rank_sorted[idx + 1].rating, rank_sorted[idx].name) for idx in
+                            range(len(rank_sorted) - 1)]
+                           , reverse=True)[:10]]
+    return largest_diff
 
 
 def write_outdated(fil, outdated):
@@ -235,11 +247,11 @@ def main():
     with open("target.pickle", 'rb') as fil:
         old_data = pickle.load(fil)
 
-    # outdated = update_scoring(fetch_actual_data(), old_data)
-    # with open("latest-ratings", 'w') as fil:
-    #     write_file(fil, old_data, outdated)
+    outdated = update_scoring(fetch_actual_data(), old_data)
+    with open("latest-ratings", 'w') as fil:
+        write_file(fil, old_data, outdated)
 
-    outdated = []
+    # outdated = []
     with open("latest-ratings.html", 'w') as fil:
         if outdated:
             write_html(fil, outdated)
@@ -251,10 +263,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# def main_soup():
-#     target_url = "https://boardgamegeek.com/browse/boardgame"
-#     html_text = requests.get(target_url).text
-#     soup = BeautifulSoup(html_text, 'html.parser')
-#     rs = [child for row in soup.find_all(id='row_')[:] for child in row.children]
-#     print(rs)
