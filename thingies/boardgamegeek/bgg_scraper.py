@@ -92,9 +92,9 @@ class BGGRow:
             self.rating_marker = len('(+1.333)') * ' '
 
     def rank_class(self):
-        if "^" in self.rank_marker:
+        if "^" in self.rank_marker  and "+" in self.rating_marker:
             return ' class="up-rank">'
-        elif "v" in self.rank_marker:
+        elif "v" in self.rank_marker  and "-" in self.rating_marker:
             return ' class="down-rank">'
         elif "NEW" in self.rank_marker:
             return ' class="new-rank">'
