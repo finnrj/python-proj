@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import pickle
 import re
+import sys
+import os.path
 from functools import reduce
 from urllib import request
 
@@ -244,23 +246,27 @@ def write_outdated(fil, outdated):
         fil.write("\n")
 
 
-def main():
-    with open("target.pickle", 'rb') as fil:
+def main(basename):
+    pickle_file = os.path.join(basename, "target.pickle")
+    latest_rating_file = os.path.join(basename, "latest-ratings")
+    latest_rating_html = os.path.join(basename, "latest-ratings.html")
+
+    with open(pickle_file, 'rb') as fil:
         old_data = pickle.load(fil)
 
     outdated = update_scoring(fetch_actual_data(), old_data)
-    with open("latest-ratings", 'w') as fil:
+    with open(latest_rating_file, 'w') as fil:
         write_file(fil, old_data, outdated)
 
     # outdated = []
-    with open("latest-ratings.html", 'w') as fil:
+    with open(latest_rating_html, 'w') as fil:
         if outdated:
             write_html(fil, outdated)
         write_html(fil, old_data)
 
-    with open("target.pickle", 'wb') as fil:
+    with open(pickle_file, 'wb') as fil:
         pickle.dump(old_data, fil)
 
 
 if __name__ == '__main__':
-    main()
+    main(os.path.dirname(sys.argv[0]))
