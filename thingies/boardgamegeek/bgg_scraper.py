@@ -6,10 +6,7 @@ import os.path
 from functools import reduce
 from urllib import request
 
-html_template_prefix = '''<html>
-        <head> <link rel="stylesheet" href="table.css">
-        </head>
-        <body>
+html_template_table_prefix = '''
             <table class="zui-table">
                 <thead>
                     <tr>
@@ -21,6 +18,14 @@ html_template_prefix = '''<html>
                     </tr>
                 </thead>                    
                 <tbody>'''
+
+html_template_page_prefix = '''<html>
+        <head> <link rel="stylesheet" href="table.css">
+        </head>
+        <body>
+            %s
+        ''' % html_template_table_prefix
+
 
 html_row_template_format = '''<tr">
         <td%s%3d %-6s</td>
@@ -39,11 +44,14 @@ html_row_template_format = '''<tr">
         <td>%7d %s</td>
     </tr>'''
 
-html_template_suffix = '''</tbody>
+html_template_table_suffix = '''</tbody>
             </table>
-        </body>
-    </html>'''
+            <br/>
+'''
 
+html_template_page_suffix = '''%s
+        </body>
+    </html>''' % html_template_table_suffix
 
 class BGGRow:
     def __init__(self, rank, name, year, description, image_link, rating, votes):
@@ -216,16 +224,16 @@ def write_file(fil, old_data, outdated):
         fil.write("\n")
 
 
-def write_html(fil, old_data):
-    fil.write(html_template_prefix)
-    rank_sorted = sorted(old_data.values(), key=lambda e: e.rank)
+def write_html(fil, old_data, page_prefix = True, page_suffix = True):
+    fil.write(html_template_page_prefix if page_prefix else html_template_table_prefix)
+    rank_sorted = sorted(old_data, key=lambda e: e.rank)
     largest_diff = largest_rating_diff(rank_sorted)
     row: BGGRow
     for row in rank_sorted:
         rating_class = ' class="rating-gap"' if row.name in largest_diff else ""
         fil.write(row.html_str(rating_class))
         fil.write("\n")
-    fil.write(html_template_suffix)
+    fil.write(html_template_page_suffix if page_suffix else html_template_table_suffix)
 
 
 def largest_rating_diff(rank_sorted):
@@ -254,15 +262,19 @@ def main(basename):
     with open(pickle_file, 'rb') as fil:
         old_data = pickle.load(fil)
 
+    # outdated = []
+    # for k,v in old_data.items():
+    #     outdated.append(v)
+    #     if len(outdated) == 3:
+    #         break
     outdated = update_scoring(fetch_actual_data(), old_data)
     with open(latest_rating_file, 'w') as fil:
         write_file(fil, old_data, outdated)
 
-    # outdated = []
     with open(latest_rating_html, 'w') as fil:
         if outdated:
-            write_html(fil, outdated)
-        write_html(fil, old_data)
+            write_html(fil, outdated, outdated, not outdated)
+        write_html(fil, old_data.values(), not outdated)
 
     with open(pickle_file, 'wb') as fil:
         pickle.dump(old_data, fil)
