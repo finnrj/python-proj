@@ -161,6 +161,13 @@ def load_actual_page():
     target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip()) > 0]
     return extract_tablerows(target_lines)
 
+def load_watchlist(watchlist):
+    for url in watchlist:
+        with request.urlopen(url) as resp:
+            target_lines = [l.decode() for l in resp.readlines()]
+            for l in target_lines:
+                print(l)
+
 
 def extract_tablerows(target_lines):
     rows = []
@@ -255,29 +262,33 @@ def write_outdated(fil, outdated):
 
 
 def main(basename):
-    pickle_file = os.path.join(basename, "target.pickle")
-    latest_rating_file = os.path.join(basename, "latest-ratings")
-    latest_rating_html = os.path.join(basename, "latest-ratings.html")
+    load_watchlist(["https://www.boardgamegeek.com/xmlapi/boardgame/162886?stats=1"])
+    # load_watchlist(["https://boardgamegeek.com/boardgame/314491/meadow"])
 
-    with open(pickle_file, 'rb') as fil:
-        old_data = pickle.load(fil)
+
+    # pickle_file = os.path.join(basename, "target.pickle")
+    # latest_rating_file = os.path.join(basename, "latest-ratings")
+    # latest_rating_html = os.path.join(basename, "latest-ratings.html")
+    #
+    # with open(pickle_file, 'rb') as fil:
+    #     old_data = pickle.load(fil)
 
     # outdated = []
     # for k,v in old_data.items():
     #     outdated.append(v)
     #     if len(outdated) == 3:
     #         break
-    outdated = update_scoring(fetch_actual_data(), old_data)
-    with open(latest_rating_file, 'w') as fil:
-        write_file(fil, old_data, outdated)
-
-    with open(latest_rating_html, 'w') as fil:
-        if outdated:
-            write_html(fil, outdated, outdated, not outdated)
-        write_html(fil, old_data.values(), not outdated)
-
-    with open(pickle_file, 'wb') as fil:
-        pickle.dump(old_data, fil)
+    # outdated = update_scoring(fetch_actual_data(), old_data)
+    # with open(latest_rating_file, 'w') as fil:
+    #     write_file(fil, old_data, outdated)
+    #
+    # with open(latest_rating_html, 'w') as fil:
+    #     if outdated:
+    #         write_html(fil, outdated, outdated, not outdated)
+    #     write_html(fil, old_data.values(), not outdated)
+    #
+    # with open(pickle_file, 'wb') as fil:
+    #     pickle.dump(old_data, fil)
 
 
 if __name__ == '__main__':
