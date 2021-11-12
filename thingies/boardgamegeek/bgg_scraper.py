@@ -154,6 +154,75 @@ def fetch_actual_data():
     return data
 
 
+def load_watchlist_pages(watchlist):
+    lines = []
+    for url in watchlist:
+        with request.urlopen(url) as resp:
+            target_lines = [l.decode() for l in resp.readlines()]
+            target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip())]
+            lines.append(target_lines)
+    return lines
+
+def fetch_watchlist_names(rows):
+    objectid_regex = re.compile(r'<boardgame objectid="(\d*)">')
+    name_regex = re.compile(r'.*<name primary="true" sortindex="1">(.*)</name>')
+    result = []
+    for row in rows:
+        for line in row:
+            if objectid_regex.match(line):
+                objectid = objectid_regex.findall(line)[0]
+            if name_regex.match(line):
+                name = name_regex.findall(line)[0]
+        result.append((objectid, name))
+    return result
+
+# <boardgame objectid="162886">
+    # <name primary="true" sortindex="1">Spirit Island</name>
+    # pass
+
+
+def fetch_watchlist_ranks(rows):
+    # <rank type="subtype" id="1" name="boardgame" friendlyname="Board Game Rank" value="11" bayesaverage="8.12664" />
+    pass
+
+
+def fetch_watchlist_year(rows):
+    # <yearpublished>2017</yearpublished>
+    pass
+
+
+def fetch_watchlist_description(rows):
+    # <description>In the most distant reaches of the world, magic still exists, embodied by spirits of the land, of the sky, and of every natural thing. As the great powers of Europe stretch their colonial empires further and further, they will inevitably lay claim to a place where spirits still hold power - and when they do, the land itself will fight back alongside the islanders who live there.&lt;br/&gt;&lt;br/&gt;Spirit Island is a complex and thematic cooperative game about defending your island home from colonizing Invaders. Players are different spirits of the land, each with its own unique elemental powers. Every turn, players simultaneously choose which of their power cards to play, paying energy to do so. Using combinations of power cards that match a spirit's elemental affinities can grant free bonus effects. Faster powers take effect immediately, before the Invaders spread and ravage, but other magics are slower, requiring forethought and planning to use effectively. In the Spirit phase, spirits gain energy, and choose how / whether to Grow: to reclaim used power cards, to seek for new power, or to spread presence into new areas of the island.&lt;br/&gt;&lt;br/&gt;The Invaders expand across the island map in a semi-predictable fashion. Each turn they explore into some lands (portions of the island); the next turn, they build in those lands, forming settlements and cities. The turn after that, they ravage there, bringing blight to the land and attacking any native islanders present.&lt;br/&gt;&lt;br/&gt;The islanders fight back against the Invaders when attacked, and lend the spirits some other aid, but may not always do so exactly as you'd hoped. Some Powers work through the islanders, helping them (eg) drive out the Invaders or clean the land of blight.&lt;br/&gt;&lt;br/&gt;The game escalates as it progresses: spirits spread their presence to new parts of the island and seek out new and more potent powers, while the Invaders step up their colonization efforts. Each turn represents 1-3 years of alternate-history.&lt;br/&gt;&lt;br/&gt;At game start, winning requires destroying every last settlement and city on the board - but as you frighten the Invaders more and more, victory becomes easier: they'll run away even if some number of settlements or cities remain. Defeat comes if any spirit is destroyed, if the island is overrun by blight, or if the Invader deck is depleted before achieving victory.&lt;br/&gt;&lt;br/&gt;The game includes different adversaries to fight against (eg: a Swedish Mining Colony, or a Remote British Colony). Each changes play in different ways, and offers a different path of difficulty boosts to keep the game challenging as you gain skill.&lt;br/&gt;&lt;br/&gt;</description>
+    pass
+
+
+def fetch_watchlist_image_links(rows):
+    # <image>https://cf.geekdo-images.com/a13ieMPP2s0KEaKNYmtH5w__original/img/nuQlvKPSBG3jsVzaTgZTpNSjlTw=/0x0/filters:format(png)/pic3615739.png</image>
+    # <thumbnail>https://cf.geekdo-images.com/a13ieMPP2s0KEaKNYmtH5w__thumb/img/SKiHQ4zAj8uVdtwxOYKIveY9jCo=/fit-in/200x150/filters:strip_icc()/pic3615739.png</thumbnail>
+    pass
+
+
+def fetch_watchlist_rating(rows):
+    # <bayesaverage>8.12664</bayesaverage>
+    pass
+
+
+def fetch_watchlist_votes(rows):
+    # <usersrated>30634</usersrated>
+    pass
+
+
+def fetch_actual_watchlist_data(watchlist):
+    rows = load_watchlist_pages(watchlist)
+    keys, names = fetch_watchlist_names(rows)
+    elements = list(zip(fetch_watchlist_ranks(rows), names, fetch_watchlist_year(rows), fetch_watchlist_description(rows), fetch_watchlist_image_links(rows),
+                        fetch_watchlist_rating(rows), fetch_watchlist_votes(rows)))
+    elements = [BGGRow(rank, name, year, description, image_link, rating, votes) for
+                rank, name, year, description, image_link, rating, votes in elements]
+    data = dict(zip(keys, elements))
+    return data
+
+
 def load_actual_page():
     target_url = "https://boardgamegeek.com/browse/boardgame"
     with request.urlopen(target_url) as resp:
@@ -161,12 +230,6 @@ def load_actual_page():
     target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip()) > 0]
     return extract_tablerows(target_lines)
 
-def load_watchlist(watchlist):
-    for url in watchlist:
-        with request.urlopen(url) as resp:
-            target_lines = [l.decode() for l in resp.readlines()]
-            for l in target_lines:
-                print(l)
 
 
 def extract_tablerows(target_lines):
@@ -262,7 +325,7 @@ def write_outdated(fil, outdated):
 
 
 def main(basename):
-    load_watchlist(["https://www.boardgamegeek.com/xmlapi/boardgame/162886?stats=1"])
+    load_watchlist_pages(["https://www.boardgamegeek.com/xmlapi/boardgame/162886?stats=1"])
     # load_watchlist(["https://boardgamegeek.com/boardgame/314491/meadow"])
 
 
