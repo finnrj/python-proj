@@ -182,8 +182,10 @@ def fetch_watchlist_names(rows):
 
 
 def fetch_watchlist_ranks(rows):
+    rank_rating_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage="(\d+\.\d+)".*/>')
+    ranks_ratings = [(rank_rating_regex.findall(line)[0][0], rank_rating_regex.findall(line)[0][1]) for row in rows for line in row if rank_rating_regex.match(line)]
     # <rank type="subtype" id="1" name="boardgame" friendlyname="Board Game Rank" value="11" bayesaverage="8.12664" />
-    pass
+    return ranks_ratings
 
 
 def fetch_watchlist_year(rows):
@@ -214,13 +216,15 @@ def fetch_watchlist_votes(rows):
 
 def fetch_actual_watchlist_data(watchlist):
     rows = load_watchlist_pages(watchlist)
-    keys, names = fetch_watchlist_names(rows)
-    elements = list(zip(fetch_watchlist_ranks(rows), names, fetch_watchlist_year(rows), fetch_watchlist_description(rows), fetch_watchlist_image_links(rows),
-                        fetch_watchlist_rating(rows), fetch_watchlist_votes(rows)))
-    elements = [BGGRow(rank, name, year, description, image_link, rating, votes) for
-                rank, name, year, description, image_link, rating, votes in elements]
-    data = dict(zip(keys, elements))
-    return data
+    # keys, names = fetch_watchlist_names(rows)
+    # rank, rating = fetch_watchlist_ranks(rows)
+    print(list(zip(fetch_watchlist_names(rows), fetch_watchlist_ranks(rows))))
+    # elements = list(zip(fetch_watchlist_ranks(rows), names, fetch_watchlist_year(rows), fetch_watchlist_description(rows), fetch_watchlist_image_links(rows),
+    #                     fetch_watchlist_rating(rows), fetch_watchlist_votes(rows)))
+    # elements = [BGGRow(rank, name, year, description, image_link, rating, votes) for
+    #             rank, name, year, description, image_link, rating, votes in elements]
+    # data = dict(zip(keys, elements))
+    # return data
 
 
 def load_actual_page():
@@ -325,7 +329,8 @@ def write_outdated(fil, outdated):
 
 
 def main(basename):
-    load_watchlist_pages(["https://www.boardgamegeek.com/xmlapi/boardgame/162886?stats=1"])
+    load_watchlist_pages(["https://www.boardgamegeek.com/xmlapi/boardgame/162886?stats=1",
+                          "https://www.boardgamegeek.com/xmlapi/boardgame/314491?stats=1"])
     # load_watchlist(["https://boardgamegeek.com/boardgame/314491/meadow"])
 
 
