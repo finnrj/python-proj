@@ -53,6 +53,8 @@ html_template_page_suffix = '''%s
         </body>
     </html>''' % html_template_table_suffix
 
+watchlist_template = "https://www.boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
+
 class BGGRow:
     def __init__(self, rank, name, year, description, image_link, rating, votes):
         self.rank = int(rank)
@@ -130,16 +132,16 @@ class BGGRow:
                            self.votes, self.votes_marker)
 
 
-def update_scoring(data, old_data):
+def update_scoring(new_data, old_data):
     outdated_elements = []
     for k, e in old_data.items():
-        if not (k in data):
+        if not (k in new_data):
             outdated_elements.append(k)
         else:
-            e.update(data[k])
+            e.update(new_data[k])
     outdated_elements = [old_data.pop(k, None) for k in outdated_elements]
-    for new_key in [k for k in data if k not in old_data]:
-        old_data[new_key] = data[new_key]
+    for new_key in [k for k in new_data if k not in old_data]:
+        old_data[new_key] = new_data[new_key]
     return outdated_elements
 
 
@@ -153,6 +155,8 @@ def fetch_actual_data():
     data = dict(zip(keys, elements))
     return data
 
+def read_watchlist(watchlist_file):
+    return [ watchlist_template % objectid.strip() for objectid in open(watchlist_file).readlines()]
 
 def load_watchlist_pages(watchlist):
     lines = []
@@ -163,69 +167,38 @@ def load_watchlist_pages(watchlist):
             lines.append(target_lines)
     return lines
 
-def fetch_watchlist_names(rows):
+def fetch_watchlist_rows(rows):
     objectid_regex = re.compile(r'<boardgame objectid="(\d*)">')
     name_regex = re.compile(r'.*<name primary="true" sortindex="1">(.*)</name>')
-    result = []
+    rank_rating_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage="(\d+\.\d+)".*/>')
+    year_regex = re.compile(r'.*<yearpublished>(\d+)</yearpublished>')
+    description_regex = re.compile(r'.*<description>(.*)</description>')
+    image_regex = re.compile(r'.*<thumbnail>(.*)</thumbnail>')
+    votes_regex = re.compile(r'.*<usersrated>(\d+)</usersrated>')
+
+    result = {}
     for row in rows:
         for line in row:
             if objectid_regex.match(line):
                 objectid = objectid_regex.findall(line)[0]
             if name_regex.match(line):
                 name = name_regex.findall(line)[0]
-        result.append((objectid, name))
+            if year_regex.match(line):
+                year = year_regex.findall(line)[0]
+            if description_regex.match(line):
+                description = description_regex.findall(line)[0]
+            if image_regex.match(line):
+                image_link = image_regex.findall(line)[0]
+            if votes_regex.match(line):
+                votes = votes_regex.findall(line)[0]
+            if rank_rating_regex.match(line):
+                rank = rank_rating_regex.findall(line)[0][0]
+                rating = rank_rating_regex.findall(line)[0][1]
+        result[objectid] = BGGRow(rank, name, year, description, image_link, rating, votes)
     return result
 
-# <boardgame objectid="162886">
-    # <name primary="true" sortindex="1">Spirit Island</name>
-    # pass
-
-
-def fetch_watchlist_ranks(rows):
-    rank_rating_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage="(\d+\.\d+)".*/>')
-    ranks_ratings = [(rank_rating_regex.findall(line)[0][0], rank_rating_regex.findall(line)[0][1]) for row in rows for line in row if rank_rating_regex.match(line)]
-    # <rank type="subtype" id="1" name="boardgame" friendlyname="Board Game Rank" value="11" bayesaverage="8.12664" />
-    return ranks_ratings
-
-
-def fetch_watchlist_year(rows):
-    # <yearpublished>2017</yearpublished>
-    pass
-
-
-def fetch_watchlist_description(rows):
-    # <description>In the most distant reaches of the world, magic still exists, embodied by spirits of the land, of the sky, and of every natural thing. As the great powers of Europe stretch their colonial empires further and further, they will inevitably lay claim to a place where spirits still hold power - and when they do, the land itself will fight back alongside the islanders who live there.&lt;br/&gt;&lt;br/&gt;Spirit Island is a complex and thematic cooperative game about defending your island home from colonizing Invaders. Players are different spirits of the land, each with its own unique elemental powers. Every turn, players simultaneously choose which of their power cards to play, paying energy to do so. Using combinations of power cards that match a spirit's elemental affinities can grant free bonus effects. Faster powers take effect immediately, before the Invaders spread and ravage, but other magics are slower, requiring forethought and planning to use effectively. In the Spirit phase, spirits gain energy, and choose how / whether to Grow: to reclaim used power cards, to seek for new power, or to spread presence into new areas of the island.&lt;br/&gt;&lt;br/&gt;The Invaders expand across the island map in a semi-predictable fashion. Each turn they explore into some lands (portions of the island); the next turn, they build in those lands, forming settlements and cities. The turn after that, they ravage there, bringing blight to the land and attacking any native islanders present.&lt;br/&gt;&lt;br/&gt;The islanders fight back against the Invaders when attacked, and lend the spirits some other aid, but may not always do so exactly as you'd hoped. Some Powers work through the islanders, helping them (eg) drive out the Invaders or clean the land of blight.&lt;br/&gt;&lt;br/&gt;The game escalates as it progresses: spirits spread their presence to new parts of the island and seek out new and more potent powers, while the Invaders step up their colonization efforts. Each turn represents 1-3 years of alternate-history.&lt;br/&gt;&lt;br/&gt;At game start, winning requires destroying every last settlement and city on the board - but as you frighten the Invaders more and more, victory becomes easier: they'll run away even if some number of settlements or cities remain. Defeat comes if any spirit is destroyed, if the island is overrun by blight, or if the Invader deck is depleted before achieving victory.&lt;br/&gt;&lt;br/&gt;The game includes different adversaries to fight against (eg: a Swedish Mining Colony, or a Remote British Colony). Each changes play in different ways, and offers a different path of difficulty boosts to keep the game challenging as you gain skill.&lt;br/&gt;&lt;br/&gt;</description>
-    pass
-
-
-def fetch_watchlist_image_links(rows):
-    # <image>https://cf.geekdo-images.com/a13ieMPP2s0KEaKNYmtH5w__original/img/nuQlvKPSBG3jsVzaTgZTpNSjlTw=/0x0/filters:format(png)/pic3615739.png</image>
-    # <thumbnail>https://cf.geekdo-images.com/a13ieMPP2s0KEaKNYmtH5w__thumb/img/SKiHQ4zAj8uVdtwxOYKIveY9jCo=/fit-in/200x150/filters:strip_icc()/pic3615739.png</thumbnail>
-    pass
-
-
-def fetch_watchlist_rating(rows):
-    # <bayesaverage>8.12664</bayesaverage>
-    pass
-
-
-def fetch_watchlist_votes(rows):
-    # <usersrated>30634</usersrated>
-    pass
-
-
 def fetch_actual_watchlist_data(watchlist):
-    rows = load_watchlist_pages(watchlist)
-    # keys, names = fetch_watchlist_names(rows)
-    # rank, rating = fetch_watchlist_ranks(rows)
-    print(list(zip(fetch_watchlist_names(rows), fetch_watchlist_ranks(rows))))
-    # elements = list(zip(fetch_watchlist_ranks(rows), names, fetch_watchlist_year(rows), fetch_watchlist_description(rows), fetch_watchlist_image_links(rows),
-    #                     fetch_watchlist_rating(rows), fetch_watchlist_votes(rows)))
-    # elements = [BGGRow(rank, name, year, description, image_link, rating, votes) for
-    #             rank, name, year, description, image_link, rating, votes in elements]
-    # data = dict(zip(keys, elements))
-    # return data
-
+    return fetch_watchlist_rows(load_watchlist_pages(watchlist))
 
 def load_actual_page():
     target_url = "https://boardgamegeek.com/browse/boardgame"
@@ -233,8 +206,6 @@ def load_actual_page():
         target_lines = [l.decode() for l in resp.readlines()[274:]]
     target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip()) > 0]
     return extract_tablerows(target_lines)
-
-
 
 def extract_tablerows(target_lines):
     rows = []
@@ -329,34 +300,42 @@ def write_outdated(fil, outdated):
 
 
 def main(basename):
-    load_watchlist_pages(["https://www.boardgamegeek.com/xmlapi/boardgame/162886?stats=1",
-                          "https://www.boardgamegeek.com/xmlapi/boardgame/314491?stats=1"])
-    # load_watchlist(["https://boardgamegeek.com/boardgame/314491/meadow"])
+    # watchlist = fetch_actual_watchlist_data([
+    #     "https://www.boardgamegeek.com/xmlapi/boardgame/314491?stats=1",
+    #     "https://www.boardgamegeek.com/xmlapi/boardgame/317985?stats=1",
+    #     "https://www.boardgamegeek.com/xmlapi/boardgame/283387?stats=1",
+    #     "https://www.boardgamegeek.com/xmlapi/boardgame/300531?stats=1"
+    # ])
 
+    pickle_file = os.path.join(basename, "target.pickle")
+    latest_rating_file = os.path.join(basename, "latest-ratings")
+    latest_rating_html = os.path.join(basename, "latest-ratings.html")
+    latest_watchlist = os.path.join(basename, "latest-watchlist")
 
-    # pickle_file = os.path.join(basename, "target.pickle")
-    # latest_rating_file = os.path.join(basename, "latest-ratings")
-    # latest_rating_html = os.path.join(basename, "latest-ratings.html")
-    #
-    # with open(pickle_file, 'rb') as fil:
-    #     old_data = pickle.load(fil)
+    with open(pickle_file, 'rb') as fil:
+        old_data = pickle.load(fil)
 
     # outdated = []
     # for k,v in old_data.items():
     #     outdated.append(v)
     #     if len(outdated) == 3:
     #         break
-    # outdated = update_scoring(fetch_actual_data(), old_data)
-    # with open(latest_rating_file, 'w') as fil:
-    #     write_file(fil, old_data, outdated)
-    #
-    # with open(latest_rating_html, 'w') as fil:
-    #     if outdated:
-    #         write_html(fil, outdated, outdated, not outdated)
-    #     write_html(fil, old_data.values(), not outdated)
-    #
-    # with open(pickle_file, 'wb') as fil:
-    #     pickle.dump(old_data, fil)
+    watchlist = fetch_actual_watchlist_data(read_watchlist(latest_watchlist))
+    actual_data = fetch_actual_data()
+    actual_data.update(watchlist)
+
+    outdated = update_scoring(actual_data, old_data)
+
+    with open(latest_rating_file, 'w') as fil:
+        write_file(fil, old_data, outdated)
+
+    with open(latest_rating_html, 'w') as fil:
+        if outdated:
+            write_html(fil, outdated, outdated, not outdated)
+        write_html(fil, old_data.values(), not outdated)
+
+    with open(pickle_file, 'wb') as fil:
+        pickle.dump(old_data, fil)
 
 
 if __name__ == '__main__':
