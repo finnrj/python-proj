@@ -145,8 +145,12 @@ def update_scoring(new_data, old_data):
     return outdated_elements
 
 
-def fetch_actual_data():
-    rows = load_actual_page()
+def fetch_actual_data(rank = None):
+    rank_option = ("?rank=%s" % rank) if rank else ""
+    rows = load_actual_page(rank_option)
+    if rank:
+        idx = 99 if (int(rank) % 100) == 0 else (int(rank) % 100) - 1
+        rows = [rows[idx]]
     keys, names = fetch_names(rows)
     elements = list(zip(fetch_ranks(rows), names, fetch_year(rows), fetch_description(rows), fetch_image_links(rows),
                         fetch_rating(rows), fetch_votes(rows)))
@@ -185,23 +189,20 @@ def fetch_watchlist_rows(rows):
                 name = name_regex.findall(line)[0]
             if year_regex.match(line):
                 year = year_regex.findall(line)[0]
-            if description_regex.match(line):
-                description = description_regex.findall(line)[0]
-            if image_regex.match(line):
-                image_link = image_regex.findall(line)[0]
             if votes_regex.match(line):
                 votes = votes_regex.findall(line)[0]
             if rank_rating_regex.match(line):
                 rank = rank_rating_regex.findall(line)[0][0]
                 rating = rank_rating_regex.findall(line)[0][1]
+        description, image_link = [(bggRow.description, bggRow.image_link) for bggRow in fetch_actual_data(rank).values()][0]
         result[objectid] = BGGRow(rank, name, year, description, image_link, rating, votes)
     return result
 
 def fetch_actual_watchlist_data(watchlist):
     return fetch_watchlist_rows(load_watchlist_pages(watchlist))
 
-def load_actual_page():
-    target_url = "https://boardgamegeek.com/browse/boardgame"
+def load_actual_page(rank_option):
+    target_url = "https://boardgamegeek.com/browse/boardgame" + rank_option
     with request.urlopen(target_url) as resp:
         target_lines = [l.decode() for l in resp.readlines()[274:]]
     target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip()) > 0]
@@ -300,13 +301,6 @@ def write_outdated(fil, outdated):
 
 
 def main(basename):
-    # watchlist = fetch_actual_watchlist_data([
-    #     "https://www.boardgamegeek.com/xmlapi/boardgame/314491?stats=1",
-    #     "https://www.boardgamegeek.com/xmlapi/boardgame/317985?stats=1",
-    #     "https://www.boardgamegeek.com/xmlapi/boardgame/283387?stats=1",
-    #     "https://www.boardgamegeek.com/xmlapi/boardgame/300531?stats=1"
-    # ])
-
     pickle_file = os.path.join(basename, "target.pickle")
     latest_rating_file = os.path.join(basename, "latest-ratings")
     latest_rating_html = os.path.join(basename, "latest-ratings.html")
@@ -320,10 +314,11 @@ def main(basename):
     #     outdated.append(v)
     #     if len(outdated) == 3:
     #         break
+
     watchlist = fetch_actual_watchlist_data(read_watchlist(latest_watchlist))
     actual_data = fetch_actual_data()
-    actual_data.update(watchlist)
 
+    actual_data.update(watchlist)
     outdated = update_scoring(actual_data, old_data)
 
     with open(latest_rating_file, 'w') as fil:
