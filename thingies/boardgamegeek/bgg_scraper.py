@@ -124,7 +124,7 @@ class BGGRow:
                                            self.votes, self.votes_marker)
 
     def __str__(self):
-        template = "%3d %-6s, %-40s %s, %2.3f %s, %7d %s"
+        template = "%4d %-6s, %-40s %s, %2.3f %s, %7d %s"
         return template % (self.rank, self.rank_marker,
                            self.name[:37] + "..." if len(self.name) > 37 else self.name,
                            self.year,
@@ -160,24 +160,19 @@ def fetch_actual_data(rank = None):
     return data
 
 def read_watchlist(watchlist_file):
-    return [ watchlist_template % objectid.strip() for objectid in open(watchlist_file).readlines()]
+    return watchlist_template % ",".join([objectid.strip() for objectid in open(watchlist_file).readlines()])
 
-def load_watchlist_pages(watchlist):
-    lines = []
-    for url in watchlist:
-        with request.urlopen(url) as resp:
-            target_lines = [l.decode() for l in resp.readlines()]
-            target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip())]
-            lines.append(target_lines)
-    return lines
+def load_watchlist_page(url):
+    with request.urlopen(url) as resp:
+        target_lines = [l.decode() for l in resp.readlines()]
+        target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip())]
+    return extract_tablerows(target_lines, "<boardgame objectid=", "</boardgame>")
 
 def fetch_watchlist_rows(rows):
     objectid_regex = re.compile(r'<boardgame objectid="(\d*)">')
-    name_regex = re.compile(r'.*<name primary="true" sortindex="1">(.*)</name>')
+    name_regex = re.compile(r'.*<name primary="true" sortindex="\d+">(.*)</name>')
     rank_rating_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage="(\d+\.\d+)".*/>')
     year_regex = re.compile(r'.*<yearpublished>(\d+)</yearpublished>')
-    description_regex = re.compile(r'.*<description>(.*)</description>')
-    image_regex = re.compile(r'.*<thumbnail>(.*)</thumbnail>')
     votes_regex = re.compile(r'.*<usersrated>(\d+)</usersrated>')
 
     result = {}
@@ -199,7 +194,7 @@ def fetch_watchlist_rows(rows):
     return result
 
 def fetch_actual_watchlist_data(watchlist):
-    return fetch_watchlist_rows(load_watchlist_pages(watchlist))
+    return fetch_watchlist_rows(load_watchlist_page(watchlist))
 
 def load_actual_page(rank_option):
     target_url = "https://boardgamegeek.com/browse/boardgame" + rank_option
@@ -208,16 +203,16 @@ def load_actual_page(rank_option):
     target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip()) > 0]
     return extract_tablerows(target_lines)
 
-def extract_tablerows(target_lines):
+def extract_tablerows(target_lines, start_pattern="<tr id='row_'>", end_pattern="</tr>"):
     rows = []
     append = False
     for idx, line in enumerate(target_lines):
-        if line.startswith("<tr id='row_'>"):
+        if line.startswith(start_pattern):
             append = True
             row = []
         if append:
             row.append(line)
-        if line.startswith("</tr>") and append:
+        if line.startswith(end_pattern) and append:
             append = False
             rows.append(row)
     return rows
