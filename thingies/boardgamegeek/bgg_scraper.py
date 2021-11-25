@@ -4,6 +4,7 @@ import re
 import sys
 import os.path
 from functools import reduce
+from itertools import groupby
 from urllib import request
 
 html_template_table_prefix = '''
@@ -146,11 +147,15 @@ def update_scoring(new_data, old_data):
 
 
 def fetch_actual_data(rank = None):
-    rank_option = ("?rank=%s" % rank) if rank else ""
-    rows = load_actual_page(rank_option)
     if rank:
-        idx = 99 if (int(rank) % 100) == 0 else (int(rank) % 100) - 1
-        rows = [rows[idx]]
+        rows = []
+        for start_rank, ranks in rank:
+            rank_option = ("?rank=%s" % start_rank)
+            rs = [row for idx, row in enumerate(load_actual_page(rank_option))
+                  if str(int(start_rank) + idx) in ranks]
+            rows += rs
+    else:
+        rows = load_actual_page("")
     keys, names = fetch_names(rows)
     elements = list(zip(fetch_ranks(rows), names, fetch_year(rows), fetch_description(rows), fetch_image_links(rows),
                         fetch_rating(rows), fetch_votes(rows)))
@@ -169,29 +174,11 @@ def load_watchlist_page(url):
     return extract_tablerows(target_lines, "<boardgame objectid=", "</boardgame>")
 
 def fetch_watchlist_rows(rows):
-    objectid_regex = re.compile(r'<boardgame objectid="(\d*)">')
-    name_regex = re.compile(r'.*<name primary="true" sortindex="\d+">(.*)</name>')
-    rank_rating_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage="(\d+\.\d+)".*/>')
-    year_regex = re.compile(r'.*<yearpublished>(\d+)</yearpublished>')
-    votes_regex = re.compile(r'.*<usersrated>(\d+)</usersrated>')
+    rank_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage=')
 
-    result = {}
-    for row in rows:
-        for line in row:
-            if objectid_regex.match(line):
-                objectid = objectid_regex.findall(line)[0]
-            if name_regex.match(line):
-                name = name_regex.findall(line)[0]
-            if year_regex.match(line):
-                year = year_regex.findall(line)[0]
-            if votes_regex.match(line):
-                votes = votes_regex.findall(line)[0]
-            if rank_rating_regex.match(line):
-                rank = rank_rating_regex.findall(line)[0][0]
-                rating = rank_rating_regex.findall(line)[0][1]
-        description, image_link = [(bggRow.description, bggRow.image_link) for bggRow in fetch_actual_data(rank).values()][0]
-        result[objectid] = BGGRow(rank, name, year, description, image_link, rating, votes)
-    return result
+    ranks = sorted([rank_regex.findall(line)[0] for row in rows for line in row if rank_regex.match(line)],
+                   key=lambda r:int(r[:-2]))
+    return fetch_actual_data([("%d01" % k, list(v)) for k, v in groupby(ranks, key=lambda r: int(r[:-2]))])
 
 def fetch_actual_watchlist_data(watchlist):
     return fetch_watchlist_rows(load_watchlist_page(watchlist))
@@ -321,7 +308,7 @@ def main(basename):
 
     with open(latest_rating_html, 'w') as fil:
         if outdated:
-            write_html(fil, outdated, outdated, not outdated)
+            write_html(fil, outdated, outdated == None, not outdated)
         write_html(fil, old_data.values(), not outdated)
 
     with open(pickle_file, 'wb') as fil:
