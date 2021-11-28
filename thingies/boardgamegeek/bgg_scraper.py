@@ -7,6 +7,7 @@ from functools import reduce
 from itertools import groupby
 from urllib import request
 
+
 html_template_table_prefix = '''
             <table class="zui-table">
                 <thead>
@@ -26,7 +27,6 @@ html_template_page_prefix = '''<html>
         <body>
             %s
         ''' % html_template_table_prefix
-
 
 html_row_template_format = '''<tr">
         <td%s%3d %-6s</td>
@@ -246,7 +246,10 @@ def write_file(fil, old_data, outdated):
     write_outdated(fil, outdated)
     row: BGGRow
     rank_sorted = sorted(old_data.values(), key=lambda e: e.rank)
-    for row in rank_sorted:
+    for idx, row in enumerate(rank_sorted):
+        if idx == 100:
+            print()
+            fil.write("\n")
         print(row)
         fil.write(str(row))
         fil.write("\n")
@@ -257,7 +260,10 @@ def write_html(fil, old_data, page_prefix = True, page_suffix = True):
     rank_sorted = sorted(old_data, key=lambda e: e.rank)
     largest_diff = largest_rating_diff(rank_sorted)
     row: BGGRow
-    for row in rank_sorted:
+    for idx, row in enumerate(rank_sorted):
+        if idx == 100:
+            fil.write(html_template_table_suffix)
+            fil.write(html_template_page_prefix)
         rating_class = ' class="rating-gap"' if row.name in largest_diff else ""
         fil.write(row.html_str(rating_class))
         fil.write("\n")
