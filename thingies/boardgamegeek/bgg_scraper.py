@@ -7,7 +7,6 @@ from functools import reduce
 from itertools import groupby
 from urllib import request
 
-
 html_template_table_prefix = '''
             <table class="zui-table">
                 <thead>
@@ -55,6 +54,7 @@ html_template_page_suffix = '''%s
     </html>''' % html_template_table_suffix
 
 watchlist_template = "https://www.boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
+
 
 class BGGRow:
     def __init__(self, rank, name, year, description, image_link, rating, votes):
@@ -105,9 +105,9 @@ class BGGRow:
             self.rating_marker = len('(+1.333)') * ' '
 
     def rank_class(self):
-        if "^" in self.rank_marker  and "+" in self.rating_marker:
+        if "^" in self.rank_marker and "+" in self.rating_marker:
             return ' class="up-rank">'
-        elif "v" in self.rank_marker  and "-" in self.rating_marker:
+        elif "v" in self.rank_marker and "-" in self.rating_marker:
             return ' class="down-rank">'
         elif "NEW" in self.rank_marker:
             return ' class="new-rank">'
@@ -146,11 +146,11 @@ def update_scoring(new_data, old_data):
     return outdated_elements
 
 
-def fetch_actual_data(rank = None):
+def fetch_actual_data(rank=None):
     if rank:
         rows = []
         for start_rank, ranks in rank:
-            rank_option = ("?rank=%s" % start_rank)
+            rank_option = ("?sort=rank&rankobjecttype=subtype&rankobjectid=1&rank=%s" % start_rank)
             rs = [row for idx, row in enumerate(load_actual_page(rank_option))
                   if str(int(start_rank) + idx) in ranks]
             rows += rs
@@ -164,33 +164,39 @@ def fetch_actual_data(rank = None):
     data = dict(zip(keys, elements))
     return data
 
+
 def read_watchlist(watchlist_file):
     return watchlist_template % ",".join([objectid.strip() for objectid in open(watchlist_file).readlines()])
+
 
 def load_watchlist_page(url):
     with request.urlopen(url) as resp:
         target_lines = [l.decode() for l in resp.readlines()]
         target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip())]
-    return extract_tablerows(target_lines, "<boardgame objectid=", "</boardgame>")
+    return extract_table_rows(target_lines, "<boardgame objectid=", "</boardgame>")
+
 
 def fetch_watchlist_rows(rows):
     rank_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage=')
 
     ranks = sorted([rank_regex.findall(line)[0] for row in rows for line in row if rank_regex.match(line)],
-                   key=lambda r:int(r[:-2]))
+                   key=lambda r: int(r[:-2]))
     return fetch_actual_data([("%d01" % k, list(v)) for k, v in groupby(ranks, key=lambda r: int(r[:-2]))])
+
 
 def fetch_actual_watchlist_data(watchlist):
     return fetch_watchlist_rows(load_watchlist_page(watchlist))
+
 
 def load_actual_page(rank_option):
     target_url = "https://boardgamegeek.com/browse/boardgame" + rank_option
     with request.urlopen(target_url) as resp:
         target_lines = [l.decode() for l in resp.readlines()[274:]]
     target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip()) > 0]
-    return extract_tablerows(target_lines)
+    return extract_table_rows(target_lines)
 
-def extract_tablerows(target_lines, start_pattern="<tr id='row_'>", end_pattern="</tr>"):
+
+def extract_table_rows(target_lines, start_pattern="<tr id='row_'>", end_pattern="</tr>"):
     rows = []
     append = False
     for idx, line in enumerate(target_lines):
@@ -255,7 +261,7 @@ def write_file(fil, old_data, outdated):
         fil.write("\n")
 
 
-def write_html(fil, old_data, page_prefix = True, page_suffix = True):
+def write_html(fil, old_data, page_prefix=True, page_suffix=True):
     fil.write(html_template_page_prefix if page_prefix else html_template_table_prefix)
     rank_sorted = sorted(old_data, key=lambda e: e.rank)
     largest_diff = largest_rating_diff(rank_sorted)
@@ -295,10 +301,10 @@ def main(basename):
     latest_watchlist = os.path.join(basename, "latest-watchlist")
 
     with open(pickle_file, 'rb') as fil:
-        old_data = pickle.load(fil)
+        pickled_data = pickle.load(fil)
 
     # outdated = []
-    # for k,v in old_data.items():
+    # for k,v in pickled_data.items():
     #     outdated.append(v)
     #     if len(outdated) == 3:
     #         break
@@ -307,18 +313,19 @@ def main(basename):
     actual_data = fetch_actual_data()
 
     actual_data.update(watchlist)
-    outdated = update_scoring(actual_data, old_data)
+    # pickled_data = actual_data
+    outdated = update_scoring(actual_data, pickled_data)
 
     with open(latest_rating_file, 'w') as fil:
-        write_file(fil, old_data, outdated)
+        write_file(fil, pickled_data, outdated)
 
     with open(latest_rating_html, 'w') as fil:
         if outdated:
             write_html(fil, outdated, outdated == None, not outdated)
-        write_html(fil, old_data.values(), not outdated)
+        write_html(fil, pickled_data.values(), not outdated)
 
     with open(pickle_file, 'wb') as fil:
-        pickle.dump(old_data, fil)
+        pickle.dump(pickled_data, fil)
 
 
 if __name__ == '__main__':
