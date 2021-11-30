@@ -149,10 +149,14 @@ def update_scoring(new_data, old_data):
 def fetch_actual_data(rank=None):
     if rank:
         rows = []
-        for start_rank, ranks in rank:
-            rank_option = ("?sort=rank&rankobjecttype=subtype&rankobjectid=1&rank=%s" % start_rank)
-            rs = [row for idx, row in enumerate(load_actual_page(rank_option))
-                  if str(int(start_rank) + idx) in ranks]
+        objectid_regex = re.compile(r'.*href="/boardgame/(\d+)/')
+        for start_rank, objectid_ranks in rank:
+            objectids = [o_r[0] for o_r in objectid_ranks]
+            rank_option = ("?rank=%s" % start_rank)
+            # print(objectid_ranks)
+            # print(objectids)
+            rs = [row for row in load_actual_page(rank_option)
+                  if objectid_regex.findall(row[5])[0] in objectids]
             rows += rs
     else:
         rows = load_actual_page("")
@@ -177,11 +181,12 @@ def load_watchlist_page(url):
 
 
 def fetch_watchlist_rows(rows):
+    objectid_regex = re.compile(r'.*<boardgame objectid="(\d+)">')
     rank_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage=')
-
-    ranks = sorted([rank_regex.findall(line)[0] for row in rows for line in row if rank_regex.match(line)],
-                   key=lambda r: int(r[:-2]))
-    return fetch_actual_data([("%d01" % k, list(v)) for k, v in groupby(ranks, key=lambda r: int(r[:-2]))])
+    objectid_ranks = list(zip((objectid_regex.findall(line)[0] for row in rows for line in row if objectid_regex.match(line)),
+                         (rank_regex.findall(line)[0] for row in rows for line in row if rank_regex.match(line))))
+    ranks = sorted(objectid_ranks, key=lambda o_r: int(o_r[1][:-2]))
+    return fetch_actual_data([("%d01" % k, list(v)) for k, v in groupby(ranks, key=lambda o_r: int(o_r[1][:-2]))])
 
 
 def fetch_actual_watchlist_data(watchlist):
@@ -311,7 +316,6 @@ def main(basename):
 
     watchlist = fetch_actual_watchlist_data(read_watchlist(latest_watchlist))
     actual_data = fetch_actual_data()
-
     actual_data.update(watchlist)
     # pickled_data = actual_data
     outdated = update_scoring(actual_data, pickled_data)
