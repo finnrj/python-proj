@@ -149,7 +149,7 @@ def update_scoring(new_data, old_data):
 def fetch_actual_data(rank=None):
     if rank:
         rows = []
-        objectid_regex = re.compile(r'.*href="/boardgame/(\d+)/')
+        objectid_regex = re.compile(r'.*href="/boardgame.*/(\d+)/')
         for start_rank, objectid_ranks in rank:
             objectids = [o_r[0] for o_r in objectid_ranks]
             rank_option = ("?rank=%s" % start_rank)
@@ -185,8 +185,8 @@ def fetch_watchlist_rows(rows):
     rank_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage=')
     objectid_ranks = list(zip((objectid_regex.findall(line)[0] for row in rows for line in row if objectid_regex.match(line)),
                          (rank_regex.findall(line)[0] for row in rows for line in row if rank_regex.match(line))))
-    ranks = sorted(objectid_ranks, key=lambda o_r: int(o_r[1][:-2]))
-    return fetch_actual_data([("%d01" % k, list(v)) for k, v in groupby(ranks, key=lambda o_r: int(o_r[1][:-2]))])
+    ranks = sorted(objectid_ranks, key=lambda o_r: int(o_r[1].zfill(3)[:-2]))
+    return fetch_actual_data([("%d01" % k, list(v)) for k, v in groupby(ranks, key=lambda o_r: int(o_r[1].zfill(3)[:-2]))])
 
 
 def fetch_actual_watchlist_data(watchlist):
@@ -218,12 +218,12 @@ def extract_table_rows(target_lines, start_pattern="<tr id='row_'>", end_pattern
 
 def fetch_rating(rows):
     rating_regex = re.compile('(\d+.\d+)')
-    return [rating_regex.findall(r[21])[0] for r in rows]
+    return [rating_regex.findall(r[20]+r[21])[0] for r in rows]
 
 
 def fetch_votes(rows):
     vote_regex = re.compile('(\d+)')
-    return [vote_regex.findall(r[25])[0] for r in rows]
+    return [(vote_regex.findall(r[25])[0] if vote_regex.match(r[25]) else '0')  for r in rows]
 
 
 def fetch_description(rows):
@@ -300,36 +300,46 @@ def write_outdated(fil, outdated):
 
 
 def main(basename):
-    pickle_file = os.path.join(basename, "target.pickle")
+    # pickle_file = os.path.join(basename, "target.pickle")
     latest_rating_file = os.path.join(basename, "latest-ratings")
     latest_rating_html = os.path.join(basename, "latest-ratings.html")
-    latest_watchlist = os.path.join(basename, "latest-watchlist")
+    # latest_watchlist = os.path.join(basename, "latest-watchlist")
+    latest_gamelist = os.path.join(basename, "latest-gamelist")
 
-    with open(pickle_file, 'rb') as fil:
-        pickled_data = pickle.load(fil)
+    # with open(pickle_file, 'rb') as fil:
+    #     pickled_data = pickle.load(fil)
 
-    # outdated = []
+    outdated = []
     # for k,v in pickled_data.items():
     #     outdated.append(v)
     #     if len(outdated) == 3:
     #         break
 
-    watchlist = fetch_actual_watchlist_data(read_watchlist(latest_watchlist))
-    actual_data = fetch_actual_data()
-    actual_data.update(watchlist)
-    # pickled_data = actual_data
-    outdated = update_scoring(actual_data, pickled_data)
-
+    gamelist = fetch_actual_watchlist_data(read_watchlist(latest_gamelist))
     with open(latest_rating_file, 'w') as fil:
-        write_file(fil, pickled_data, outdated)
+        write_file(fil, gamelist, outdated)
 
     with open(latest_rating_html, 'w') as fil:
         if outdated:
             write_html(fil, outdated, outdated == None, not outdated)
-        write_html(fil, pickled_data.values(), not outdated)
+        write_html(fil, gamelist.values(), not outdated)
 
-    with open(pickle_file, 'wb') as fil:
-        pickle.dump(pickled_data, fil)
+    # watchlist = fetch_actual_watchlist_data(read_watchlist(latest_watchlist))
+    # actual_data = fetch_actual_data()
+    # actual_data.update(watchlist)
+    # # pickled_data = actual_data
+    # outdated = update_scoring(actual_data, pickled_data)
+
+    # with open(latest_rating_file, 'w') as fil:
+    #     write_file(fil, pickled_data, outdated)
+    #
+    # with open(latest_rating_html, 'w') as fil:
+    #     if outdated:
+    #         write_html(fil, outdated, outdated == None, not outdated)
+    #     write_html(fil, pickled_data.values(), not outdated)
+    #
+    # with open(pickle_file, 'wb') as fil:
+    #     pickle.dump(pickled_data, fil)
 
 
 if __name__ == '__main__':
