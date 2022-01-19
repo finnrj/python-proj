@@ -160,6 +160,9 @@ def fetch_actual_data(rank=None):
             rows += rs
     else:
         rows = load_actual_page("")
+    # for row in rows:
+    #     for idx, r in enumerate(row):
+    #         print ("%02d : %s" % (idx, r))
     keys, names = fetch_names(rows)
     elements = list(zip(fetch_ranks(rows), names, fetch_year(rows), fetch_description(rows), fetch_image_links(rows),
                         fetch_rating(rows), fetch_votes(rows)))
@@ -183,10 +186,12 @@ def load_watchlist_page(url):
 def fetch_watchlist_rows(rows):
     objectid_regex = re.compile(r'.*<boardgame objectid="(\d+)">')
     rank_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage=')
-    objectid_ranks = list(zip((objectid_regex.findall(line)[0] for row in rows for line in row if objectid_regex.match(line)),
-                         (rank_regex.findall(line)[0] for row in rows for line in row if rank_regex.match(line))))
+    objectid_ranks = list(
+        zip((objectid_regex.findall(line)[0] for row in rows for line in row if objectid_regex.match(line)),
+            (rank_regex.findall(line)[0] for row in rows for line in row if rank_regex.match(line))))
     ranks = sorted(objectid_ranks, key=lambda o_r: int(o_r[1].zfill(3)[:-2]))
-    return fetch_actual_data([("%d01" % k, list(v)) for k, v in groupby(ranks, key=lambda o_r: int(o_r[1].zfill(3)[:-2]))])
+    return fetch_actual_data(
+        [("%d01" % k, list(v)) for k, v in groupby(ranks, key=lambda o_r: int(o_r[1].zfill(3)[:-2]))])
 
 
 def fetch_actual_watchlist_data(watchlist):
@@ -218,16 +223,16 @@ def extract_table_rows(target_lines, start_pattern="<tr id='row_'>", end_pattern
 
 def fetch_rating(rows):
     rating_regex = re.compile('(\d+.\d+)')
-    return [rating_regex.findall(r[20]+r[21])[0] for r in rows]
+    return [rating_regex.findall(r[21] if r[18].startswith("</p") else r[18])[0] for r in rows]
 
 
 def fetch_votes(rows):
     vote_regex = re.compile('(\d+)')
-    return [(vote_regex.findall(r[25])[0] if vote_regex.match(r[25]) else '0')  for r in rows]
+    return [vote_regex.findall(r[25] if r[18].startswith("</p") else r[22])[0]  for r in rows]
 
 
 def fetch_description(rows):
-    return [r[17] for r in rows]
+    return [r[17] if r[16].startswith("<p") else "no description" for r in rows]
 
 
 def fetch_ranks(rows):
@@ -257,8 +262,11 @@ def write_file(fil, old_data, outdated):
     write_outdated(fil, outdated)
     row: BGGRow
     rank_sorted = sorted(old_data.values(), key=lambda e: e.rank)
-    for idx, row in enumerate(rank_sorted):
-        if idx == 100:
+    factor = 0
+    for row in rank_sorted:
+        actual_factor = row.rank // 100
+        if factor < actual_factor:
+            factor = actual_factor
             print()
             fil.write("\n")
         print(row)
@@ -271,8 +279,11 @@ def write_html(fil, old_data, page_prefix=True, page_suffix=True):
     rank_sorted = sorted(old_data, key=lambda e: e.rank)
     largest_diff = largest_rating_diff(rank_sorted)
     row: BGGRow
-    for idx, row in enumerate(rank_sorted):
-        if idx == 100:
+    factor = 0
+    for row in rank_sorted:
+        actual_factor = row.rank // 100
+        if factor < actual_factor:
+            factor = actual_factor
             fil.write(html_template_table_suffix)
             fil.write(html_template_page_prefix)
         rating_class = ' class="rating-gap"' if row.name in largest_diff else ""
@@ -300,46 +311,39 @@ def write_outdated(fil, outdated):
 
 
 def main(basename):
-    # pickle_file = os.path.join(basename, "target.pickle")
+    pickle_file = os.path.join(basename, "target.pickle")
     latest_rating_file = os.path.join(basename, "latest-ratings")
     latest_rating_html = os.path.join(basename, "latest-ratings.html")
-    # latest_watchlist = os.path.join(basename, "latest-watchlist")
+    latest_watchlist = os.path.join(basename, "latest-watchlist")
     latest_gamelist = os.path.join(basename, "latest-gamelist")
 
-    # with open(pickle_file, 'rb') as fil:
-    #     pickled_data = pickle.load(fil)
+    with open(pickle_file, 'rb') as fil:
+        pickled_data = pickle.load(fil)
 
-    outdated = []
+    # outdated = []
     # for k,v in pickled_data.items():
     #     outdated.append(v)
     #     if len(outdated) == 3:
     #         break
 
     gamelist = fetch_actual_watchlist_data(read_watchlist(latest_gamelist))
+    watchlist = fetch_actual_watchlist_data(read_watchlist(latest_watchlist))
+    actual_data = fetch_actual_data()
+    actual_data.update(watchlist)
+    actual_data.update(gamelist)
+    # pickled_data = actual_data
+    outdated = update_scoring(actual_data, pickled_data)
+
     with open(latest_rating_file, 'w') as fil:
-        write_file(fil, gamelist, outdated)
+        write_file(fil, pickled_data, outdated)
 
     with open(latest_rating_html, 'w') as fil:
         if outdated:
             write_html(fil, outdated, outdated == None, not outdated)
-        write_html(fil, gamelist.values(), not outdated)
+        write_html(fil, pickled_data.values(), not outdated)
 
-    # watchlist = fetch_actual_watchlist_data(read_watchlist(latest_watchlist))
-    # actual_data = fetch_actual_data()
-    # actual_data.update(watchlist)
-    # # pickled_data = actual_data
-    # outdated = update_scoring(actual_data, pickled_data)
-
-    # with open(latest_rating_file, 'w') as fil:
-    #     write_file(fil, pickled_data, outdated)
-    #
-    # with open(latest_rating_html, 'w') as fil:
-    #     if outdated:
-    #         write_html(fil, outdated, outdated == None, not outdated)
-    #     write_html(fil, pickled_data.values(), not outdated)
-    #
-    # with open(pickle_file, 'wb') as fil:
-    #     pickle.dump(pickled_data, fil)
+    with open(pickle_file, 'wb') as fil:
+        pickle.dump(pickled_data, fil)
 
 
 if __name__ == '__main__':
