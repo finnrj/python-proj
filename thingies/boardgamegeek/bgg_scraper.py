@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
+import os.path
 import pickle
 import re
 import sys
-import os.path
 from functools import reduce
 from itertools import groupby
 from urllib import request
@@ -228,7 +228,7 @@ def fetch_rating(rows):
 
 def fetch_votes(rows):
     vote_regex = re.compile('(\d+)')
-    return [vote_regex.findall(r[25] if r[18].startswith("</p") else r[22])[0]  for r in rows]
+    return [vote_regex.findall(r[25] if r[18].startswith("</p") else r[22])[0] for r in rows]
 
 
 def fetch_description(rows):
@@ -264,7 +264,7 @@ def write_file(fil, old_data, outdated):
     rank_sorted = sorted(old_data.values(), key=lambda e: e.rank)
     factor = 0
     for row in rank_sorted:
-        actual_factor = row.rank // 100
+        actual_factor = (row.rank - 1) // 100
         if factor < actual_factor:
             factor = actual_factor
             print()
@@ -281,7 +281,7 @@ def write_html(fil, old_data, page_prefix=True, page_suffix=True):
     row: BGGRow
     factor = 0
     for row in rank_sorted:
-        actual_factor = row.rank // 100
+        actual_factor = (row.rank - 1) // 100
         if factor < actual_factor:
             factor = actual_factor
             fil.write(html_template_table_suffix)
@@ -315,7 +315,7 @@ def main(basename):
     latest_rating_file = os.path.join(basename, "latest-ratings")
     latest_rating_html = os.path.join(basename, "latest-ratings.html")
     latest_watchlist = os.path.join(basename, "latest-watchlist")
-    latest_gamelist = os.path.join(basename, "latest-gamelist")
+    # latest_gamelist = os.path.join(basename, "latest-gamelist")
 
     with open(pickle_file, 'rb') as fil:
         pickled_data = pickle.load(fil)
@@ -326,11 +326,11 @@ def main(basename):
     #     if len(outdated) == 3:
     #         break
 
-    gamelist = fetch_actual_watchlist_data(read_watchlist(latest_gamelist))
+    # gamelist = fetch_actual_watchlist_data(read_watchlist(latest_gamelist))
     watchlist = fetch_actual_watchlist_data(read_watchlist(latest_watchlist))
     actual_data = fetch_actual_data()
     actual_data.update(watchlist)
-    actual_data.update(gamelist)
+    # actual_data.update(gamelist)
     # pickled_data = actual_data
     outdated = update_scoring(actual_data, pickled_data)
 

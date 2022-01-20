@@ -1,0 +1,150 @@
+Name			Titel				bgg-id
+--------------------------------------------------------------
+Rocketmen		Rocketmen			283387
+Thurn und Taxis		Thurn and Taxis			 21790
+Anno 1503 		Anno 1503 			  8166
+Durch die Wüste         Through the Desert		   503
+Thunderstone		Thunderstone			 53953
+Coimbra			Coimbra				245638
+Lignum			Lignum				174155
+Der Pate		Der Pate			 74102
+Schwarzer Freitag 	Black Friday			 39242
+Cuba	  		Cuba  				 30380
+Mombasa			Mombasa			 	172386
+Andor			Andor				127398
+Siedler	+++		Catan				    13
+Gloomhaven		Gloomhaven			174430
+Blokus			Blokus				  2453
+Robo-Rally		RoboRally			    18
+Zug um Zug		Ticket to Ride			  9209
+7 Wonders +		7 Wonders 			 68448
+7 Wonders Duell		7 Wonders duel			173346
+Stone Age 		Stone Age 			 34635
+Trajan			Trajan				102680
+Top Race		Top Race		           932
+Fliegende Holländer	Fliegende Holländer		   305
+Drüber und Drunter	Wacky Wacky West		    19
+Raja   	   		Maharaja    			  9440
+Urland			Urland				  2539
+Fische Fluppen Fri..	Fische Fluppen Fri..		  4370
+Entdecker      		Entdecker      			   200
+Marco Polo		Voyages of Marco Polo		171623
+Dampfross		Dampfross  	 		   539
+Kingdom Builder +	Kingdom Builder			107529
+Eden			Eden				  1336
+Tongiaki		Tongiaki			  9028
+Adel Verpflichtet	Hoity Toity			   120
+Carcassonne +		Carcassonne			   822
+King of Tokyo		King of Tokyo			 70323
+Linq 			Linq 				 11945
+Piranha Pedro  		Piranha Pedro			 14035
+Tabu			Tabu				  1111
+Fiji			Fiji				 21704
+Pingwin			Hey, Thats My Fish		  8203
+DruidenWalzer		DruidenWalzer 			   376
+Caesar & Cleopatra	Caesar & Cleopatra		   132
+Kahuna 	 		Kanhuna	 			   394
+Blitz & Donner		Hera and Zeus			   638
+ALcazar			Alcazar	 			 45319
+Siedler Kartenspiel +	Catan Card Game			   278
+Kippit		    	Kippit	   			   612
+Packesel		The Last Straw			 15505
+Bausack			Bausack	 			  1231
+Villa Paletti		Villa Paletti			  2596
+Flick'em up		Flick'em Up			169124
+Carabande		PitchCar 			   150
+Ohne Furch und Adel	Citadels			130060
+Anno Domini    		Anno Domini			 18058
+Keltis			Keltis				 34585
+Don			Serengeti			  1376
+Res Publica		Res Publica			   277
+Ubongo Extrem		Ubongo Extreme 			 31479
+Guilliotine		Guilliotine			   116
+Hol's der Geier		What the Heck			   175
+Cash  	  		Cash 	 			  2310
+Beyond the Sun		Beyond the Sun			317985
+Arche Nova 		Ark Nova   			342942
+Dune Imperium		Dune Imperium			316554
+Viticulture essential	Viticulture essential		183394
+Würfel König		King of Dice			235922
+Just One		Just One			254640
+Codenames		Codenames			178900
+The Crew (Deep Sea)	The Crew (Deep Sea)		324856
+Cosmic Encounter	Cosmic Encounter		 39463
+Nidavellir +		Nidavellir			293014
+Bad Company		Bad Company			340677
+Pictures		Pictures			284108
+Meadow			Meadow				314491
+Wingspan ++		Wingspan			266192
+Navegador		Navegador			 66589
+Funkenschlag ++		Power Grid			  2651
+Ein Fest für Odin +	A Feast for Odin		177736
+Kartographin	  	Cartographers Heroes		315767
+Twilight Imperium IV +	Twilight Imperium IV		233078
+Gloomhaven ++	     	Gloomhaven	  		174430
+Pranken des Löwen	Jaws of the Lion		291457
+Orleans	    		Orleans	    			164928
+Die Burgen von Burgund	Castles of Burgundy		 84876
+Jaipur	       		Jaipur	   			 54043
+Trans Europa		Trans Europe			 16267
+7 Wonders Duell		7 Wonders Duel			173346
+Shanghaien		Shanghaien			 34320
+El Grande		El Grande			    93
+Union Pacific		Union Pacific			    94
+Schrille Stille		Schrille Stille			   831
+Scythe ++		Scythe	 			169786
+Port Royal +		Port Royal			156009
+Machi Koro 		Machi Koro			143884
+Guildhall		Guildhall			132372
+Um Krone und Kragen	To Court the King		 21632
+Istanbul +   		Istanbul     			148949
+Spekulatius		Oh Hell				  1116
+Rasende Roboter 	Ricochet Robots			    51
+Dynasties		Dynasties			191972
+Caylus			Caylus				 18602
+Yspahan			Yspahan				 22345
+Teotihuacan		Teotihuacan			229853
+Race for the Galaxy +	Race for the Galaxy		 28143
+Dominion     	    	Dominion     			 36218
+Kingsburg		Kingsburg			 27162
+Uluru			Pelican Cove			 90870
+Kalimambo		Kalimambo			108157
+Im Wandel der Zeiten 	Roll Through the Ages		 37380
+Metro	      		Metro	     	 		   559
+Agricola		Agricola			 31260
+Imperial Settlers	Imperial Settlers		154203
+Azul	 		Azul	 			230802
+Russian Railroads +	Russian Railroads		144733
+Filou		  	Felicity			 32125
+Heckmek +		Pikomino			 15818
+Kuhhandel		You're Bluffing			  1117
+Ein Solches Ding	Such a Thing?			  6657
+Gifttrap    		Gifttrap			 23686
+Hanabi			Hanabi				 98778
+Ouga Bouga		Ooga Booga			106753
+Tichu			Tichu				   215
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bluff			Bluff
+Ratten Scharf
+Tipover
+Cuboro
+Mind Maze		Mind Maze			 
+Die Chinesische Mauer
+Beutezug
