@@ -277,7 +277,7 @@ def write_file(fil, old_data, outdated):
 def write_html(fil, old_data, page_prefix=True, page_suffix=True):
     fil.write(html_template_page_prefix if page_prefix else html_template_table_prefix)
     rank_sorted = sorted(old_data, key=lambda e: e.rank)
-    largest_diff = largest_rating_diff(rank_sorted)
+    largest_diff = largest_rating_diff(rank_sorted[:100])
     row: BGGRow
     factor = 0
     for row in rank_sorted:
