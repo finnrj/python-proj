@@ -5,7 +5,7 @@ import re
 import sys
 from functools import reduce
 from itertools import groupby
-from urllib import request
+from urllib import request, error
 
 html_template_table_prefix = '''
             <table class="zui-table">
@@ -200,8 +200,13 @@ def fetch_actual_watchlist_data(watchlist):
 
 def load_actual_page(rank_option):
     target_url = "https://boardgamegeek.com/browse/boardgame" + rank_option
-    with request.urlopen(target_url) as resp:
-        target_lines = [l.decode() for l in resp.readlines()[274:]]
+    try:
+        with request.urlopen(target_url) as resp:
+            target_lines = [l.decode() for l in resp.readlines()[274:]]
+    except error.HTTPError as err:
+        print(target_url)
+        print (err)
+        return []
     target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip()) > 0]
     return extract_table_rows(target_lines)
 
