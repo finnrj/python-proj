@@ -344,7 +344,7 @@ def main(basename):
 
     with open(latest_rating_html, 'w') as fil:
         if outdated:
-            write_html(fil, outdated, outdated == None, not outdated)
+            write_html(fil, outdated, outdated is None, not outdated)
         write_html(fil, pickled_data.values(), not outdated)
 
     with open(pickle_file, 'wb') as fil:
