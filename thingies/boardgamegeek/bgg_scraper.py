@@ -173,7 +173,9 @@ def fetch_actual_data(rank=None):
 
 
 def read_watchlist(watchlist_file):
-    return watchlist_template % ",".join([objectid.strip() for objectid in open(watchlist_file).readlines()])
+    game_ids = [objectid.strip() for objectid in open(watchlist_file).readlines()]
+    chunks = [game_ids[i:i+20] for i in range(0,len(game_ids), 20)]
+    return [(watchlist_template % ",".join(chunk)) for chunk in chunks]
 
 
 def load_watchlist_page(url):
@@ -332,7 +334,7 @@ def main(basename):
     #         break
 
     # gamelist = fetch_actual_watchlist_data(read_watchlist(latest_gamelist))
-    watchlist = fetch_actual_watchlist_data(read_watchlist(latest_watchlist))
+    watchlist = reduce(lambda dct1, dct2 : dct1 | dct2, [fetch_actual_watchlist_data(url) for url in read_watchlist(latest_watchlist)])
     actual_data = fetch_actual_data()
     actual_data.update(watchlist)
     # actual_data.update(gamelist)
