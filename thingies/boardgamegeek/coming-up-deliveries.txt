@@ -1,6 +1,3 @@
-2024.11 Earth Abundance
-
-2024.12 Fate
 2024.12 Rocketmen - Target Jupiter
 2024.12 Firefighters on Duty
 -----------------------------------
@@ -8,8 +5,10 @@
 2025.01 Gloomhaven 2.ed.
 
 2025.02 Fractured Sky: Rift
+2025.02 Fate
 
 2025.03 Ready Set Bet
+2025.03 Earth Abundance
 
 2025.04 Ra: Traders expansion
 
