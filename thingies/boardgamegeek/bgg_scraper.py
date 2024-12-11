@@ -229,12 +229,12 @@ def extract_table_rows(target_lines, start_pattern="<tr id='row_'>", end_pattern
 
 
 def fetch_rating(rows):
-    rating_regex = re.compile('(\d+.\d+)')
+    rating_regex = re.compile(r'(\d+.\d+)')
     return [rating_regex.findall(r[21] if r[18].startswith("</p") else r[18])[0] for r in rows]
 
 
 def fetch_votes(rows):
-    vote_regex = re.compile('(\d+)')
+    vote_regex = re.compile(r'(\d+)')
     return [vote_regex.findall(r[25] if r[18].startswith("</p") else r[22])[0] for r in rows]
 
 
