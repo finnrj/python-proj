@@ -187,11 +187,19 @@ def load_watchlist_page(url):
 
 def fetch_watchlist_rows(rows):
     objectid_regex = re.compile(r'.*<boardgame objectid="(\d+)">')
-    rank_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage=')
+    rank_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(.*)" bayesaverage=')
+    # rank_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage=')
+    # print(len(list(objectid_regex.findall(line)[0] for row in rows for line in row if objectid_regex.match(line))))
+    # print(len(list((rank_regex.findall(line)[0] for row in rows for line in row if rank_regex.match(line)))))
+
     objectid_ranks = list(
         zip((objectid_regex.findall(line)[0] for row in rows for line in row if objectid_regex.match(line)),
             (rank_regex.findall(line)[0] for row in rows for line in row if rank_regex.match(line))))
+    # print(objectid_ranks)
+    objectid_ranks = [(o_r[0],o_r[1].replace("Not Ranked", "10000")) for o_r in objectid_ranks]
+    # print(objectid_ranks)
     ranks = sorted(objectid_ranks, key=lambda o_r: int(o_r[1].zfill(3)[:-2]))
+    # print(ranks)
     return fetch_actual_data(
         [("%d01" % k, list(v)) for k, v in groupby(ranks, key=lambda o_r: int(o_r[1].zfill(3)[:-2]))])
 
@@ -334,8 +342,12 @@ def main(basename):
     #         break
 
     # gamelist = fetch_actual_watchlist_data(read_watchlist(latest_gamelist))
+    # print([fetch_actual_watchlist_data(url) for url in read_watchlist(latest_watchlist)])
+    # print(len(read_watchlist(latest_watchlist)))
     watchlist = reduce(lambda dct1, dct2 : dct1 | dct2, [fetch_actual_watchlist_data(url) for url in read_watchlist(latest_watchlist)])
+    # print(len(watchlist.keys()))
     actual_data = fetch_actual_data()
+    # print([l for l in watchlist])
     actual_data.update(watchlist)
     # actual_data.update(gamelist)
     # pickled_data = actual_data
