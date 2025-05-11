@@ -7,12 +7,14 @@
 2025.04 Ra: Traders expansion
 
 2025.07 Barcelona
-2025.07 Click a Tree
 
 2024.09 Tameri
 
 2025.10 Madcala
+2025.10 Click a Tree
 
 2025.11 Speakeasy
 
 2025.12 Avalon: The Riven Veil
+
+2026.01 Earth Animal Kingdom expansion
