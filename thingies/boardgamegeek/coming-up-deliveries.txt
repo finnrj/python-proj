@@ -12,8 +12,10 @@
 
 2025.10 Madcala
 2025.10 Click a Tree
+2025.10 The Voynich Puzzle
 
 2025.11 Speakeasy
+2025.11 Thebai
 
 2025.12 Avalon: The Riven Veil
 
