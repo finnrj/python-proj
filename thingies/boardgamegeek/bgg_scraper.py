@@ -6,6 +6,7 @@ import sys
 from functools import reduce
 from itertools import groupby
 from urllib import request, error
+from urllib.request import Request
 
 html_template_table_prefix = '''
             <table class="zui-table">
@@ -55,6 +56,8 @@ html_template_page_suffix = '''%s
 
 watchlist_template = "https://www.boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
 
+token = "2a3f21d5-645e-4bd3-b8e5-9a5cd4c484d6"
+headers = {"Authorization": f"Bearer {token}"}
 
 class BGGRow:
     def __init__(self, rank, name, year, description, image_link, rating, votes):
@@ -178,8 +181,9 @@ def read_watchlist(watchlist_file):
     return [(watchlist_template % ",".join(chunk)) for chunk in chunks]
 
 
-def load_watchlist_page(url):
-    with request.urlopen(url) as resp:
+def load_watchlist_page(url, headers=None):
+    req  = Request(url, headers=headers or {})
+    with request.urlopen(req) as resp:
         target_lines = [l.decode() for l in resp.readlines()]
         target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip())]
     return extract_table_rows(target_lines, "<boardgame objectid=", "</boardgame>")
@@ -205,13 +209,16 @@ def fetch_watchlist_rows(rows):
 
 
 def fetch_actual_watchlist_data(watchlist):
-    return fetch_watchlist_rows(load_watchlist_page(watchlist))
+    # token = "2a3f21d5-645e-4bd3-b8e5-9a5cd4c484d6"
+    # headers = {"Authorization": f"Bearer {token}"}
+    return fetch_watchlist_rows(load_watchlist_page(watchlist,  headers))
 
 
 def load_actual_page(rank_option):
     target_url = "https://boardgamegeek.com/browse/boardgame" + rank_option
+    req  = Request(target_url, headers=headers)
     try:
-        with request.urlopen(target_url) as resp:
+        with request.urlopen(req) as resp:
             target_lines = [l.decode() for l in resp.readlines()[274:]]
     except error.HTTPError as err:
         print(target_url)
