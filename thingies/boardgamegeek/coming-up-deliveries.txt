@@ -1,5 +1,4 @@
 -----------------------------------
-2026.01 Galactic Cruise
 2026.01 Earth Animal Kingdom expansion
 
 2026.05 Tameri
@@ -12,5 +11,5 @@
 
 2026.08 Wonderlands War extension
 
-2026.10 Galactic Cruise Achievements
+2026.10 Galactic Cruise, Galactic Cruise Achievements
 2026.10 Spirited
