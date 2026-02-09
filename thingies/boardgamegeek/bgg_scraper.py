@@ -273,6 +273,8 @@ def fetch_year(rows):
 
 
 def fetch_names(rows):
+    if not rows:
+        return ('', '')
     name_lines = [line[13] for line in rows]
     name_regex = re.compile(r'href="(.*)".*>(.*)</a>')
     tuples = [name_regex.findall(line) for line in name_lines]
