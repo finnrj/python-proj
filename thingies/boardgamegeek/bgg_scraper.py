@@ -56,7 +56,8 @@ html_template_page_suffix = '''%s
 
 watchlist_template = "https://www.boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
 
-token = "2a3f21d5-645e-4bd3-b8e5-9a5cd4c484d6"
+# token = "2a3f21d5-645e-4bd3-b8e5-9a5cd4c484d6"
+token = "6580d55c-6752-4089-a577-626702d2cdd8"
 headers = {"Authorization": f"Bearer {token}"}
 
 class BGGRow:
@@ -182,6 +183,7 @@ def read_watchlist(watchlist_file):
 
 
 def load_watchlist_page(url, headers=None):
+    print(headers or {})
     req  = Request(url, headers=headers or {})
     with request.urlopen(req) as resp:
         target_lines = [l.decode() for l in resp.readlines()]
