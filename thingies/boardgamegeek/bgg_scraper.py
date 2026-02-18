@@ -173,7 +173,7 @@ def fetch_actual_data(rank=None):
     elements = [BGGRow(rank, name, year, description, image_link, rating, votes) for
                 rank, name, year, description, image_link, rating, votes in elements]
     data = dict(zip(keys, elements))
-    print("data: %s" % data)
+    # print("data: %s" % data)
     return data
 
 
@@ -184,8 +184,12 @@ def read_watchlist(watchlist_file):
 
 
 def load_watchlist_page(url, headers=None):
-    print("headers: %s" % (headers or {}))
+    # print("headers: %s" % (headers or {}))
     req  = Request(url, headers=headers or {})
+    # print(req)
+    # print(url)
+    # print(headers)
+    # print("boolean %s" % (headers or {}))
     with request.urlopen(req) as resp:
         target_lines = [l.decode() for l in resp.readlines()]
         target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip())]
