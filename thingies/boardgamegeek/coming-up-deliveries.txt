@@ -13,3 +13,5 @@
 
 2026.10 Galactic Cruise, Galactic Cruise Achievements
 2026.10 Spirited
+
+2026.12 Corps of Discovery Duo
