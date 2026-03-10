@@ -187,14 +187,14 @@ def load_watchlist_page(url, headers=None):
     # print("headers: %s" % (headers or {}))
     req  = Request(url, headers=headers or {})
     # print(req)
-    print(url)
+    # print(url)
     # print(headers)
     # print("boolean %s" % (headers or {}))
     with request.urlopen(req) as resp:
         target_lines = [l.decode() for l in resp.readlines()]
         target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip())]
-    for l in target_lines:
-        print(l)
+    # for l in target_lines:
+    #     print(l)
     return extract_table_rows(target_lines, "<boardgame objectid=", "</boardgame>")
 
 
