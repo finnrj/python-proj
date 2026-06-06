@@ -1,12 +1,12 @@
 -----------------------------------
 2026.05 Tameri
-2026.05 Forage: The Magnetic Bee Game
 
 2026.06 Jackpot: set the reels
 
 2026.07 Avalon: The Riven Veil
 2026.07 Maestro
 
+2026.08 Forage: The Magnetic Bee Game
 2026.08 Wonderlands War extension
 
 2026.09 The Great Library
@@ -21,7 +21,7 @@
 2026.12 Queen Alice
 
 2027.01 Fractured Sky Awakening
-2027.01 Brass Pittsburg
 
 2027.03 Let's go to France
 
+2027.05 Brass Pittsburg
