@@ -25,3 +25,5 @@
 2027.03 Let's go to France
 
 2027.05 Brass Pittsburg
+
+2027.07 Concordia
