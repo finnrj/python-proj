@@ -18,7 +18,7 @@
 2026.11 Inferno 1348
 
 2026.12 Corps of Discovery Duo
-
+-----------------------------------
 2027.01 Fractured Sky Awakening
 
 2027.03 Let's go to France
@@ -27,3 +27,4 @@
 2027.05 Brass Pittsburg
 
 2027.07 Concordia
+2027.07 Galileo's Truth
