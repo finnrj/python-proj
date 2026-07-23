@@ -11,7 +11,6 @@
 2026.09 The Great Library
 
 2026.10 Galactic Cruise, Galactic Cruise Achievements
-2026.10 Spirited
 2026.10 For The Gods
 2026.10 Queen Alice
 
@@ -28,3 +27,4 @@
 
 2027.07 Concordia
 2027.07 Galileo's Truth
+2027.07 Rosalie
