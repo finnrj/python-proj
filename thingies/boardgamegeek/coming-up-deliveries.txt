@@ -10,6 +10,7 @@
 2026.10 Wonderlands War extension
 
 2026.11 Inferno 1348
+2026.11 The Great Library
 
 2026.12 Corps of Discovery Duo
 -----------------------------------
