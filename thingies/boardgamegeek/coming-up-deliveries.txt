@@ -1,8 +1,8 @@
 -----------------------------------
 2026.09 Maestro
 2026.09 Jackpot: set the reels
-2026.09 Forage: The Magnetic Bee Game
 
+2026.10 Forage: The Magnetic Bee Game
 2026.10 Galactic Cruise, Galactic Cruise Achievements
 2026.10 For The Gods
 2026.10 Queen Alice
