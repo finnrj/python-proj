@@ -3,7 +3,6 @@
 2026.09 Jackpot: set the reels
 
 2026.10 Forage: The Magnetic Bee Game
-2026.10 Galactic Cruise, Galactic Cruise Achievements
 2026.10 Tameri
 2026.10 Wonderlands War extension
 
@@ -12,6 +11,7 @@
 2026.11 The Great Library
 
 2026.12 Corps of Discovery Duo
+2026.12 Galactic Cruise, Galactic Cruise Achievements
 -----------------------------------
 2027.01 Fractured Sky Awakening
 
