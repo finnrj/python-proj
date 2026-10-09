@@ -1,17 +1,17 @@
 -----------------------------------
 2026.10 Tameri
 2026.10 Wonderlands War extension
-2026.10 Jackpot: set the reels
 
+2026.11 Jackpot: set the reels
 2026.11 Inferno 1348
 2026.11 Opera Magna
 
 2026.12 For The Gods
-2026.12 The Great Library
 2026.12 Corps of Discovery Duo
 2026.12 Arche Nova Acrylic Components
 2026.12 Galactic Cruise, Galactic Cruise Achievements
 -----------------------------------
+2027.01 The Great Library
 2027.01 Fractured Sky Awakening
 
 2027.03 Let's go to France
