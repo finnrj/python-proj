@@ -3,7 +3,6 @@
 2026.10 Wonderlands War extension
 
 2026.11 Jackpot: set the reels
-2026.11 Inferno 1348
 2026.11 Opera Magna
 
 2026.12 For The Gods
@@ -24,3 +23,4 @@
 2027.07 Rosalie
 
 2027.10 Steam and Cheese
+2027.10 The Danes
