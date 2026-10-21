@@ -57,7 +57,8 @@ html_template_page_suffix = '''%s
 watchlist_template = "https://www.boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
 
 # token = "2a3f21d5-645e-4bd3-b8e5-9a5cd4c484d6"
-token = "6580d55c-6752-4089-a577-626702d2cdd8"
+# token = "6580d55c-6752-4089-a577-626702d2cdd8"
+token = "fc4021d4-3c12-4b9a-bebd-6f82a1fe8419"
 headers = {"Authorization": f"Bearer {token}"}
 
 class BGGRow:
