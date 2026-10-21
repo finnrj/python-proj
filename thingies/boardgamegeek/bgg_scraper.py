@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
+import html
 import os.path
 import pickle
 import re
 import sys
-from functools import reduce
-from itertools import groupby
-from urllib import request, error
+import time
+from urllib import request
 from urllib.request import Request
+from xml.etree import ElementTree
 
 html_template_table_prefix = '''
             <table class="zui-table">
@@ -54,7 +55,10 @@ html_template_page_suffix = '''%s
         </body>
     </html>''' % html_template_table_suffix
 
-watchlist_template = "https://www.boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
+# watchlist_template = "https://www.boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
+game_url_template = "https://boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
+hot_url = "https://boardgamegeek.com/xmlapi2/hot?type=boardgame"
+top_ranks = 100
 
 # token = "2a3f21d5-645e-4bd3-b8e5-9a5cd4c484d6"
 # token = "6580d55c-6752-4089-a577-626702d2cdd8"
@@ -151,146 +155,72 @@ def update_scoring(new_data, old_data):
     return outdated_elements
 
 
-def fetch_actual_data(rank=None):
-    if rank:
-        rows = []
-        objectid_regex = re.compile(r'.*href="/boardgame.*/(\d+)/')
-        for start_rank, objectid_ranks in rank:
-            objectids = [o_r[0] for o_r in objectid_ranks]
-            rank_option = ("?rank=%s" % start_rank)
-            # print(objectid_ranks)
-            # print(objectids)
-            rs = [row for row in load_actual_page(rank_option)
-                  if objectid_regex.findall(row[5])[0] in objectids]
-            rows += rs
-    else:
-        rows = load_actual_page("")
-    # for row in rows:
-    #     for idx, r in enumerate(row):
-    #         print ("%02d : %s" % (idx, r))
-    keys, names = fetch_names(rows)
-    elements = list(zip(fetch_ranks(rows), names, fetch_year(rows), fetch_description(rows), fetch_image_links(rows),
-                        fetch_rating(rows), fetch_votes(rows)))
-    elements = [BGGRow(rank, name, year, description, image_link, rating, votes) for
-                rank, name, year, description, image_link, rating, votes in elements]
-    data = dict(zip(keys, elements))
-    # print("data: %s" % data)
+def read_watchlist(watchlist_file):
+    return [objectid.strip() for objectid in open(watchlist_file).readlines() if objectid.strip()]
+
+
+def load_xml(url):
+    req = Request(url, headers=headers)
+    with request.urlopen(req) as resp:
+        return ElementTree.fromstring(resp.read())
+
+
+def fetch_hot_ids():
+    return [item.get("id") for item in load_xml(hot_url).findall("item")]
+
+
+def short_description(description):
+    # the xml api only has the full description, so use its first sentence
+    first_line = html.unescape(description or "").strip().split("\n")[0]
+    sentence = re.split(r'(?<=[.!?])\s', first_line, maxsplit=1)[0]
+    return " ".join(sentence.split())[:150] or "no description"
+
+
+def parse_games(root):
+    data = {}
+    for game in root.findall("boardgame"):
+        ratings = game.find("statistics/ratings")
+        if ratings is None:
+            continue
+        rank = ratings.find("ranks/rank[@name='boardgame']")
+        rank = rank.get("value") if rank is not None else ""
+        data["/boardgame/%s" % game.get("objectid")] = BGGRow(
+            rank if rank.isdigit() else 10000,
+            game.findtext("name[@primary='true']"),
+            "(%s)" % game.findtext("yearpublished"),
+            short_description(game.findtext("description")),
+            game.findtext("thumbnail", ""),
+            ratings.findtext("bayesaverage"),
+            ratings.findtext("usersrated"))
     return data
 
 
-def read_watchlist(watchlist_file):
-    game_ids = [objectid.strip() for objectid in open(watchlist_file).readlines()]
-    chunks = [game_ids[i:i+20] for i in range(0,len(game_ids), 20)]
-    return [(watchlist_template % ",".join(chunk)) for chunk in chunks]
+def fetch_games(game_ids):
+    game_ids = list(dict.fromkeys(game_ids))
+    data = {}
+    for i in range(0, len(game_ids), 20):
+        if i:
+            time.sleep(2)  # stay below the xml api rate limit
+        data.update(parse_games(load_xml(game_url_template % ",".join(game_ids[i:i + 20]))))
+    return data
 
 
-def load_watchlist_page(url, headers=None):
-    # print("headers: %s" % (headers or {}))
-    req  = Request(url, headers=headers or {})
-    # print(req)
-    # print(url)
-    # print(headers)
-    # print("boolean %s" % (headers or {}))
-    with request.urlopen(req) as resp:
-        target_lines = [l.decode() for l in resp.readlines()]
-        target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip())]
-    # for l in target_lines:
-    #     print(l)
-    return extract_table_rows(target_lines, "<boardgame objectid=", "</boardgame>")
+def game_id(key):
+    return key.split("/")[2]
 
 
-def fetch_watchlist_rows(rows):
-    objectid_regex = re.compile(r'.*<boardgame objectid="(\d+)">')
-    rank_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(.*)" bayesaverage=')
-    # rank_regex = re.compile(r'.*friendlyname="Board Game Rank" value="(\d+)" bayesaverage=')
-    # print(len(list(objectid_regex.findall(line)[0] for row in rows for line in row if objectid_regex.match(line))))
-    # print(len(list((rank_regex.findall(line)[0] for row in rows for line in row if rank_regex.match(line)))))
-
-    objectid_ranks = list(
-        zip((objectid_regex.findall(line)[0] for row in rows for line in row if objectid_regex.match(line)),
-            (rank_regex.findall(line)[0] for row in rows for line in row if rank_regex.match(line))))
-    # print(objectid_ranks)
-    objectid_ranks = [(o_r[0],o_r[1].replace("Not Ranked", "10000")) for o_r in objectid_ranks]
-    # print(objectid_ranks)
-    ranks = sorted(objectid_ranks, key=lambda o_r: int(o_r[1].zfill(3)[:-2]))
-    # print(ranks)
-    return fetch_actual_data(
-        [("%d01" % k, list(v)) for k, v in groupby(ranks, key=lambda o_r: int(o_r[1].zfill(3)[:-2]))])
+def match_existing_keys(new_data, old_data):
+    # xml api keys lack the name slug of the old browse page links, so reuse existing keys
+    old_keys = {game_id(k): k for k in old_data}
+    return {old_keys.get(game_id(k), k): v for k, v in new_data.items()}
 
 
-def fetch_actual_watchlist_data(watchlist):
-    # token = "2a3f21d5-645e-4bd3-b8e5-9a5cd4c484d6"
-    # headers = {"Authorization": f"Bearer {token}"}
-    return fetch_watchlist_rows(load_watchlist_page(watchlist,  headers))
-
-
-def load_actual_page(rank_option):
-    target_url = "https://boardgamegeek.com/browse/boardgame" + rank_option
-    req  = Request(target_url, headers=headers)
-    try:
-        with request.urlopen(req) as resp:
-            target_lines = [l.decode() for l in resp.readlines()[274:]]
-    except error.HTTPError as err:
-        print(target_url)
-        print (err)
-        return []
-    target_lines = [line.strip().replace('\t', '') for line in target_lines if len(line.strip()) > 0]
-    return extract_table_rows(target_lines)
-
-
-def extract_table_rows(target_lines, start_pattern="<tr id='row_'>", end_pattern="</tr>"):
-    rows = []
-    append = False
-    for idx, line in enumerate(target_lines):
-        if line.startswith(start_pattern):
-            append = True
-            row = []
-        if append:
-            row.append(line)
-        if line.startswith(end_pattern) and append:
-            append = False
-            rows.append(row)
-    # print("rows: %s" % rows)
-    return rows
-
-
-def fetch_rating(rows):
-    rating_regex = re.compile(r'(\d+.\d+)')
-    return [rating_regex.findall(r[21] if r[18].startswith("</p") else r[18])[0] for r in rows]
-
-
-def fetch_votes(rows):
-    vote_regex = re.compile(r'(\d+)')
-    return [vote_regex.findall(r[25] if r[18].startswith("</p") else r[22])[0] for r in rows]
-
-
-def fetch_description(rows):
-    return [r[17] if r[16].startswith("<p") else "no description" for r in rows]
-
-
-def fetch_ranks(rows):
-    rank_regex = re.compile(r'.*name="(\d+)">')
-    return [rank_regex.findall(r[2])[0] for r in rows]
-
-
-def fetch_image_links(rows):
-    image_regex = re.compile(r'.*src="(.*)"></a>')
-    return [image_regex.findall(r[5])[0] for r in rows]
-
-
-def fetch_year(rows):
-    rank_regex = re.compile(r'.*(\(\d+\))</span>')
-    return [rank_regex.findall(r[14])[0] for r in rows]
-
-
-def fetch_names(rows):
-    if not rows:
-        return ('', '')
-    name_lines = [line[13] for line in rows]
-    name_regex = re.compile(r'href="(.*)".*>(.*)</a>')
-    tuples = [name_regex.findall(line) for line in name_lines]
-    dd = reduce(lambda l1, l2: l1 + l2, tuples)
-    return zip(*dd)
+def fetch_actual_data(old_data, watchlist_ids):
+    # the xml api has no ranking list, so check every known game plus the hot ones for the top ranks
+    candidate_ids = watchlist_ids + [game_id(k) for k in old_data] + fetch_hot_ids()
+    games = fetch_games(candidate_ids)
+    actual_data = {k: v for k, v in games.items() if v.rank <= top_ranks or game_id(k) in watchlist_ids}
+    return match_existing_keys(actual_data, old_data)
 
 
 def write_file(fil, old_data, outdated):
@@ -361,15 +291,8 @@ def main(basename):
     #     if len(outdated) == 3:
     #         break
 
-    # gamelist = fetch_actual_watchlist_data(read_watchlist(latest_gamelist))
-    # print([fetch_actual_watchlist_data(url) for url in read_watchlist(latest_watchlist)])
-    # print(len(read_watchlist(latest_watchlist)))
-    watchlist = reduce(lambda dct1, dct2 : dct1 | dct2, [fetch_actual_watchlist_data(url) for url in read_watchlist(latest_watchlist)])
-    # print(len(watchlist.keys()))
-    actual_data = fetch_actual_data()
-    # print([l for l in watchlist])
-    actual_data.update(watchlist)
-    # actual_data.update(gamelist)
+    # watchlist_ids = read_watchlist(latest_watchlist) + read_watchlist(latest_gamelist)
+    actual_data = fetch_actual_data(pickled_data, read_watchlist(latest_watchlist))
     # pickled_data = actual_data
     outdated = update_scoring(actual_data, pickled_data)
 
