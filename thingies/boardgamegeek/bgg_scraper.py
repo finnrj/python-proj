@@ -1,225 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #!/usr/bin/env python3
 from concurrent.futures import ThreadPoolExecutor
 import csv
@@ -285,371 +63,6 @@ html_template_page_suffix = '''
 game_url_template = "https://boardgamegeek.com/xmlapi2/thing?id=%s&stats=1"
 hot_url = "https://boardgamegeek.com/xmlapi2/hot?type=boardgame"
 dump_url = "https://boardgamegeek.com/data_dumps/bg_ranks"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 geeklist_url_template = "https://boardgamegeek.com/xmlapi/geeklist/%s"
 geeklist_id = "271616"
 geeklist_url = geeklist_url_template % geeklist_id
@@ -660,6 +73,7 @@ top_ranks = 100
 # token = "6580d55c-6752-4089-a577-626702d2cdd8"
 token = "fc4021d4-3c12-4b9a-bebd-6f82a1fe8419"
 headers = {"Authorization": f"Bearer {token}"}
+
 
 class BGGRow:
     def __init__(self, rank, name, year, description, image_link, rating, votes):
@@ -760,6 +174,7 @@ def load_xml(url, timeout=15):
     with request.urlopen(req, timeout=timeout) as resp:
         return ElementTree.fromstring(resp.read())
 
+
 def child_value(element, tag, default="?"):
     # hot list items keep their data in a value attribute, and some lack e.g. yearpublished
     child = element.find(tag)
@@ -824,72 +239,51 @@ def parse_top100_data(raw_data, max_ranks=top_ranks):
     id_idx = -1
     rank_idx = -1
     expansion_idx = -1
+
     for idx, col in enumerate(header_lower):
-        if col in ("id", "bggid", "game_id", "objectid", "gameid", "bgg_id"):
+        if col in ("id", "game_id", "boardgame_id", "objectid"):
             id_idx = idx
-        elif col in ("rank", "boardgame_rank", "bg_rank", "ranking"):
+        elif col in ("rank", "boardgame_rank", "bg_rank"):
             rank_idx = idx
         elif col in ("is_expansion", "expansion"):
             expansion_idx = idx
 
-    first_row_is_data = False
     if id_idx == -1:
-        if header and header[0].strip().isdigit():
-            first_row_is_data = True
+        if len(header) > 0 and header[0].strip().isdigit():
             id_idx = 0
-            if len(header) > 1 and header[1].strip().isdigit():
-                rank_idx = 1
+            f.seek(0)
+            reader = csv.reader(f)
         else:
-            id_idx = 0
+            return []
 
-    rows_to_process = [header] if first_row_is_data else []
-    for r in reader:
-        if r:
-            rows_to_process.append(r)
-
-    ranked_items = []
-    unranked_ids = []
-
-    for row in rows_to_process:
+    entries = []
+    for row_idx, row in enumerate(reader):
         if not row or len(row) <= id_idx:
             continue
-        if expansion_idx != -1 and len(row) > expansion_idx:
-            if row[expansion_idx].strip().lower() in ("1", "true", "yes"):
-                continue
-        raw_id = row[id_idx].strip()
-        if not raw_id.isdigit():
+        game_id_str = row[id_idx].strip()
+        if not game_id_str.isdigit():
             continue
-        if rank_idx != -1 and len(row) > rank_idx:
-            raw_rank = row[rank_idx].strip()
-            if raw_rank.isdigit():
-                r_val = int(raw_rank)
-                if r_val > 0:
-                    ranked_items.append((r_val, raw_id))
-                    continue
-        unranked_ids.append(raw_id)
+        if expansion_idx != -1 and len(row) > expansion_idx:
+            is_exp = row[expansion_idx].strip()
+            if is_exp in ("1", "true", "True", "yes"):
+                continue
 
-    if ranked_items:
-        ranked_items.sort(key=lambda x: x[0])
-        seen = set()
-        top_ids = []
-        for r, gid in ranked_items:
-            if gid not in seen:
-                seen.add(gid)
-                top_ids.append(gid)
-            if len(top_ids) == max_ranks:
-                break
-        return top_ids
-    elif unranked_ids:
-        seen = set()
-        top_ids = []
-        for gid in unranked_ids:
-            if gid not in seen:
-                seen.add(gid)
-                top_ids.append(gid)
-            if len(top_ids) == max_ranks:
-                break
-        return top_ids
-    return []
+        rank_val = row_idx + 1
+        if rank_idx != -1 and len(row) > rank_idx:
+            rank_str = row[rank_idx].strip()
+            if rank_str.isdigit():
+                rank_val = int(rank_str)
+
+        entries.append((rank_val, game_id_str))
+
+    entries.sort(key=lambda x: x[0])
+    ids = []
+    for _, gid in entries:
+        if gid not in ids:
+            ids.append(gid)
+        if len(ids) == max_ranks:
+            break
+    return ids
 
 
 def fetch_top100(url=geeklist_url, top100_file="latest-top100", geeklist_id=None, source=None):
@@ -907,28 +301,28 @@ def fetch_top100(url=geeklist_url, top100_file="latest-top100", geeklist_id=None
     try:
         if url.startswith("http://") or url.startswith("https://"):
             req = Request(url, headers=headers)
-            with request.urlopen(req) as resp:
+            with request.urlopen(req, timeout=15) as resp:
                 raw_data = resp.read()
         else:
             with open(url, "rb") as f:
                 raw_data = f.read()
-        ids = parse_top100_data(raw_data)
-    except Exception as err:
-        print(url)
-        print(err)
-        return []
 
-    if top100_file and ids:
-        with open(top100_file, 'w') as fil:
-            fil.write("\n".join(ids) + "\n")
-    return ids
+        ids = parse_top100_data(raw_data)
+        if ids and top100_file:
+            with open(top100_file, "w") as f:
+                f.write("\n".join(ids) + "\n")
+        return ids
+    except Exception as e:
+        print(f"Error fetching top 100: {e}")
+        return []
 
 
 def short_description(description):
-    # the xml api only has the full description, so use its first sentence
-    first_line = html.unescape(description or "").strip().split("\n")[0]
-    sentence = re.split(r'(?<=[.!?])\s', first_line, maxsplit=1)[0]
-    return " ".join(sentence.split())[:150] or "no description"
+    if not description:
+        return ""
+    paragraphs = description.split("&#10;&#10;")
+    res = paragraphs[0]
+    return html.unescape(res)
 
 
 def parse_games(root):
@@ -1010,93 +404,73 @@ def fetch_games(game_ids, max_workers=5):
 
 
 def game_id(key):
-    return key.split("/")[2]
+    return key[len("/boardgame/"):]
 
 
-def match_existing_keys(new_data, old_data):
-    # xml api keys lack the name slug of the old browse page links, so reuse existing keys
-    old_keys = {game_id(k): k for k in old_data}
-    return {old_keys.get(game_id(k), k): v for k, v in new_data.items()}
+def match_existing_keys(actual_data, pickled_data):
+    # try to keep original keys - /boardgame/123/name-of-the-game
+    for old_k in pickled_data.keys():
+        for new_k in [k for k in actual_data.keys() if old_k.startswith(k)]:
+            actual_data[old_k] = actual_data.pop(new_k)
 
 
-def fetch_actual_data(old_data, watchlist_ids):
-    # the xml api has no ranking list, so check every known game plus the hot ones for the top ranks
-    candidate_ids = watchlist_ids + [game_id(k) for k in old_data] + fetch_hot_ids()
-    games = fetch_games(candidate_ids)
-    actual_data = {k: v for k, v in games.items() if v.rank <= top_ranks or game_id(k) in watchlist_ids}
-    return match_existing_keys(actual_data, old_data)
+def fetch_actual_data(pickled_data, watchlist_ids):
+    candidates = list(pickled_data.keys())
+    candidates = [game_id(k) for k in candidates if pickled_data[k].rank <= top_ranks]
+
+    # actual_ids = list(dict.fromkeys(candidates + fetch_hot_ids()))
+    actual_ids = list(dict.fromkeys(candidates + watchlist_ids + fetch_hot_ids()))
+    actual_data = fetch_games(actual_ids)
+    match_existing_keys(actual_data, pickled_data)
+    return actual_data
 
 
-def write_file(fil, old_data, outdated):
-    write_outdated(fil, outdated)
-    row: BGGRow
-    rank_sorted = sorted(old_data.values(), key=lambda e: e.rank)
-    factor = 0
-    for row in rank_sorted:
-        actual_factor = (row.rank - 1) // 100
-        if factor < actual_factor:
-            factor = actual_factor
-            print()
-            fil.write("\n")
-        print(row)
-        fil.write(str(row))
-        fil.write("\n")
-
-
-def write_html(fil, old_data, outdated):
-    fil.write(html_template_page_prefix)
+def write_file(fil, data, outdated):
+    for e in sorted(data.values(), key=lambda e: e.rank):
+        if e.rank <= top_ranks:
+            fil.write(str(e) + "\n")
     if outdated:
-        fil.write("<h2>Outdated</h2>\n")
-        write_html_table(fil, outdated)
-        fil.write("<h2>Ranking</h2>\n")
-    write_html_table(fil, old_data.values())
-    fil.write(html_template_page_suffix)
+        fil.write("\nOutdated:\n")
+        for e in outdated:
+            fil.write(str(e) + "\n")
 
 
-def write_html_table(fil, rows):
+def write_html_table(fil, title, elements, max_rating=10.0):
+    fil.write("<h2>%s</h2>\n" % title)
     fil.write(html_template_table_prefix)
-    rank_sorted = sorted(rows, key=lambda e: e.rank)
-    largest_diff = largest_rating_diff(rank_sorted[:100])
-    row: BGGRow
-    factor = 0
-    for row in rank_sorted:
-        actual_factor = (row.rank - 1) // 100
-        if factor < actual_factor:
-            factor = actual_factor
-            fil.write(html_template_table_suffix)
-            fil.write(html_template_table_prefix)
-        rating_class = ' class="rating-gap"' if row.name in largest_diff else ""
-        fil.write(row.html_str(rating_class))
-        fil.write("\n")
+    prev = max_rating
+    for e in elements:
+        rating_bg = ""
+        if prev - e.rating > 0.05:
+            # rating_bg = ' style="border-top-style:dashed;border-top-color:red"'
+            rating_bg = ' style="background-color:powderblue"'
+        prev = e.rating
+        fil.write(e.html_str(rating_bg))
     fil.write(html_template_table_suffix)
 
 
-def largest_rating_diff(rank_sorted):
-    largest_diff = [t[1] for t in
-                    sorted([(rank_sorted[idx].rating - rank_sorted[idx + 1].rating, rank_sorted[idx].name) for idx in
-                            range(len(rank_sorted) - 1)]
-                           , reverse=True)[:10]]
-    return largest_diff
+def write_html(fil, data, outdated):
+    fil.write(html_template_page_prefix)
+    write_html_table(fil, "Top %d" % top_ranks,
+                     sorted([v for v in data.values() if v.rank <= top_ranks], key=lambda e: e.rank))
+
+    write_html_table(fil, "Watchlist",
+                     sorted([v for v in data.values() if v.rank > top_ranks], key=lambda e: e.rating, reverse=True))
+
+    if outdated:
+        write_html_table(fil, "Outdated", outdated)
+    fil.write(html_template_page_suffix)
 
 
-def write_outdated(fil, outdated):
-    if len(outdated):
-        fil.write("Outdated:")
-        fil.write("\n")
-        for o in sorted(outdated, key=lambda e: e.rank):
-            fil.write(str(o))
-            fil.write("\n")
-        fil.write("\n")
+def main(data_dir):
+    latest_watchlist = os.path.join(data_dir, "latest-watchlist")
+    latest_top100 = os.path.join(data_dir, "latest-top100")
+    # latest_gamelist = os.path.join(data_dir, "latest-gamelist")
+    latest_rating_file = os.path.join(data_dir, "latest-ratings")
+    latest_rating_html = os.path.join(data_dir, "latest-ratings.html")
+    pickle_file = os.path.join(data_dir, "target.pickle")
 
-
-def main(basename):
-    pickle_file = os.path.join(basename, "target.pickle")
-    latest_rating_file = os.path.join(basename, "latest-ratings")
-    latest_rating_html = os.path.join(basename, "latest-ratings.html")
-    latest_watchlist = os.path.join(basename, "latest-watchlist")
-    latest_top100 = os.path.join(basename, "latest-top100")
-    # latest_gamelist = os.path.join(basename, "latest-gamelist")
-
+    pickled_data = {}
     with open(pickle_file, 'rb') as fil:
         pickled_data = pickle.load(fil)
 
