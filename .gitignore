@@ -38,3 +38,7 @@ pip-log.txt
 
 #tags file
 TAGS
+
+#boardgamegeek scratch files
+thingies/boardgamegeek/top_100.txt
+thingies/boardgamegeek/https___boardgamegeek.com_browse_boardgame.html
