@@ -143,7 +143,10 @@ h2, h3 {
     display: inline-block;
     border-bottom: 1px dotted black;
     font-weight: bold;
-    z-index: 1000;
+}
+
+.tooltip:hover {
+    z-index: 10000;
 }
 
 .tooltip .tooltiptext {
@@ -165,6 +168,7 @@ h2, h3 {
     width: max-content;
     box-sizing: border-box;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    opacity: 1;
 }
 
 .tooltip .tooltiptext::after {

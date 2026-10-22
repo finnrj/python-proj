@@ -400,10 +400,55 @@ class TestHTMLAndCSS(unittest.TestCase):
             css_content = f.read()
 
         self.assertIn(".tooltip .tooltiptext", css_content)
+        self.assertIn(".tooltip:hover", css_content)
+        self.assertIn("z-index: 10000", css_content)
+        self.assertIn("background-color: black", css_content)
         self.assertIn("max-width:", css_content)
         self.assertIn("white-space: pre-wrap", css_content)
         self.assertIn("word-wrap: break-word", css_content)
         self.assertIn("text-align: left", css_content)
+
+
+class TestCleanDescription(unittest.TestCase):
+
+    def test_remove_publisher_description_variants(self):
+        cases = [
+            ("Game summary.\n\n—description from the publisher", "Game summary."),
+            ("Game summary.\n\n— description from the publisher\n\n", "Game summary."),
+            ("Game summary.\n\n-description from the publisher", "Game summary."),
+            ("Game summary.\n\n--description from the publisher", "Game summary."),
+            ("Game summary.\n\n—description from publisher", "Game summary."),
+            ("Game summary.\n\n-description from publisher", "Game summary."),
+            ("Game summary.\n\n—description from the publisher (German)", "Game summary."),
+            ("Game summary.\n\n—description from the publisher (translated).", "Game summary."),
+            ("Game summary.\n\n- from the publisher's website", "Game summary."),
+            ("Game summary.\n\nDescription from the publisher:", "Game summary."),
+        ]
+        for input_desc, expected in cases:
+            self.assertEqual(expected, bgg_scraper.clean_description(input_desc))
+
+    def test_clean_description_preserves_regular_text(self):
+        desc = "A thrilling adventure across multiple scenarios."
+        self.assertEqual(desc, bgg_scraper.clean_description(desc))
+
+    def test_clean_description_empty_and_none(self):
+        self.assertEqual("", bgg_scraper.clean_description(""))
+        self.assertEqual("", bgg_scraper.clean_description(None))
+
+    def test_bggrow_html_str_removes_publisher_line(self):
+        row = bgg_scraper.BGGRow(
+            rank=1,
+            name="Ark Nova",
+            year="(2021)",
+            description="In Ark Nova, you will plan and design a modern zoo.\n\n—description from the publisher\n\n",
+            image_link="ark_nova.jpg",
+            rating="8.355",
+            votes="60000"
+        )
+        html_str = row.html_str()
+        self.assertNotIn("—description from the publisher", html_str)
+        self.assertNotIn("description from the publisher", html_str)
+        self.assertIn("In Ark Nova, you will plan and design a modern zoo.", html_str)
 
 
 if __name__ == "__main__":

@@ -75,13 +75,43 @@ token = "fc4021d4-3c12-4b9a-bebd-6f82a1fe8419"
 headers = {"Authorization": f"Bearer {token}"}
 
 
+def clean_description(description):
+    if not description:
+        return ""
+    text = html.unescape(description)
+    lines = text.splitlines()
+
+    publisher_pattern = re.compile(
+        r'^\s*[-—–]*\s*(description\s+.*)?from\s+(the\s+)?publisher.*$',
+        re.IGNORECASE
+    )
+
+    last_idx = -1
+    for i in range(len(lines) - 1, -1, -1):
+        if publisher_pattern.match(lines[i].strip()):
+            last_idx = i
+            break
+
+    if last_idx != -1:
+        lines.pop(last_idx)
+
+    while lines and not lines[-1].strip():
+        lines.pop()
+
+    return "\n".join(lines)
+
+
+def short_description(description):
+    return clean_description(description)
+
+
 class BGGRow:
     def __init__(self, rank, name, year, description, image_link, rating, votes):
         self.rank = int(rank)
         self.rank_marker = "NEW!!"
         self.name = name
         self.year = year
-        self.description = description
+        self.description = clean_description(description)
         self.image_link = image_link
         self.rating = float(rating)
         self.rating_marker = ""
@@ -95,7 +125,7 @@ class BGGRow:
         self.set_rating_marker(other.rating)
         self.rating = other.rating
         if self.description is not other.description:
-            self.description = other.description
+            self.description = clean_description(other.description)
         if self.image_link is not other.image_link:
             self.image_link = other.image_link
         self.set_votes_marker(other.votes)
@@ -139,7 +169,7 @@ class BGGRow:
                                            self.image_link,
                                            self.name,
                                            self.name[:37] + "..." if len(self.name) > 37 else self.name, self.year,
-                                           self.description,
+                                           clean_description(self.description),
                                            rating_bg, self.rating, self.rating_marker,
                                            self.votes, self.votes_marker)
 
@@ -315,14 +345,6 @@ def fetch_top100(url=geeklist_url, top100_file="latest-top100", geeklist_id=None
     except Exception as e:
         print(f"Error fetching top 100: {e}")
         return []
-
-
-def short_description(description):
-    if not description:
-        return ""
-    paragraphs = description.split("&#10;&#10;")
-    res = paragraphs[0]
-    return html.unescape(res)
 
 
 def parse_games(root):
@@ -505,6 +527,8 @@ def main(data_dir):
     pickled_data = {}
     with open(pickle_file, 'rb') as fil:
         pickled_data = pickle.load(fil)
+    for v in pickled_data.values():
+        v.description = clean_description(v.description)
 
     # outdated = []
     # for k,v in pickled_data.items():
