@@ -221,6 +221,7 @@
 
 
 #!/usr/bin/env python3
+from concurrent.futures import ThreadPoolExecutor
 import csv
 import gzip
 import html
@@ -281,7 +282,7 @@ html_template_page_suffix = '''
     </html>'''
 
 # watchlist_template = "https://www.boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
-game_url_template = "https://boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
+game_url_template = "https://boardgamegeek.com/xmlapi2/thing?id=%s&stats=1"
 hot_url = "https://boardgamegeek.com/xmlapi2/hot?type=boardgame"
 dump_url = "https://boardgamegeek.com/data_dumps/bg_ranks"
 
@@ -754,9 +755,9 @@ def read_watchlist(watchlist_file):
     return [objectid.strip() for objectid in open(watchlist_file).readlines() if objectid.strip()]
 
 
-def load_xml(url):
+def load_xml(url, timeout=15):
     req = Request(url, headers=headers)
-    with request.urlopen(req) as resp:
+    with request.urlopen(req, timeout=timeout) as resp:
         return ElementTree.fromstring(resp.read())
 
 def child_value(element, tag, default="?"):
@@ -932,30 +933,79 @@ def short_description(description):
 
 def parse_games(root):
     data = {}
-    for game in root.findall("boardgame"):
+    items = root.findall("boardgame") + root.findall("item")
+    for game in items:
         ratings = game.find("statistics/ratings")
         if ratings is None:
             continue
-        rank = ratings.find("ranks/rank[@name='boardgame']")
-        rank = rank.get("value") if rank is not None else ""
-        data["/boardgame/%s" % game.get("objectid")] = BGGRow(
+        rank_elem = ratings.find("ranks/rank[@name='boardgame']")
+        rank = rank_elem.get("value") if rank_elem is not None else ""
+
+        # Name: v1 uses <name primary="true">Text</name>, v2 uses <name type="primary" value="Text"/>
+        name = game.findtext("name[@primary='true']")
+        if not name:
+            name_el = game.find("name[@type='primary']")
+            if name_el is None:
+                name_el = game.find("name")
+            if name_el is not None:
+                name = name_el.get("value") or name_el.text or ""
+        name = name or ""
+
+        # Year: v1 uses text, v2 uses value attribute
+        year = game.findtext("yearpublished")
+        if not year:
+            year_el = game.find("yearpublished")
+            if year_el is not None:
+                year = year_el.get("value") or year_el.text or ""
+        year_str = "(%s)" % year if year else "(?)"
+
+        # Rating / Bayesaverage: v1 uses text, v2 uses value attribute
+        bayes = ratings.findtext("bayesaverage")
+        if not bayes:
+            bayes_el = ratings.find("bayesaverage")
+            bayes = bayes_el.get("value") if bayes_el is not None else "0"
+
+        # Votes / Usersrated: v1 uses text, v2 uses value attribute
+        votes = ratings.findtext("usersrated")
+        if not votes:
+            votes_el = ratings.find("usersrated")
+            votes = votes_el.get("value") if votes_el is not None else "0"
+
+        desc = game.findtext("description", "")
+        thumb = game.findtext("thumbnail", "")
+
+        obj_id = game.get("objectid") or game.get("id")
+        data["/boardgame/%s" % obj_id] = BGGRow(
             rank if rank.isdigit() else 10000,
-            game.findtext("name[@primary='true']"),
-            "(%s)" % game.findtext("yearpublished"),
-            short_description(game.findtext("description")),
-            game.findtext("thumbnail", ""),
-            ratings.findtext("bayesaverage"),
-            ratings.findtext("usersrated"))
+            name,
+            year_str,
+            short_description(desc),
+            thumb,
+            bayes,
+            votes)
     return data
 
 
-def fetch_games(game_ids):
+def fetch_games(game_ids, max_workers=5):
     game_ids = list(dict.fromkeys(game_ids))
+    if not game_ids:
+        return {}
+    batches = [game_ids[i:i + 20] for i in range(0, len(game_ids), 20)]
+
+    def fetch_batch(batch):
+        try:
+            return parse_games(load_xml(game_url_template % ",".join(batch)))
+        except Exception as err:
+            print(f"Error fetching batch: {err}")
+            return {}
+
     data = {}
-    for i in range(0, len(game_ids), 20):
-        if i:
-            time.sleep(2)  # stay below the xml api rate limit
-        data.update(parse_games(load_xml(game_url_template % ",".join(game_ids[i:i + 20]))))
+    if len(batches) == 1:
+        data.update(fetch_batch(batches[0]))
+    else:
+        with ThreadPoolExecutor(max_workers=min(max_workers, len(batches))) as executor:
+            for batch_result in executor.map(fetch_batch, batches):
+                data.update(batch_result)
     return data
 
 
@@ -1060,6 +1110,15 @@ def main(basename):
 
     # watchlist_ids = read_watchlist(latest_watchlist) + read_watchlist(latest_gamelist)
     actual_data = fetch_actual_data(pickled_data, read_watchlist(latest_watchlist) + (top100_ids if top100_ids else read_watchlist(latest_top100)))
+
+    # Persist the actual ranked 1-100 IDs from fetched data to latest_top100
+    top_ranked = sorted([v for v in actual_data.values() if v.rank <= top_ranks], key=lambda e: e.rank)
+    if top_ranked:
+        top_ids = [game_id(k) for k, v in actual_data.items() if v in top_ranked]
+        if top_ids and latest_top100:
+            with open(latest_top100, 'w') as fil:
+                fil.write("\n".join(top_ids) + "\n")
+
     # pickled_data = actual_data
     outdated = update_scoring(actual_data, pickled_data)
 
