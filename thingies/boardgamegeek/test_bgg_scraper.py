@@ -52,7 +52,7 @@ class TestFetchTop100(unittest.TestCase):
     def test_fetch_top100_from_geeklist_xml(self, mock_urlopen):
         sample_xml = (
             '<?xml version="1.0" encoding="utf-8"?>\n'
-            '<geeklist id="271616" termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">\n'
+            '<geeklist id="298125" termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">\n'
             '    <item id="101" objecttype="thing" subtype="boardgame" objectid="224517" objectname="Brass: Birmingham" />\n'
             '    <item id="102" objecttype="thing" subtype="boardgame" objectid="342942" objectname="Ark Nova" />\n'
             '    <item id="103" objecttype="thing" subtype="boardgame" objectid="161936" objectname="Pandemic Legacy: Season 1" />\n'

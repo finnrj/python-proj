@@ -13,7 +13,7 @@
   13       , Gaia Project                             (2017), 8.082         ,   31980 (0)
   14       , SETI: Search for Extraterrestrial Int... (2024), 8.059         ,   22725 (0)
   15       , Slay the Spire: The Board Game           (2024), 8.051         ,   14756 (0)
-  16       , Twilight Struggle                        (2005), 8.035         ,   52561 (0)
+  16 (^96) , Twilight Struggle                        (2005), 8.035 (+0.474),   52561 (+19360)
   17       , The Castles of Burgundy                  (2011), 8.033         ,   70823 (0)
   18       , The Lord of the Rings: Duel for Middl... (2024), 8.006         ,   22640 (0)
   19       , Through the Ages: A New Story of Civi... (2015), 8.003         ,   35265 (0)
@@ -98,105 +98,3 @@
   98       , Five Tribes: The Djinns of Naqala        (2014), 7.606         ,   45826 (0)
   99       , Azul                                     (2017), 7.602         ,  111549 (0)
  100       , El Grande                                (1995), 7.595         ,   33777 (0)
-
- 104       , Galactic Cruise                          (2025), 7.591         ,    8276 (0)
- 105       , Arcs                                     (2024), 7.590         ,   19081 (0)
- 111       , SCOUT                                    (2019), 7.572         ,   29901 (0)
- 112       , Ra                                       (1999), 7.561         ,   33201 (0)
- 114       , Beyond the Sun                           (2020), 7.556         ,   18003 (0)
- 118       , The Search for Planet X                  (2020), 7.544         ,   16184 (0)
- 129       , Nucleum                                  (2023), 7.520         ,    9128 (0)
- 130       , Carnegie                                 (2022), 7.518         ,   12330 (0)
- 134       , Wonderland's War                         (2022), 7.507         ,   11092 (0)
- 135       , Tigris & Euphrates                       (1997), 7.505         ,   30221 (0)
- 157       , Civolution                               (2024), 7.440         ,    6801 (0)
- 184       , Wondrous Creatures                       (2024), 7.385         ,    7789 (0)
- 199       , Speakeasy                                (2025), 7.364         ,    4696 (0)
-
- 215       , Earth                                    (2023), 7.351         ,   22152 (0)
- 220       , Meadow                                   (2021), 7.336         ,   14302 (0)
- 253       , Faraway                                  (2023), 7.278         ,   19998 (0)
- 259       , Nidavellir                               (2020), 7.263         ,   16608 (0)
- 265       , So Clover!                               (2021), 7.252         ,   12937 (0)
- 269       , Coimbra                                  (2018), 7.246         ,   13124 (0)
-
- 318       , Nippon: Zaibatsu                         (2026), 7.185         ,    3374 (0)
- 330       , Mind MGMT: The Psychic Espionage “Gam... (2021), 7.176         ,    7567 (0)
-
- 451       , Ready Set Bet                            (2022), 7.054         ,    9344 (0)
- 483       , Kutná Hora: The City of Silver           (2023), 7.029         ,    5728 (0)
- 488       , Knarr                                    (2023), 7.027         ,    8878 (0)
-
- 526       , Caper: Europe                            (2022), 6.987         ,    6238 (0)
- 559       , Barcelona                                (2023), 6.956         ,    4845 (0)
-
- 717       , First Rat                                (2022), 6.839         ,    5056 (0)
- 800       , Sleeping Gods: Distant Skies             (2023), 6.777         ,    2226 (0)
-
-1058       , Inferno                                  (2024), 6.632         ,    2632 (0)
-
-1259       , Pixies                                   (2024), 6.535         ,    4846 (0)
-
-1326       , Bad Company                              (2021), 6.511         ,    3644 (0)
-1340       , Arborea                                  (2023), 6.506         ,    2482 (0)
-1395       , Vagrantsong                              (2022), 6.483         ,    2823 (0)
-
-1555       , Dewan                                    (2025), 6.419         ,    2433 (0)
-1597       , Last Light                               (2023), 6.404         ,    2430 (0)
-
-1646       , Tenby                                    (2025), 6.387         ,    1772 (0)
-
-1794       , HUANG                                    (2024), 6.330         ,    1262 (0)
-
-1813       , Origin Story                             (2025), 6.324         ,    2419 (0)
-
-1931       , Corps of Discovery: A Game Set in the... (2025), 6.294         ,    1501 (0)
-1943       , Orichalcum                               (2022), 6.292         ,    2482 (0)
-1953       , Fractured Sky                            (2024), 6.289         ,    1812 (0)
-1975       , Daitoshi                                 (2024), 6.279         ,    1706 (0)
-
-2105       , Fate: Defenders of Grimheim              (2025), 6.239         ,    1205 (0)
-
-2484       , Avalon: The Riven Veil                   (2026), 6.144         ,     884 (0)
-
-3012       , Rocketmen                                (2021), 6.041         ,    2012 (0)
-3072       , Karvi                                    (2023), 6.030         ,    1098 (0)
-
-3550       , The Voynich Puzzle                       (2025), 5.950         ,     825 (0)
-
-3750       , Queen Alice                              (2026), 5.922         ,     453 (0)
-
-3896       , Neko Syndicate                           (2024), 5.904         ,     752 (0)
-
-4417       , Coming of Age                            (2025), 5.844         ,     777 (0)
-4419       , From the Moon                            (2024), 5.844         ,     567 (0)
-
-5033       , Thebai                                   (2025), 5.787         ,     475 (0)
-
-5127       , Brass: Pittsburgh                        (2027), 5.779         ,     455 (0)
-
-5219       , Madcala                                  (2025), 5.771         ,     410 (0)
-
-5522       , Tax the Rich                             (2025), 5.752         ,     627 (0)
-
-7938       , Click A Tree                             (2025), 5.640         ,     271 (0)
-
-8206       , Yucatan                                  (2023), 5.632         ,     454 (0)
-
-8688       , Firefighters on Duty                     (2025), 5.618         ,     182 (0)
-
-9066       , The Great Library                        (2026), 5.611         ,     159 (0)
-
-10000       , Ovoo                                     (2022), 0.000         ,       3 (0)
-10000       , Andromeda's Edge: Deluxe Edition         (2024), 6.307         ,     832 (0)
-10000       , Niraya                                   (2027), 0.000         ,       0 (0)
-
-10942       , Tameri                                   (2026), 5.578         ,      97 (0)
-10984       , Spirited                                 (2026), 5.577         ,     377 (0)
-
-12633       , For the Gods!                            (2026), 5.558         ,      92 (0)
-
-13017       , Gaudí                                    (2026), 5.554         ,      81 (0)
-
-13486       , Jackpot: Set the Reel                    (2026), 5.550         ,     191 (0)
-13492       , Galileo's Truth                          (2027), 5.550         ,      65 (0)

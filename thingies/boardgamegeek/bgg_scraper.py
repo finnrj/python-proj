@@ -64,7 +64,7 @@ game_url_template = "https://boardgamegeek.com/xmlapi2/thing?id=%s&stats=1"
 hot_url = "https://boardgamegeek.com/xmlapi2/hot?type=boardgame"
 dump_url = "https://boardgamegeek.com/data_dumps/bg_ranks"
 geeklist_url_template = "https://boardgamegeek.com/xmlapi/geeklist/%s"
-geeklist_id = "271616"
+geeklist_id = "298125"
 geeklist_url = geeklist_url_template % geeklist_id
 browse_url = "https://boardgamegeek.com/browse/boardgame"
 top_ranks = 100
