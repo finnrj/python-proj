@@ -25,6 +25,21 @@ except ImportError:
 
 class TestFetchTop100(unittest.TestCase):
 
+    def setUp(self):
+        self.default_top100 = "latest-top100"
+        self._had_top100 = os.path.exists(self.default_top100)
+        self._top100_content = None
+        if self._had_top100:
+            with open(self.default_top100, "r") as f:
+                self._top100_content = f.read()
+
+    def tearDown(self):
+        if self._had_top100:
+            with open(self.default_top100, "w") as f:
+                f.write(self._top100_content)
+        elif os.path.exists(self.default_top100):
+            os.remove(self.default_top100)
+
     def _create_mock_response(self, content_bytes):
         if isinstance(content_bytes, str):
             content_bytes = content_bytes.encode("utf-8")
@@ -110,6 +125,48 @@ class TestFetchTop100(unittest.TestCase):
             with open(tmp_path, "r") as f:
                 content = f.read()
             self.assertEqual("101\n102\n103\n", content)
+        finally:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+
+    @patch("urllib.request.urlopen")
+    def test_fetch_top100_saves_to_default_latest_top100(self, mock_urlopen):
+        sample_csv = "id,name,rank\n101,A,1\n102,B,2\n"
+        mock_urlopen.return_value = self._create_mock_response(sample_csv)
+
+        default_file = "latest-top100"
+        backup_content = None
+        if os.path.exists(default_file):
+            with open(default_file, "r") as f:
+                backup_content = f.read()
+
+        try:
+            ids = bgg_scraper.fetch_top100()
+            self.assertEqual(["101", "102"], ids)
+            self.assertTrue(os.path.exists(default_file))
+            with open(default_file, "r") as f:
+                self.assertEqual("101\n102\n", f.read())
+        finally:
+            if backup_content is not None:
+                with open(default_file, "w") as f:
+                    f.write(backup_content)
+            elif os.path.exists(default_file):
+                os.remove(default_file)
+
+    @patch("urllib.request.urlopen")
+    def test_fetch_top100_does_not_save_when_unsuccessful(self, mock_urlopen):
+        mock_urlopen.side_effect = URLError("Network timeout")
+
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as tmp_file:
+            tmp_path = tmp_file.name
+            tmp_file.write("existing_data\n")
+
+        try:
+            ids = bgg_scraper.fetch_top100(top100_file=tmp_path)
+            self.assertEqual([], ids)
+            with open(tmp_path, "r") as f:
+                content = f.read()
+            self.assertEqual("existing_data\n", content)
         finally:
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)

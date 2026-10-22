@@ -284,10 +284,10 @@ def parse_top100_data(raw_data, max_ranks=top_ranks):
     return []
 
 
-def fetch_top100(url=dump_url, top100_file=None, source=None):
+def fetch_top100(url=dump_url, top100_file="latest-top100", source=None):
     if source is not None:
         url = source
-    elif url and not url.startswith("http://") and not url.startswith("https://") and top100_file is None:
+    elif url and not url.startswith("http://") and not url.startswith("https://") and top100_file == "latest-top100":
         if not (url.endswith((".csv", ".zip", ".gz")) and os.path.exists(url)):
             top100_file = url
             url = dump_url
