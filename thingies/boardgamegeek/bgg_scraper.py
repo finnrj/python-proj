@@ -57,6 +57,7 @@ html_template_page_suffix = '''
 # watchlist_template = "https://www.boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
 game_url_template = "https://boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
 hot_url = "https://boardgamegeek.com/xmlapi2/hot?type=boardgame"
+browse_url = "https://boardgamegeek.com/browse/boardgame"
 top_ranks = 100
 
 # token = "2a3f21d5-645e-4bd3-b8e5-9a5cd4c484d6"
@@ -174,9 +175,30 @@ def fetch_hot_ids():
     for i in hots.findall("item"):
         print(i.get("rank"), i.get("id"), child_value(i, "name"), child_value(i, "yearpublished"))
     return [item.get("id") for item in hots.findall("item")]
-#
-# def fetch_top100():
-#     return [item.get("id") for item in hots.findall("item")]
+
+
+def fetch_top100(url=browse_url, top100_file=None):
+    if url and not url.startswith("http://") and not url.startswith("https://"):
+        top100_file = url
+        url = browse_url
+    req = Request(url, headers=headers)
+    try:
+        with request.urlopen(req) as resp:
+            content = resp.read().decode('utf-8', errors='ignore')
+    except Exception as err:
+        print(url)
+        print(err)
+        return []
+    ids = []
+    for match in re.findall(r'/boardgame/(\d+)', content):
+        if match not in ids:
+            ids.append(match)
+        if len(ids) == top_ranks:
+            break
+    if top100_file and ids:
+        with open(top100_file, 'w') as fil:
+            fil.write("\n".join(ids) + "\n")
+    return ids
 
 
 def short_description(description):
@@ -312,8 +334,10 @@ def main(basename):
     #     if len(outdated) == 3:
     #         break
 
+    top100_ids = fetch_top100(top100_file=latest_top100)
+
     # watchlist_ids = read_watchlist(latest_watchlist) + read_watchlist(latest_gamelist)
-    actual_data = fetch_actual_data(pickled_data, read_watchlist(latest_watchlist) + read_watchlist(latest_top100))
+    actual_data = fetch_actual_data(pickled_data, read_watchlist(latest_watchlist) + (top100_ids if top100_ids else read_watchlist(latest_top100)))
     # pickled_data = actual_data
     outdated = update_scoring(actual_data, pickled_data)
 
