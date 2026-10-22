@@ -26,8 +26,7 @@ html_template_page_prefix = '''<html>
         <head> <link rel="stylesheet" href="table.css">
         </head>
         <body>
-            %s
-        ''' % html_template_table_prefix
+        '''
 
 html_row_template_format = '''<tr">
         <td%s%3d %-6s</td>
@@ -51,9 +50,9 @@ html_template_table_suffix = '''</tbody>
             <br/>
 '''
 
-html_template_page_suffix = '''%s
+html_template_page_suffix = '''
         </body>
-    </html>''' % html_template_table_suffix
+    </html>'''
 
 # watchlist_template = "https://www.boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
 game_url_template = "https://boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
@@ -164,9 +163,20 @@ def load_xml(url):
     with request.urlopen(req) as resp:
         return ElementTree.fromstring(resp.read())
 
+def child_value(element, tag, default="?"):
+    # hot list items keep their data in a value attribute, and some lack e.g. yearpublished
+    child = element.find(tag)
+    return child.get("value", default) if child is not None else default
+
 
 def fetch_hot_ids():
-    return [item.get("id") for item in load_xml(hot_url).findall("item")]
+    hots = load_xml(hot_url)
+    for i in hots.findall("item"):
+        print(i.get("rank"), i.get("id"), child_value(i, "name"), child_value(i, "yearpublished"))
+    return [item.get("id") for item in hots.findall("item")]
+#
+# def fetch_top100():
+#     return [item.get("id") for item in hots.findall("item")]
 
 
 def short_description(description):
@@ -239,9 +249,19 @@ def write_file(fil, old_data, outdated):
         fil.write("\n")
 
 
-def write_html(fil, old_data, page_prefix=True, page_suffix=True):
-    fil.write(html_template_page_prefix if page_prefix else html_template_table_prefix)
-    rank_sorted = sorted(old_data, key=lambda e: e.rank)
+def write_html(fil, old_data, outdated):
+    fil.write(html_template_page_prefix)
+    if outdated:
+        fil.write("<h2>Outdated</h2>\n")
+        write_html_table(fil, outdated)
+        fil.write("<h2>Ranking</h2>\n")
+    write_html_table(fil, old_data.values())
+    fil.write(html_template_page_suffix)
+
+
+def write_html_table(fil, rows):
+    fil.write(html_template_table_prefix)
+    rank_sorted = sorted(rows, key=lambda e: e.rank)
     largest_diff = largest_rating_diff(rank_sorted[:100])
     row: BGGRow
     factor = 0
@@ -250,11 +270,11 @@ def write_html(fil, old_data, page_prefix=True, page_suffix=True):
         if factor < actual_factor:
             factor = actual_factor
             fil.write(html_template_table_suffix)
-            fil.write(html_template_page_prefix)
+            fil.write(html_template_table_prefix)
         rating_class = ' class="rating-gap"' if row.name in largest_diff else ""
         fil.write(row.html_str(rating_class))
         fil.write("\n")
-    fil.write(html_template_page_suffix if page_suffix else html_template_table_suffix)
+    fil.write(html_template_table_suffix)
 
 
 def largest_rating_diff(rank_sorted):
@@ -269,7 +289,7 @@ def write_outdated(fil, outdated):
     if len(outdated):
         fil.write("Outdated:")
         fil.write("\n")
-        for o in outdated:
+        for o in sorted(outdated, key=lambda e: e.rank):
             fil.write(str(o))
             fil.write("\n")
         fil.write("\n")
@@ -280,6 +300,7 @@ def main(basename):
     latest_rating_file = os.path.join(basename, "latest-ratings")
     latest_rating_html = os.path.join(basename, "latest-ratings.html")
     latest_watchlist = os.path.join(basename, "latest-watchlist")
+    latest_top100 = os.path.join(basename, "latest-top100")
     # latest_gamelist = os.path.join(basename, "latest-gamelist")
 
     with open(pickle_file, 'rb') as fil:
@@ -292,7 +313,7 @@ def main(basename):
     #         break
 
     # watchlist_ids = read_watchlist(latest_watchlist) + read_watchlist(latest_gamelist)
-    actual_data = fetch_actual_data(pickled_data, read_watchlist(latest_watchlist))
+    actual_data = fetch_actual_data(pickled_data, read_watchlist(latest_watchlist) + read_watchlist(latest_top100))
     # pickled_data = actual_data
     outdated = update_scoring(actual_data, pickled_data)
 
@@ -300,9 +321,7 @@ def main(basename):
         write_file(fil, pickled_data, outdated)
 
     with open(latest_rating_html, 'w') as fil:
-        if outdated:
-            write_html(fil, outdated, outdated is None, not outdated)
-        write_html(fil, pickled_data.values(), not outdated)
+        write_html(fil, pickled_data, outdated)
 
     with open(pickle_file, 'wb') as fil:
         pickle.dump(pickled_data, fil)
