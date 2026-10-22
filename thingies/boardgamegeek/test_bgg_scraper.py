@@ -299,5 +299,112 @@ class TestFetchTop100(unittest.TestCase):
         self.assertEqual("167791", ids[3])
 
 
+class TestHTMLAndCSS(unittest.TestCase):
+
+    def test_rank_range_calculation(self):
+        self.assertEqual((1, 100), bgg_scraper.rank_range(1))
+        self.assertEqual((1, 100), bgg_scraper.rank_range(50))
+        self.assertEqual((1, 100), bgg_scraper.rank_range(100))
+        self.assertEqual((101, 200), bgg_scraper.rank_range(101))
+        self.assertEqual((101, 200), bgg_scraper.rank_range(200))
+        self.assertEqual((201, 300), bgg_scraper.rank_range(201))
+        self.assertEqual((201, 300), bgg_scraper.rank_range(300))
+        self.assertEqual((301, 400), bgg_scraper.rank_range(301))
+        self.assertEqual((901, 1000), bgg_scraper.rank_range(1000))
+        self.assertEqual((1001, 1100), bgg_scraper.rank_range(1001))
+
+        self.assertEqual("1-100", bgg_scraper.rank_range_str(1))
+        self.assertEqual("1-100", bgg_scraper.rank_range_str(100))
+        self.assertEqual("101-200", bgg_scraper.rank_range_str(101))
+        self.assertEqual("201-300", bgg_scraper.rank_range_str(201))
+
+    def test_image_attributes_in_html_row(self):
+        row = bgg_scraper.BGGRow(
+            rank=1,
+            name="Brass: Birmingham",
+            year="(2018)",
+            description="Economic strategy game",
+            image_link="https://example.com/brass.jpg",
+            rating="8.390",
+            votes="60000"
+        )
+        html_str = row.html_str()
+        self.assertIn('class="image"', html_str)
+
+    def test_write_html_table_adds_headers_for_each_100_ranks(self):
+        rows = [
+            bgg_scraper.BGGRow(1, "Game 1", "(2020)", "Desc 1", "img1.jpg", "8.5", "1000"),
+            bgg_scraper.BGGRow(50, "Game 50", "(2020)", "Desc 50", "img50.jpg", "8.2", "800"),
+            bgg_scraper.BGGRow(100, "Game 100", "(2020)", "Desc 100", "img100.jpg", "8.0", "700"),
+            bgg_scraper.BGGRow(105, "Game 105", "(2020)", "Desc 105", "img105.jpg", "7.9", "600"),
+            bgg_scraper.BGGRow(180, "Game 180", "(2020)", "Desc 180", "img180.jpg", "7.8", "500"),
+            bgg_scraper.BGGRow(320, "Game 320", "(2020)", "Desc 320", "img320.jpg", "7.5", "400"),
+        ]
+        buf = io.StringIO()
+        bgg_scraper.write_html_table(buf, "Test Rankings", rows)
+        content = buf.getvalue()
+
+        # Should contain the section title
+        self.assertIn("<h2>Test Rankings</h2>", content)
+
+        # Should contain rank range headers for ranges with games present
+        self.assertIn("<h3>1-100</h3>", content)
+        self.assertIn("<h3>101-200</h3>", content)
+        self.assertIn("<h3>301-400</h3>", content)
+        # Should not contain rank range header for range without games
+        self.assertNotIn("<h3>201-300</h3>", content)
+
+        # Count how many table headers (thead) are emitted:
+        # 1-100 (contains 1, 50, 100) -> header 1
+        # 101-200 (contains 105, 180) -> header 2
+        # 201-300 (no games) -> no header
+        # 301-400 (contains 320) -> header 3
+        # Total table headers should be exactly 3
+        table_count = content.count('<table class="zui-table">')
+        self.assertEqual(3, table_count)
+        thead_count = content.count('<thead>')
+        self.assertEqual(3, thead_count)
+
+    def test_write_html_multiple_sections(self):
+        data = {
+            "/boardgame/1": bgg_scraper.BGGRow(1, "Top Game", "(2021)", "Top", "top.jpg", "8.5", "1000"),
+            "/boardgame/2": bgg_scraper.BGGRow(150, "Watchlist Game", "(2021)", "Watch", "watch.jpg", "7.5", "500"),
+        }
+        outdated = [
+            bgg_scraper.BGGRow(200, "Old Game", "(2010)", "Old", "old.jpg", "7.0", "200")
+        ]
+        buf = io.StringIO()
+        bgg_scraper.write_html(buf, data, outdated)
+        content = buf.getvalue()
+
+        self.assertIn("<h2>Top 100</h2>", content)
+        self.assertIn("<h3>1-100</h3>", content)
+        self.assertIn("<h2>Watchlist</h2>", content)
+        self.assertIn("<h3>101-200</h3>", content)
+        self.assertIn("<h2>Outdated</h2>", content)
+        self.assertIn("<h3>101-200</h3>", content)
+
+    def test_css_hover_enlarged_image_rules(self):
+        css_path = os.path.join(pkg_dir, "table.css")
+        with open(css_path, "r", encoding="utf-8") as f:
+            css_content = f.read()
+
+        self.assertIn(".image:hover", css_content)
+        self.assertIn("transform:", css_content)
+        self.assertIn("max-width: 60px", css_content)
+        self.assertIn("h2, h3", css_content)
+
+    def test_css_description_tooltip_rules(self):
+        css_path = os.path.join(pkg_dir, "table.css")
+        with open(css_path, "r", encoding="utf-8") as f:
+            css_content = f.read()
+
+        self.assertIn(".tooltip .tooltiptext", css_content)
+        self.assertIn("max-width:", css_content)
+        self.assertIn("white-space: pre-wrap", css_content)
+        self.assertIn("word-wrap: break-word", css_content)
+        self.assertIn("text-align: left", css_content)
+
+
 if __name__ == "__main__":
     unittest.main()

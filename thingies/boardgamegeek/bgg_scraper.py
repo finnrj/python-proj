@@ -435,11 +435,36 @@ def write_file(fil, data, outdated):
             fil.write(str(e) + "\n")
 
 
+def rank_range(rank):
+    factor = max(0, (rank - 1) // 100)
+    start_rank = factor * 100 + 1
+    end_rank = (factor + 1) * 100
+    return start_rank, end_rank
+
+
+def rank_range_str(rank):
+    start_rank, end_rank = rank_range(rank)
+    return "%d-%d" % (start_rank, end_rank)
+
+
 def write_html_table(fil, title, elements, max_rating=10.0):
     fil.write("<h2>%s</h2>\n" % title)
-    fil.write(html_template_table_prefix)
+    if not elements:
+        return
+    rank_sorted = sorted(elements, key=lambda e: e.rank)
     prev = max_rating
-    for e in elements:
+    factor = (rank_sorted[0].rank - 1) // 100
+    start_rank, end_rank = rank_range(rank_sorted[0].rank)
+    fil.write("<h3>%d-%d</h3>\n" % (start_rank, end_rank))
+    fil.write(html_template_table_prefix)
+    for e in rank_sorted:
+        actual_factor = (e.rank - 1) // 100
+        if factor < actual_factor:
+            factor = actual_factor
+            start_rank, end_rank = rank_range(e.rank)
+            fil.write(html_template_table_suffix)
+            fil.write("<h3>%d-%d</h3>\n" % (start_rank, end_rank))
+            fil.write(html_template_table_prefix)
         rating_bg = ""
         if prev - e.rating > 0.05:
             # rating_bg = ' style="border-top-style:dashed;border-top-color:red"'
@@ -451,11 +476,18 @@ def write_html_table(fil, title, elements, max_rating=10.0):
 
 def write_html(fil, data, outdated):
     fil.write(html_template_page_prefix)
-    write_html_table(fil, "Top %d" % top_ranks,
-                     sorted([v for v in data.values() if v.rank <= top_ranks], key=lambda e: e.rank))
+    if isinstance(data, dict):
+        elements = list(data.values())
+    else:
+        elements = list(data)
 
-    write_html_table(fil, "Watchlist",
-                     sorted([v for v in data.values() if v.rank > top_ranks], key=lambda e: e.rating, reverse=True))
+    top_games = [v for v in elements if v.rank <= top_ranks]
+    if top_games:
+        write_html_table(fil, "Top %d" % top_ranks, top_games)
+
+    watchlist_games = [v for v in elements if v.rank > top_ranks]
+    if watchlist_games:
+        write_html_table(fil, "Watchlist", watchlist_games)
 
     if outdated:
         write_html_table(fil, "Outdated", outdated)
