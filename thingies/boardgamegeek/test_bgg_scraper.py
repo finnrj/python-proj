@@ -49,6 +49,39 @@ class TestFetchTop100(unittest.TestCase):
         return mock_resp
 
     @patch("urllib.request.urlopen")
+    def test_fetch_top100_from_geeklist_xml(self, mock_urlopen):
+        sample_xml = (
+            '<?xml version="1.0" encoding="utf-8"?>\n'
+            '<geeklist id="271616" termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">\n'
+            '    <item id="101" objecttype="thing" subtype="boardgame" objectid="224517" objectname="Brass: Birmingham" />\n'
+            '    <item id="102" objecttype="thing" subtype="boardgame" objectid="342942" objectname="Ark Nova" />\n'
+            '    <item id="103" objecttype="thing" subtype="boardgame" objectid="161936" objectname="Pandemic Legacy: Season 1" />\n'
+            '</geeklist>'
+        )
+        mock_urlopen.return_value = self._create_mock_response(sample_xml)
+
+        ids = bgg_scraper.fetch_top100()
+
+        self.assertEqual(["224517", "342942", "161936"], ids)
+        called_req = mock_urlopen.call_args[0][0]
+        self.assertEqual(bgg_scraper.geeklist_url, called_req.full_url)
+
+    @patch("urllib.request.urlopen")
+    def test_fetch_top100_with_geeklist_id(self, mock_urlopen):
+        sample_xml = (
+            '<geeklist id="99999">\n'
+            '    <item id="1" objectid="174430" objectname="Gloomhaven" />\n'
+            '</geeklist>'
+        )
+        mock_urlopen.return_value = self._create_mock_response(sample_xml)
+
+        ids = bgg_scraper.fetch_top100(geeklist_id="99999")
+
+        self.assertEqual(["174430"], ids)
+        called_req = mock_urlopen.call_args[0][0]
+        self.assertEqual("https://boardgamegeek.com/xmlapi/geeklist/99999", called_req.full_url)
+
+    @patch("urllib.request.urlopen")
     def test_fetch_top100_from_csv_dump(self, mock_urlopen):
         sample_csv = (
             "id,name,yearpublished,rank,bayesaverage,average,usersrated,is_expansion\n"

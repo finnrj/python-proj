@@ -1,3 +1,225 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 import csv
 import gzip
@@ -62,6 +284,374 @@ html_template_page_suffix = '''
 game_url_template = "https://boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
 hot_url = "https://boardgamegeek.com/xmlapi2/hot?type=boardgame"
 dump_url = "https://boardgamegeek.com/data_dumps/bg_ranks"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+geeklist_url_template = "https://boardgamegeek.com/xmlapi/geeklist/%s"
+geeklist_id = "271616"
+geeklist_url = geeklist_url_template % geeklist_id
 browse_url = "https://boardgamegeek.com/browse/boardgame"
 top_ranks = 100
 
@@ -187,7 +777,7 @@ def parse_top100_data(raw_data, max_ranks=top_ranks):
         content = raw_data
     elif raw_data.startswith(b"PK\x03\x04"):
         with zipfile.ZipFile(io.BytesIO(raw_data)) as z:
-            csv_files = [n for n in z.namelist() if n.endswith(".csv")]
+            csv_files = [n for n in z.namelist() if n.endswith((".csv", ".xml", ".txt"))]
             target = csv_files[0] if csv_files else z.namelist()[0]
             content = z.read(target).decode("utf-8", errors="ignore")
     elif raw_data.startswith(b"\x1f\x8b"):
@@ -196,7 +786,24 @@ def parse_top100_data(raw_data, max_ranks=top_ranks):
         content = raw_data.decode("utf-8", errors="ignore")
 
     stripped = content.lstrip()
-    if stripped.startswith(("<html", "<!DOCTYPE", "<!doctype", "<?xml")):
+    if stripped.startswith("<?xml") or "<geeklist" in stripped or "<items" in stripped:
+        try:
+            root = ElementTree.fromstring(content)
+            items = root.findall(".//item")
+            if items:
+                ids = []
+                for item in items:
+                    oid = item.get("objectid") or item.get("id")
+                    if oid and oid.isdigit() and oid not in ids:
+                        ids.append(oid)
+                    if len(ids) == max_ranks:
+                        break
+                if ids:
+                    return ids
+        except Exception:
+            pass
+
+    if stripped.startswith(("<html", "<!DOCTYPE", "<!doctype")):
         ids = []
         for match in re.findall(r'/boardgame/(\d+)', content):
             if match not in ids:
@@ -284,13 +891,17 @@ def parse_top100_data(raw_data, max_ranks=top_ranks):
     return []
 
 
-def fetch_top100(url=dump_url, top100_file="latest-top100", source=None):
-    if source is not None:
+def fetch_top100(url=geeklist_url, top100_file="latest-top100", geeklist_id=None, source=None):
+    if geeklist_id is not None:
+        url = geeklist_url_template % geeklist_id
+    elif source is not None:
         url = source
     elif url and not url.startswith("http://") and not url.startswith("https://") and top100_file == "latest-top100":
-        if not (url.endswith((".csv", ".zip", ".gz")) and os.path.exists(url)):
+        if isinstance(url, int) or (isinstance(url, str) and url.isdigit()):
+            url = geeklist_url_template % url
+        elif not (url.endswith((".csv", ".zip", ".gz", ".xml", ".html")) and os.path.exists(url)):
             top100_file = url
-            url = dump_url
+            url = geeklist_url
 
     try:
         if url.startswith("http://") or url.startswith("https://"):
