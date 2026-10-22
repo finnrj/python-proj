@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
+import csv
+import gzip
 import html
+import io
 import os.path
 import pickle
 import re
@@ -7,6 +10,7 @@ import sys
 import time
 from urllib import request
 from urllib.request import Request
+import zipfile
 from xml.etree import ElementTree
 
 html_template_table_prefix = '''
@@ -57,6 +61,7 @@ html_template_page_suffix = '''
 # watchlist_template = "https://www.boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
 game_url_template = "https://boardgamegeek.com/xmlapi/boardgame/%s?stats=1"
 hot_url = "https://boardgamegeek.com/xmlapi2/hot?type=boardgame"
+dump_url = "https://boardgamegeek.com/data_dumps/bg_ranks"
 browse_url = "https://boardgamegeek.com/browse/boardgame"
 top_ranks = 100
 
@@ -177,24 +182,130 @@ def fetch_hot_ids():
     return [item.get("id") for item in hots.findall("item")]
 
 
-def fetch_top100(url=browse_url, top100_file=None):
-    if url and not url.startswith("http://") and not url.startswith("https://"):
-        top100_file = url
-        url = browse_url
-    req = Request(url, headers=headers)
+def parse_top100_data(raw_data, max_ranks=top_ranks):
+    if isinstance(raw_data, str):
+        content = raw_data
+    elif raw_data.startswith(b"PK\x03\x04"):
+        with zipfile.ZipFile(io.BytesIO(raw_data)) as z:
+            csv_files = [n for n in z.namelist() if n.endswith(".csv")]
+            target = csv_files[0] if csv_files else z.namelist()[0]
+            content = z.read(target).decode("utf-8", errors="ignore")
+    elif raw_data.startswith(b"\x1f\x8b"):
+        content = gzip.decompress(raw_data).decode("utf-8", errors="ignore")
+    else:
+        content = raw_data.decode("utf-8", errors="ignore")
+
+    stripped = content.lstrip()
+    if stripped.startswith(("<html", "<!DOCTYPE", "<!doctype", "<?xml")):
+        ids = []
+        for match in re.findall(r'/boardgame/(\d+)', content):
+            if match not in ids:
+                ids.append(match)
+            if len(ids) == max_ranks:
+                break
+        return ids
+
+    f = io.StringIO(content.strip())
+    reader = csv.reader(f)
     try:
-        with request.urlopen(req) as resp:
-            content = resp.read().decode('utf-8', errors='ignore')
+        header = next(reader)
+    except StopIteration:
+        return []
+
+    header_lower = [h.strip().lower() for h in header]
+    id_idx = -1
+    rank_idx = -1
+    expansion_idx = -1
+    for idx, col in enumerate(header_lower):
+        if col in ("id", "bggid", "game_id", "objectid", "gameid", "bgg_id"):
+            id_idx = idx
+        elif col in ("rank", "boardgame_rank", "bg_rank", "ranking"):
+            rank_idx = idx
+        elif col in ("is_expansion", "expansion"):
+            expansion_idx = idx
+
+    first_row_is_data = False
+    if id_idx == -1:
+        if header and header[0].strip().isdigit():
+            first_row_is_data = True
+            id_idx = 0
+            if len(header) > 1 and header[1].strip().isdigit():
+                rank_idx = 1
+        else:
+            id_idx = 0
+
+    rows_to_process = [header] if first_row_is_data else []
+    for r in reader:
+        if r:
+            rows_to_process.append(r)
+
+    ranked_items = []
+    unranked_ids = []
+
+    for row in rows_to_process:
+        if not row or len(row) <= id_idx:
+            continue
+        if expansion_idx != -1 and len(row) > expansion_idx:
+            if row[expansion_idx].strip().lower() in ("1", "true", "yes"):
+                continue
+        raw_id = row[id_idx].strip()
+        if not raw_id.isdigit():
+            continue
+        if rank_idx != -1 and len(row) > rank_idx:
+            raw_rank = row[rank_idx].strip()
+            if raw_rank.isdigit():
+                r_val = int(raw_rank)
+                if r_val > 0:
+                    ranked_items.append((r_val, raw_id))
+                    continue
+        unranked_ids.append(raw_id)
+
+    if ranked_items:
+        ranked_items.sort(key=lambda x: x[0])
+        seen = set()
+        top_ids = []
+        for r, gid in ranked_items:
+            if gid not in seen:
+                seen.add(gid)
+                top_ids.append(gid)
+            if len(top_ids) == max_ranks:
+                break
+        return top_ids
+    elif unranked_ids:
+        seen = set()
+        top_ids = []
+        for gid in unranked_ids:
+            if gid not in seen:
+                seen.add(gid)
+                top_ids.append(gid)
+            if len(top_ids) == max_ranks:
+                break
+        return top_ids
+    return []
+
+
+def fetch_top100(url=dump_url, top100_file=None, source=None):
+    if source is not None:
+        url = source
+    elif url and not url.startswith("http://") and not url.startswith("https://") and top100_file is None:
+        if not (url.endswith((".csv", ".zip", ".gz")) and os.path.exists(url)):
+            top100_file = url
+            url = dump_url
+
+    try:
+        if url.startswith("http://") or url.startswith("https://"):
+            req = Request(url, headers=headers)
+            with request.urlopen(req) as resp:
+                raw_data = resp.read()
+        else:
+            with open(url, "rb") as f:
+                raw_data = f.read()
+        ids = parse_top100_data(raw_data)
     except Exception as err:
         print(url)
         print(err)
         return []
-    ids = []
-    for match in re.findall(r'/boardgame/(\d+)', content):
-        if match not in ids:
-            ids.append(match)
-        if len(ids) == top_ranks:
-            break
+
     if top100_file and ids:
         with open(top100_file, 'w') as fil:
             fil.write("\n".join(ids) + "\n")
