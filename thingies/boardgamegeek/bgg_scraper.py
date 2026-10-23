@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from concurrent.futures import ThreadPoolExecutor
+from curl_cffi import requests
 import csv
 import gzip
 import html
@@ -316,35 +317,38 @@ def parse_top100_data(raw_data, max_ranks=top_ranks):
     return ids
 
 
-def fetch_top100(url=geeklist_url, top100_file="latest-top100", geeklist_id=None, source=None):
-    if geeklist_id is not None:
-        url = geeklist_url_template % geeklist_id
-    elif source is not None:
+def fetch_top100_via_impersonation(url=browse_url, top100_file="latest-top100", source=None):
+    if source is not None:
         url = source
     elif url and not url.startswith("http://") and not url.startswith("https://") and top100_file == "latest-top100":
-        if isinstance(url, int) or (isinstance(url, str) and url.isdigit()):
-            url = geeklist_url_template % url
-        elif not (url.endswith((".csv", ".zip", ".gz", ".xml", ".html")) and os.path.exists(url)):
+        if not (url.endswith((".csv", ".zip", ".gz", ".xml", ".html")) and os.path.exists(url)):
             top100_file = url
-            url = geeklist_url
+            url = browse_url
 
     try:
         if url.startswith("http://") or url.startswith("https://"):
-            req = Request(url, headers=headers)
-            with request.urlopen(req, timeout=15) as resp:
-                raw_data = resp.read()
+            response = requests.get(url, impersonate="chrome")
+            if response.status_code != 200:
+                print(f"Error fetching top 100 via impersonation: HTTP {response.status_code}")
+                return []
+            raw_data = response.content
         else:
             with open(url, "rb") as f:
                 raw_data = f.read()
-
         ids = parse_top100_data(raw_data)
         if ids and top100_file:
             with open(top100_file, "w") as f:
                 f.write("\n".join(ids) + "\n")
         return ids
     except Exception as e:
-        print(f"Error fetching top 100: {e}")
+        print(f"Error fetching top 100 via impersonation: {e}")
         return []
+
+
+def fetch_top100(url=browse_url, top100_file="latest-top100", geeklist_id=None, source=None):
+    if geeklist_id is not None:
+        url = geeklist_url_template % geeklist_id
+    return fetch_top100_via_impersonation(url=url, top100_file=top100_file, source=source)
 
 
 def parse_games(root):
@@ -536,7 +540,7 @@ def main(data_dir):
     #     if len(outdated) == 3:
     #         break
 
-    top100_ids = fetch_top100(top100_file=latest_top100)
+    top100_ids = fetch_top100_via_impersonation(top100_file=latest_top100)
 
     # watchlist_ids = read_watchlist(latest_watchlist) + read_watchlist(latest_gamelist)
     actual_data = fetch_actual_data(pickled_data, read_watchlist(latest_watchlist) + (top100_ids if top100_ids else read_watchlist(latest_top100)))
