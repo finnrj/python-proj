@@ -60,35 +60,21 @@ class TestFetchTop100(unittest.TestCase):
         mock_get.assert_called_once_with(bgg_scraper.browse_url, impersonate="chrome")
 
     @patch("curl_cffi.requests.get")
-    def test_fetch_top100_from_geeklist_xml(self, mock_get):
+    def test_fetch_top100_from_xml(self, mock_get):
         sample_xml = (
             '<?xml version="1.0" encoding="utf-8"?>\n'
-            '<geeklist id="298125" termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">\n'
+            '<items>\n'
             '    <item id="101" objecttype="thing" subtype="boardgame" objectid="224517" objectname="Brass: Birmingham" />\n'
             '    <item id="102" objecttype="thing" subtype="boardgame" objectid="342942" objectname="Ark Nova" />\n'
             '    <item id="103" objecttype="thing" subtype="boardgame" objectid="161936" objectname="Pandemic Legacy: Season 1" />\n'
-            '</geeklist>'
+            '</items>'
         )
         mock_get.return_value = self._create_mock_response(sample_xml)
 
-        ids = bgg_scraper.fetch_top100(geeklist_id="298125")
+        ids = bgg_scraper.fetch_top100(url="https://example.com/items.xml")
 
         self.assertEqual(["224517", "342942", "161936"], ids)
-        mock_get.assert_called_once_with(bgg_scraper.geeklist_url, impersonate="chrome")
-
-    @patch("curl_cffi.requests.get")
-    def test_fetch_top100_with_geeklist_id(self, mock_get):
-        sample_xml = (
-            '<geeklist id="99999">\n'
-            '    <item id="1" objectid="174430" objectname="Gloomhaven" />\n'
-            '</geeklist>'
-        )
-        mock_get.return_value = self._create_mock_response(sample_xml)
-
-        ids = bgg_scraper.fetch_top100(geeklist_id="99999")
-
-        self.assertEqual(["174430"], ids)
-        mock_get.assert_called_once_with("https://boardgamegeek.com/xmlapi/geeklist/99999", impersonate="chrome")
+        mock_get.assert_called_once_with("https://example.com/items.xml", impersonate="chrome")
 
     @patch("curl_cffi.requests.get")
     def test_fetch_top100_from_csv_dump(self, mock_get):

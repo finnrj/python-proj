@@ -64,9 +64,6 @@ html_template_page_suffix = '''
 game_url_template = "https://boardgamegeek.com/xmlapi2/thing?id=%s&stats=1"
 hot_url = "https://boardgamegeek.com/xmlapi2/hot?type=boardgame"
 dump_url = "https://boardgamegeek.com/data_dumps/bg_ranks"
-geeklist_url_template = "https://boardgamegeek.com/xmlapi/geeklist/%s"
-geeklist_id = "298125"
-geeklist_url = geeklist_url_template % geeklist_id
 browse_url = "https://boardgamegeek.com/browse/boardgame"
 top_ranks = 100
 
@@ -233,7 +230,7 @@ def parse_top100_data(raw_data, max_ranks=top_ranks):
         content = raw_data.decode("utf-8", errors="ignore")
 
     stripped = content.lstrip()
-    if stripped.startswith("<?xml") or "<geeklist" in stripped or "<items" in stripped:
+    if stripped.startswith("<?xml") or "<items" in stripped:
         try:
             root = ElementTree.fromstring(content)
             items = root.findall(".//item")
@@ -345,9 +342,7 @@ def fetch_top100_via_impersonation(url=browse_url, top100_file="latest-top100", 
         return []
 
 
-def fetch_top100(url=browse_url, top100_file="latest-top100", geeklist_id=None, source=None):
-    if geeklist_id is not None:
-        url = geeklist_url_template % geeklist_id
+def fetch_top100(url=browse_url, top100_file="latest-top100", source=None):
     return fetch_top100_via_impersonation(url=url, top100_file=top100_file, source=source)
 
 
