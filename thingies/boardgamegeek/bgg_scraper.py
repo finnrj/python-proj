@@ -57,6 +57,7 @@ html_template_table_suffix = '''</tbody>
 '''
 
 html_template_page_suffix = '''
+        <img src="bgg_logo.jpg">
         </body>
     </html>'''
 
@@ -104,7 +105,7 @@ def short_description(description):
 
 
 class BGGRow:
-    def __init__(self, rank, name, year, description, image_link, rating, votes):
+    def __init__(self, rank, name, year, description, image_link, rating, votes, designer=""):
         self.rank = int(rank)
         self.rank_marker = "NEW!!"
         self.name = name
@@ -115,6 +116,7 @@ class BGGRow:
         self.rating_marker = ""
         self.votes = int(votes)
         self.votes_marker = ""
+        self.designer = designer or ""
 
     def update(self, other):
         self.set_rank_marker(other.rank)
@@ -128,6 +130,8 @@ class BGGRow:
             self.image_link = other.image_link
         self.set_votes_marker(other.votes)
         self.votes = other.votes
+        if hasattr(other, 'designer') and other.designer:
+            self.designer = other.designer
 
     def set_votes_marker(self, new_votes):
         difference = new_votes - self.votes
@@ -161,13 +165,25 @@ class BGGRow:
         else:
             return '>'
 
+    def tooltip_text(self):
+        desc = clean_description(self.description)
+        designer = getattr(self, "designer", "")
+        if designer:
+            prefix = designer if designer.lower().startswith("designer") else f"Designer: {designer}"
+            if desc.startswith(prefix) or desc.startswith(designer):
+                return desc
+            if desc:
+                return f"{prefix}\n\n{desc}"
+            return prefix
+        return desc
+
     def html_str(self, rating_bg=""):
         return html_row_template_format % (self.rank_class(), self.rank, self.rank_marker,
                                            self.name[:37] + "..." if len(self.name) > 37 else self.name,
                                            self.image_link,
                                            self.name,
                                            self.name[:37] + "..." if len(self.name) > 37 else self.name, self.year,
-                                           clean_description(self.description),
+                                           self.tooltip_text(),
                                            rating_bg, self.rating, self.rating_marker,
                                            self.votes, self.votes_marker)
 
@@ -389,6 +405,18 @@ def parse_games(root):
         desc = game.findtext("description", "")
         thumb = game.findtext("thumbnail", "")
 
+        # Designer: v1 uses <boardgamedesigner>, v2 uses <link type="boardgamedesigner" value="..."/>
+        designers = []
+        for d in game.findall("link[@type='boardgamedesigner']"):
+            val = d.get("value") or d.text
+            if val and val not in designers:
+                designers.append(val)
+        for d in game.findall("boardgamedesigner"):
+            val = d.text or d.get("value")
+            if val and val not in designers:
+                designers.append(val)
+        designer = ", ".join(designers)
+
         obj_id = game.get("objectid") or game.get("id")
         data["/boardgame/%s" % obj_id] = BGGRow(
             rank if rank.isdigit() else 10000,
@@ -397,7 +425,8 @@ def parse_games(root):
             short_description(desc),
             thumb,
             bayes,
-            votes)
+            votes,
+            designer=designer)
     return data
 
 
@@ -446,14 +475,46 @@ def fetch_actual_data(pickled_data, watchlist_ids):
     return actual_data
 
 
+def write_file_table(fil, title, elements):
+    fil.write("%s\n" % title)
+    if not elements:
+        return
+    rank_sorted = sorted(elements, key=lambda e: e.rank)
+    factor = (rank_sorted[0].rank - 1) // 100
+    start_rank, end_rank = rank_range(rank_sorted[0].rank)
+    fil.write("%d-%d\n" % (start_rank, end_rank))
+    for e in rank_sorted:
+        actual_factor = (e.rank - 1) // 100
+        if factor < actual_factor:
+            factor = actual_factor
+            start_rank, end_rank = rank_range(e.rank)
+            fil.write("\n%d-%d\n" % (start_rank, end_rank))
+        fil.write(str(e) + "\n")
+
+
 def write_file(fil, data, outdated):
-    for e in sorted(data.values(), key=lambda e: e.rank):
-        if e.rank <= top_ranks:
-            fil.write(str(e) + "\n")
+    if isinstance(data, dict):
+        elements = list(data.values())
+    else:
+        elements = list(data)
+
+    top_games = [v for v in elements if v.rank <= top_ranks]
+    first = True
+    if top_games:
+        write_file_table(fil, "Top %d" % top_ranks, top_games)
+        first = False
+
+    watchlist_games = [v for v in elements if v.rank > top_ranks]
+    if watchlist_games:
+        if not first:
+            fil.write("\n")
+        write_file_table(fil, "Watchlist", watchlist_games)
+        first = False
+
     if outdated:
-        fil.write("\nOutdated:\n")
-        for e in outdated:
-            fil.write(str(e) + "\n")
+        if not first:
+            fil.write("\n")
+        write_file_table(fil, "Outdated", outdated)
 
 
 def rank_range(rank):
@@ -559,6 +620,9 @@ def main(data_dir):
 
     with open(pickle_file, 'wb') as fil:
         pickle.dump(pickled_data, fil)
+
+    with open(latest_rating_file, 'r') as fil:
+        print(fil.read(), end='')
 
 
 if __name__ == '__main__':

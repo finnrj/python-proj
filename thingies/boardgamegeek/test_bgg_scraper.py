@@ -384,6 +384,16 @@ class TestHTMLAndCSS(unittest.TestCase):
         self.assertIn("<h3>101-200</h3>", content)
         self.assertIn("<h2>Outdated</h2>", content)
         self.assertIn("<h3>101-200</h3>", content)
+        self.assertIn('<img src="bgg_logo.jpg">', content)
+
+    def test_bgg_logo_at_bottom_of_page(self):
+        buf = io.StringIO()
+        bgg_scraper.write_html(buf, {}, [])
+        content = buf.getvalue()
+        self.assertIn('<img src="bgg_logo.jpg">', content)
+        # Ensure it appears towards the end of the HTML output
+        self.assertTrue(content.find('<img src="bgg_logo.jpg">') > content.find('<body>'))
+        self.assertTrue(content.find('<img src="bgg_logo.jpg">') < content.find('</html>'))
 
     def test_css_hover_enlarged_image_rules(self):
         css_path = os.path.join(pkg_dir, "table.css")
@@ -450,6 +460,247 @@ class TestCleanDescription(unittest.TestCase):
         self.assertNotIn("—description from the publisher", html_str)
         self.assertNotIn("description from the publisher", html_str)
         self.assertIn("In Ark Nova, you will plan and design a modern zoo.", html_str)
+
+
+class TestDesignerTooltipAndParsing(unittest.TestCase):
+
+    def test_bggrow_tooltip_text_with_designer(self):
+        row = bgg_scraper.BGGRow(
+            rank=1,
+            name="Brass: Birmingham",
+            year="(2018)",
+            description="Brass: Birmingham is an economic strategy game.",
+            image_link="brass.jpg",
+            rating="8.390",
+            votes="60000",
+            designer="Gavan Brown, Matt Tolman, Martin Wallace"
+        )
+        tooltip = row.tooltip_text()
+        self.assertTrue(tooltip.startswith("Designer: Gavan Brown, Matt Tolman, Martin Wallace\n\n"))
+        self.assertIn("Brass: Birmingham is an economic strategy game.", tooltip)
+
+        html_str = row.html_str()
+        self.assertIn("Designer: Gavan Brown, Matt Tolman, Martin Wallace\n\nBrass: Birmingham is an economic strategy game.", html_str)
+
+    def test_bggrow_tooltip_text_without_designer(self):
+        row = bgg_scraper.BGGRow(
+            rank=2,
+            name="Mystery Game",
+            year="(2020)",
+            description="A game without known designer.",
+            image_link="mystery.jpg",
+            rating="7.5",
+            votes="1000",
+            designer=""
+        )
+        self.assertEqual("A game without known designer.", row.tooltip_text())
+
+    def test_bggrow_tooltip_text_already_prefixed_designer(self):
+        row = bgg_scraper.BGGRow(
+            rank=3,
+            name="Card Game",
+            year="(2022)",
+            description="Fun card game.",
+            image_link="card.jpg",
+            rating="8.0",
+            votes="2000",
+            designer="Designer: Jane Doe"
+        )
+        self.assertEqual("Designer: Jane Doe\n\nFun card game.", row.tooltip_text())
+
+    def test_bggrow_update_preserves_and_updates_designer(self):
+        row1 = bgg_scraper.BGGRow(
+            rank=1,
+            name="Game",
+            year="(2020)",
+            description="Old desc",
+            image_link="img.jpg",
+            rating="8.0",
+            votes="1000"
+        )
+        row2 = bgg_scraper.BGGRow(
+            rank=1,
+            name="Game",
+            year="(2020)",
+            description="New desc",
+            image_link="img.jpg",
+            rating="8.1",
+            votes="1100",
+            designer="Famous Designer"
+        )
+        row1.update(row2)
+        self.assertEqual("Famous Designer", row1.designer)
+        self.assertTrue(row1.tooltip_text().startswith("Designer: Famous Designer\n\n"))
+
+    def test_parse_games_xmlapi2_designers(self):
+        xml_content = (
+            '<?xml version="1.0" encoding="utf-8"?>\n'
+            '<items termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">\n'
+            '  <item type="boardgame" id="224517">\n'
+            '    <name type="primary" value="Brass: Birmingham" />\n'
+            '    <yearpublished value="2018" />\n'
+            '    <description>Brass: Birmingham description.</description>\n'
+            '    <thumbnail>https://example.com/brass.jpg</thumbnail>\n'
+            '    <link type="boardgamedesigner" id="3307" value="Gavan Brown" />\n'
+            '    <link type="boardgamedesigner" id="87740" value="Matt Tolman" />\n'
+            '    <link type="boardgamedesigner" id="429" value="Martin Wallace" />\n'
+            '    <link type="boardgameartist" id="1" value="Some Artist" />\n'
+            '    <statistics page="1">\n'
+            '      <ratings>\n'
+            '        <usersrated value="60000" />\n'
+            '        <bayesaverage value="8.390" />\n'
+            '        <ranks>\n'
+            '          <rank type="subtype" id="1" name="boardgame" value="1" />\n'
+            '        </ranks>\n'
+            '      </ratings>\n'
+            '    </statistics>\n'
+            '  </item>\n'
+            '</items>'
+        )
+        from xml.etree import ElementTree
+        root = ElementTree.fromstring(xml_content)
+        games = bgg_scraper.parse_games(root)
+
+        self.assertIn("/boardgame/224517", games)
+        game_row = games["boardgame/224517" if "boardgame/224517" in games else "/boardgame/224517"]
+        self.assertEqual("Gavan Brown, Matt Tolman, Martin Wallace", game_row.designer)
+        self.assertTrue(game_row.tooltip_text().startswith("Designer: Gavan Brown, Matt Tolman, Martin Wallace\n\n"))
+
+    def test_parse_games_xmlapi1_designers(self):
+        xml_content = (
+            '<?xml version="1.0" encoding="utf-8"?>\n'
+            '<boardgames termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">\n'
+            '  <boardgame objectid="174430">\n'
+            '    <name primary="true">Gloomhaven</name>\n'
+            '    <yearpublished>2017</yearpublished>\n'
+            '    <description>Gloomhaven description.</description>\n'
+            '    <thumbnail>https://example.com/gloom.jpg</thumbnail>\n'
+            '    <boardgamedesigner objectid="69802">Isaac Childres</boardgamedesigner>\n'
+            '    <statistics page="1">\n'
+            '      <ratings>\n'
+            '        <usersrated>68000</usersrated>\n'
+            '        <bayesaverage>8.288</bayesaverage>\n'
+            '        <ranks>\n'
+            '          <rank type="subtype" id="1" name="boardgame" value="4" />\n'
+            '        </ranks>\n'
+            '      </ratings>\n'
+            '    </statistics>\n'
+            '  </boardgame>\n'
+            '</boardgames>'
+        )
+        from xml.etree import ElementTree
+        root = ElementTree.fromstring(xml_content)
+        games = bgg_scraper.parse_games(root)
+
+        self.assertIn("/boardgame/174430", games)
+        game_row = games["/boardgame/174430"]
+        self.assertEqual("Isaac Childres", game_row.designer)
+        self.assertTrue(game_row.tooltip_text().startswith("Designer: Isaac Childres\n\n"))
+
+
+class TestWriteFileAndPlainTextOutput(unittest.TestCase):
+
+    def test_write_file_table_adds_headers_for_each_100_ranks(self):
+        rows = [
+            bgg_scraper.BGGRow(1, "Game 1", "(2020)", "Desc 1", "img1.jpg", "8.5", "1000"),
+            bgg_scraper.BGGRow(50, "Game 50", "(2020)", "Desc 50", "img50.jpg", "8.2", "800"),
+            bgg_scraper.BGGRow(100, "Game 100", "(2020)", "Desc 100", "img100.jpg", "8.0", "700"),
+            bgg_scraper.BGGRow(105, "Game 105", "(2020)", "Desc 105", "img105.jpg", "7.9", "600"),
+            bgg_scraper.BGGRow(180, "Game 180", "(2020)", "Desc 180", "img180.jpg", "7.8", "500"),
+            bgg_scraper.BGGRow(320, "Game 320", "(2020)", "Desc 320", "img320.jpg", "7.5", "400"),
+        ]
+        buf = io.StringIO()
+        bgg_scraper.write_file_table(buf, "Test Section", rows)
+        content = buf.getvalue()
+
+        # Should contain section title
+        self.assertTrue(content.startswith("Test Section\n"))
+
+        # Should contain rank range headers for ranges with games present
+        self.assertIn("1-100\n", content)
+        self.assertIn("101-200\n", content)
+        self.assertIn("301-400\n", content)
+        # Should not contain rank range header for range without games
+        self.assertNotIn("201-300", content)
+
+        # Check order of headers
+        pos_title = content.find("Test Section")
+        pos_100 = content.find("1-100")
+        pos_200 = content.find("101-200")
+        pos_400 = content.find("301-400")
+        self.assertTrue(pos_title < pos_100 < pos_200 < pos_400)
+
+    def test_write_file_multiple_sections(self):
+        data = {
+            "/boardgame/1": bgg_scraper.BGGRow(1, "Top Game", "(2021)", "Top", "top.jpg", "8.5", "1000"),
+            "/boardgame/2": bgg_scraper.BGGRow(150, "Watchlist Game", "(2021)", "Watch", "watch.jpg", "7.5", "500"),
+        }
+        outdated = [
+            bgg_scraper.BGGRow(200, "Old Game", "(2010)", "Old", "old.jpg", "7.0", "200")
+        ]
+        buf = io.StringIO()
+        bgg_scraper.write_file(buf, data, outdated)
+        content = buf.getvalue()
+
+        self.assertIn("Top 100\n", content)
+        self.assertIn("1-100\n", content)
+        self.assertIn("Watchlist\n", content)
+        self.assertIn("101-200\n", content)
+        self.assertIn("Outdated\n", content)
+        self.assertIn("101-200\n", content)
+
+        # Verify games are listed under appropriate sections
+        pos_top = content.find("Top 100")
+        pos_top_game = content.find("Top Game")
+        pos_watch = content.find("Watchlist")
+        pos_watch_game = content.find("Watchlist Game")
+        pos_outdated = content.find("Outdated")
+        pos_old_game = content.find("Old Game")
+
+        self.assertTrue(pos_top < pos_top_game < pos_watch < pos_watch_game < pos_outdated < pos_old_game)
+
+    def test_write_file_equivalence_with_write_html_sections_and_ranges(self):
+        data = {
+            "/boardgame/1": bgg_scraper.BGGRow(1, "Top Game", "(2021)", "Top", "top.jpg", "8.5", "1000"),
+            "/boardgame/150": bgg_scraper.BGGRow(150, "Watchlist 1", "(2021)", "W1", "w1.jpg", "7.5", "500"),
+            "/boardgame/250": bgg_scraper.BGGRow(250, "Watchlist 2", "(2021)", "W2", "w2.jpg", "7.2", "300"),
+        }
+        outdated = [
+            bgg_scraper.BGGRow(500, "Old Game", "(2010)", "Old", "old.jpg", "7.0", "200")
+        ]
+        text_buf = io.StringIO()
+        html_buf = io.StringIO()
+
+        bgg_scraper.write_file(text_buf, data, outdated)
+        bgg_scraper.write_html(html_buf, data, outdated)
+
+        text_content = text_buf.getvalue()
+        html_content = html_buf.getvalue()
+
+        # Both have Top 100 and 1-100
+        self.assertIn("Top 100", text_content)
+        self.assertIn("<h2>Top 100</h2>", html_content)
+        self.assertIn("1-100", text_content)
+        self.assertIn("<h3>1-100</h3>", html_content)
+
+        # Both have Watchlist and 101-200, 201-300
+        self.assertIn("Watchlist", text_content)
+        self.assertIn("<h2>Watchlist</h2>", html_content)
+        self.assertIn("101-200", text_content)
+        self.assertIn("<h3>101-200</h3>", html_content)
+        self.assertIn("201-300", text_content)
+        self.assertIn("<h3>201-300</h3>", html_content)
+
+        # Both have Outdated and 401-500
+        self.assertIn("Outdated", text_content)
+        self.assertIn("<h2>Outdated</h2>", html_content)
+        self.assertIn("401-500", text_content)
+        self.assertIn("<h3>401-500</h3>", html_content)
+
+    def test_write_file_empty(self):
+        buf = io.StringIO()
+        bgg_scraper.write_file(buf, {}, [])
+        self.assertEqual("", buf.getvalue())
 
 
 if __name__ == "__main__":
