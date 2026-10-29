@@ -34,7 +34,7 @@ html_template_page_prefix = '''<html>
         <body>
         '''
 
-html_row_template_format = '''<tr">
+html_row_template_format = '''<tr>
         <td%s%3d %-6s</td>
         <td>
             <div class="container">

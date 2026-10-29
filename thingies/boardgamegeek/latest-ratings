@@ -1,100 +1,321 @@
-   1       , Brass: Birmingham                        (2018), 8.390         ,   60677 (0)
-   2       , Ark Nova                                 (2021), 8.355         ,   63671 (0)
-   3       , Pandemic Legacy: Season 1                (2015), 8.343         ,   57940 (0)
-   4       , Gloomhaven                               (2017), 8.288         ,   67886 (0)
-   5       , Dune: Imperium – Uprising                (2023), 8.270         ,   20743 (0)
-   6       , Dune: Imperium                           (2020), 8.218         ,   60215 (0)
-   7       , Twilight Imperium: Fourth Edition        (2017), 8.217         ,   29201 (0)
-   8       , War of the Ring: Second Edition          (2011), 8.200         ,   25680 (0)
-   9       , Terraforming Mars                        (2016), 8.179         ,  115449 (0)
-  10       , Star Wars: Rebellion                     (2016), 8.169         ,   36997 (0)
-  11       , Spirit Island                            (2017), 8.141         ,   65126 (0)
-  12       , Gloomhaven: Jaws of the Lion             (2020), 8.088         ,   42178 (0)
-  13       , Gaia Project                             (2017), 8.082         ,   31980 (0)
-  14       , SETI: Search for Extraterrestrial Int... (2024), 8.059         ,   22725 (0)
-  15       , Slay the Spire: The Board Game           (2024), 8.051         ,   14756 (0)
-  16 (^96) , Twilight Struggle                        (2005), 8.035 (+0.474),   52561 (+19360)
-  17       , The Castles of Burgundy                  (2011), 8.033         ,   70823 (0)
-  18       , The Lord of the Rings: Duel for Middl... (2024), 8.006         ,   22640 (0)
-  19       , Through the Ages: A New Story of Civi... (2015), 8.003         ,   35265 (0)
-  20       , Frosthaven                               (2022), 7.971         ,   10631 (0)
-  21       , Great Western Trail                      (2016), 7.965         ,   44240 (0)
-  22       , Brass: Lancashire                        (2007), 7.959         ,   27850 (0)
-  23       , Eclipse: Second Dawn for the Galaxy      (2020), 7.956         ,   17998 (0)
-  24       , 7 Wonders Duel                           (2015), 7.949         ,  111030 (0)
-  25       , Nemesis                                  (2018), 7.945         ,   38494 (0)
-  26       , A Feast for Odin                         (2016), 7.941         ,   34344 (0)
-  27       , Scythe                                   (2016), 7.937         ,   94943 (0)
-  28       , Clank!: Legacy – Acquisitions Incorpo... (2019), 7.929         ,   11639 (0)
-  29       , Concordia                                (2013), 7.922         ,   46596 (0)
-  30       , Lost Ruins of Arnak                      (2020), 7.920         ,   59268 (0)
-  31       , Great Western Trail (Second Edition)     (2021), 7.903         ,   18791 (0)
-  32       , Sky Team                                 (2023), 7.890         ,   35341 (0)
-  33       , Arkham Horror: The Card Game             (2016), 7.888         ,   48356 (0)
-  34       , Root                                     (2018), 7.880         ,   66632 (0)
-  35       , Orléans                                  (2014), 7.858         ,   36314 (0)
-  36       , Terra Mystica                            (2012), 7.854         ,   51501 (0)
-  37       , Too Many Bones                           (2017), 7.843         ,   17637 (0)
-  38       , Wingspan                                 (2019), 7.839         ,  116120 (0)
-  39       , Mage Knight Board Game                   (2011), 7.837         ,   35474 (0)
-  40       , Barrage                                  (2019), 7.836         ,   22409 (0)
-  41       , Hegemony: Lead Your Class to Victory     (2023), 7.829         ,   13128 (0)
-  42       , Kanban EV                                (2020), 7.811         ,   10727 (0)
-  43       , Crokinole                                (1876), 7.804         ,   21633 (0)
-  44       , Viticulture Essential Edition            (2015), 7.802         ,   56178 (0)
-  45       , The Crew: Mission Deep Sea               (2021), 7.799         ,   26903 (0)
-  46       , Clank!: Catacombs                        (2022), 7.798         ,   15653 (0)
-  47       , Everdell                                 (2018), 7.797         ,   70473 (0)
-  48       , Heat: Pedal to the Metal                 (2022), 7.795         ,   43766 (0)
-  49       , Ticket to Ride Legacy: Legends of the... (2023), 7.794         ,    7330 (0)
-  50       , Marvel Champions: The Card Game          (2019), 7.789         ,   28460 (0)
-  51       , Harmonies                                (2024), 7.778         ,   33747 (0)
-  52       , The Lord of the Rings: Fate of the Fe... (2025), 7.774         ,   12399 (0)
-  53       , Food Chain Magnate                       (2015), 7.773         ,   23675 (0)
-  54       , Underwater Cities                        (2018), 7.772         ,   23532 (0)
-  55       , Cthulhu: Death May Die                   (2019), 7.763         ,   17572 (0)
-  56       , Pax Pamir: Second Edition                (2019), 7.761         ,   18208 (0)
-  57       , Age of Innovation                        (2023), 7.753         ,    9024 (0)
-  58       , Puerto Rico                              (2002), 7.749         ,   74887 (0)
-  59       , On Mars                                  (2020), 7.740         ,   15358 (0)
-  60       , Pandemic Legacy: Season 0                (2020), 7.737         ,    9793 (0)
-  61       , Cascadia                                 (2021), 7.729         ,   57695 (0)
-  62       , Caverna: The Cave Farmers                (2013), 7.727         ,   37682 (0)
-  63       , Anachrony                                (2017), 7.727         ,   22027 (0)
-  64       , Blood on the Clocktower                  (2022), 7.724         ,   12673 (0)
-  65       , Oathsworn: Into the Deepwood             (2022), 7.723         ,    7111 (0)
-  66       , Agricola                                 (2007), 7.720         ,   77403 (0)
-  67       , Grand Austria Hotel                      (2015), 7.716         ,   25787 (0)
-  68       , Obsession                                (2018), 7.715         ,   18996 (0)
-  69       , Endeavor: Deep Sea                       (2024), 7.715         ,   12006 (0)
-  70       , Blood Rage                               (2015), 7.714         ,   52565 (0)
-  71       , Lisboa                                   (2017), 7.707         ,   13179 (0)
-  72       , The White Castle                         (2023), 7.696         ,   24770 (0)
-  73       , Great Western Trail: New Zealand         (2023), 7.691         ,    7518 (0)
-  74       , Pandemic Legacy: Season 2                (2017), 7.686         ,   18521 (0)
-  75       , Power Grid                               (2004), 7.679         ,   70268 (0)
-  76       , Sleeping Gods                            (2021), 7.678         ,   16466 (0)
-  77       , Tzolk'in: The Mayan Calendar             (2012), 7.678         ,   42982 (0)
-  78       , Voidfall                                 (2023), 7.678         ,    7531 (0)
-  79       , Clans of Caledonia                       (2017), 7.675         ,   23314 (0)
-  80       , Mansions of Madness: Second Edition      (2016), 7.673         ,   40926 (0)
-  81       , Quacks                                   (2018), 7.663         ,   60511 (0)
-  82       , Bomb Busters                             (2024), 7.659         ,   16083 (0)
-  83       , Paladins of the West Kingdom             (2019), 7.657         ,   21067 (0)
-  84       , Le Havre                                 (2008), 7.654         ,   34215 (0)
-  85       , Android: Netrunner                       (2012), 7.652         ,   31488 (0)
-  86       , Agricola (Revised Edition)               (2016), 7.651         ,   21829 (0)
-  87       , The Gallerist                            (2015), 7.650         ,   16804 (0)
-  88       , Star Wars: Imperial Assault              (2014), 7.645         ,   26185 (0)
-  89       , Wingspan Asia                            (2022), 7.639         ,   10723 (0)
-  90       , Darwin's Journey                         (2023), 7.633         ,   12966 (0)
-  91       , Maracaibo                                (2019), 7.620         ,   19017 (0)
-  92       , Revive                                   (2022), 7.619         ,   13507 (0)
-  93       , Mechs vs. Minions                        (2016), 7.616         ,   18560 (0)
-  94       , Final Girl                               (2021), 7.615         ,   12134 (0)
-  95       , Race for the Galaxy                      (2007), 7.614         ,   59546 (0)
-  96       , Kingdom Death: Monster                   (2015), 7.611         ,   10540 (0)
-  97       , The Crew: The Quest for Planet Nine      (2019), 7.609         ,   49666 (0)
-  98       , Five Tribes: The Djinns of Naqala        (2014), 7.606         ,   45826 (0)
-  99       , Azul                                     (2017), 7.602         ,  111549 (0)
- 100       , El Grande                                (1995), 7.595         ,   33777 (0)
+Top 100
+1-100
+   1       , Brass: Birmingham                        (2018), 8.391         ,   60779 (0)
+   2       , Ark Nova                                 (2021), 8.355         ,   63782 (0)
+   3       , Pandemic Legacy: Season 1                (2015), 8.343         ,   57958 (0)
+   4       , Gloomhaven                               (2017), 8.288         ,   67924 (0)
+   5       , Dune: Imperium – Uprising                (2023), 8.272         ,   20863 (0)
+   6       , Dune: Imperium                           (2020), 8.218         ,   60299 (0)
+   7       , Twilight Imperium: Fourth Edition        (2017), 8.218         ,   29244 (0)
+   8       , War of the Ring: Second Edition          (2011), 8.200         ,   25710 (0)
+   9       , Terraforming Mars                        (2016), 8.179         ,  115565 (0)
+  10       , Star Wars: Rebellion                     (2016), 8.168         ,   37029 (0)
+  11       , Spirit Island                            (2017), 8.141         ,   65212 (0)
+  12       , Gloomhaven: Jaws of the Lion             (2020), 8.088         ,   42229 (0)
+  13       , Gaia Project                             (2017), 8.083         ,   32007 (0)
+  14       , SETI: Search for Extraterrestrial Int... (2024), 8.059         ,   22863 (0)
+  15       , Slay the Spire: The Board Game           (2024), 8.052         ,   14842 (0)
+  17       , The Castles of Burgundy                  (2011), 8.033         ,   70878 (0)
+  18       , The Lord of the Rings: Duel for Middl... (2024), 8.006         ,   22765 (0)
+  19       , Through the Ages: A New Story of Civi... (2015), 8.003         ,   35287 (0)
+  20       , Frosthaven                               (2022), 7.970         ,   10660 (0)
+  21       , Great Western Trail                      (2016), 7.965         ,   44258 (0)
+  22       , Brass: Lancashire                        (2007), 7.959         ,   27899 (0)
+  23       , Eclipse: Second Dawn for the Galaxy      (2020), 7.956         ,   18026 (0)
+  24       , 7 Wonders Duel                           (2015), 7.949         ,  111135 (0)
+  25       , Nemesis                                  (2018), 7.945         ,   38547 (0)
+  26       , A Feast for Odin                         (2016), 7.941         ,   34388 (0)
+  27       , Scythe                                   (2016), 7.937         ,   95017 (0)
+  28       , Clank!: Legacy – Acquisitions Incorpo... (2019), 7.929         ,   11656 (0)
+  29       , Concordia                                (2013), 7.922         ,   46636 (0)
+  30       , Lost Ruins of Arnak                      (2020), 7.920         ,   59371 (0)
+  31       , Great Western Trail (Second Edition)     (2021), 7.903         ,   18833 (0)
+  32       , Sky Team                                 (2023), 7.890         ,   35518 (0)
+  33       , Arkham Horror: The Card Game             (2016), 7.888         ,   48378 (0)
+  34       , Root                                     (2018), 7.879         ,   66729 (0)
+  35       , Orléans                                  (2014), 7.858         ,   36344 (0)
+  36       , Terra Mystica                            (2012), 7.854         ,   51527 (0)
+  37       , Too Many Bones                           (2017), 7.843         ,   17661 (0)
+  38       , Wingspan                                 (2019), 7.838         ,  116277 (0)
+  39       , Barrage                                  (2019), 7.837         ,   22447 (0)
+  40       , Mage Knight Board Game                   (2011), 7.836         ,   35489 (0)
+  41       , Hegemony: Lead Your Class to Victory     (2023), 7.829         ,   13174 (0)
+  42       , Kanban EV                                (2020), 7.812         ,   10748 (0)
+  43       , Crokinole                                (1876), 7.805         ,   21654 (0)
+  44       , Viticulture Essential Edition            (2015), 7.801         ,   56220 (0)
+  45       , Clank!: Catacombs                        (2022), 7.799         ,   15729 (0)
+  46       , The Crew: Mission Deep Sea               (2021), 7.799         ,   26959 (0)
+  47       , Everdell                                 (2018), 7.796         ,   70568 (0)
+  48       , Ticket to Ride Legacy: Legends of the... (2023), 7.795         ,    7356 (0)
+  49       , Heat: Pedal to the Metal                 (2022), 7.795         ,   43895 (0)
+  50       , Marvel Champions: The Card Game          (2019), 7.789         ,   28472 (0)
+  51       , Harmonies                                (2024), 7.780         ,   33951 (0)
+  52       , The Lord of the Rings: Fate of the Fe... (2025), 7.777         ,   12546 (0)
+  53       , Food Chain Magnate                       (2015), 7.773         ,   23701 (0)
+  54       , Underwater Cities                        (2018), 7.772         ,   23555 (0)
+  55       , Cthulhu: Death May Die                   (2019), 7.763         ,   17593 (0)
+  56       , Pax Pamir: Second Edition                (2019), 7.762         ,   18240 (0)
+  57       , Age of Innovation                        (2023), 7.754         ,    9049 (0)
+  58       , Puerto Rico                              (2002), 7.749         ,   74913 (0)
+  59       , On Mars                                  (2020), 7.741         ,   15382 (0)
+  60       , Pandemic Legacy: Season 0                (2020), 7.738         ,    9809 (0)
+  61       , Cascadia                                 (2021), 7.729         ,   57801 (0)
+  62       , Caverna: The Cave Farmers                (2013), 7.728         ,   37693 (0)
+  63       , Anachrony                                (2017), 7.727         ,   22039 (0)
+  64       , Blood on the Clocktower                  (2022), 7.725         ,   12732 (0)
+  65       , Oathsworn: Into the Deepwood             (2022), 7.723         ,    7121 (0)
+  66       , Agricola                                 (2007), 7.720         ,   77431 (0)
+  67       , Endeavor: Deep Sea                       (2024), 7.717         ,   12078 (0)
+  68       , Grand Austria Hotel                      (2015), 7.716         ,   25819 (0)
+  69       , Obsession                                (2018), 7.715         ,   19035 (0)
+  70       , Blood Rage                               (2015), 7.714         ,   52596 (0)
+  71       , Lisboa                                   (2017), 7.707         ,   13196 (0)
+  72       , The White Castle                         (2023), 7.696         ,   24877 (0)
+  73       , Great Western Trail: New Zealand         (2023), 7.691         ,    7543 (0)
+  74       , Pandemic Legacy: Season 2                (2017), 7.686         ,   18530 (0)
+  75       , Voidfall                                 (2023), 7.679         ,    7552 (0)
+  76       , Power Grid                               (2004), 7.679         ,   70288 (0)
+  77       , Tzolk'in: The Mayan Calendar             (2012), 7.678         ,   42999 (0)
+  78       , Sleeping Gods                            (2021), 7.678         ,   16490 (0)
+  79       , Clans of Caledonia                       (2017), 7.675         ,   23329 (0)
+  80       , Mansions of Madness: Second Edition      (2016), 7.673         ,   40949 (0)
+  81       , Quacks                                   (2018), 7.663         ,   60575 (0)
+  82       , Bomb Busters                             (2024), 7.660         ,   16233 (0)
+  83       , Paladins of the West Kingdom             (2019), 7.657         ,   21090 (0)
+  84       , Le Havre                                 (2008), 7.654         ,   34226 (0)
+  85       , Android: Netrunner                       (2012), 7.652         ,   31494 (0)
+  86       , Agricola (Revised Edition)               (2016), 7.650         ,   21852 (0)
+  87       , The Gallerist                            (2015), 7.650         ,   16818 (0)
+  88       , Star Wars: Imperial Assault              (2014), 7.645         ,   26193 (0)
+  89       , Wingspan Asia                            (2022), 7.639         ,   10751 (0)
+  90       , Darwin's Journey                         (2023), 7.633         ,   13005 (0)
+  91       , Maracaibo                                (2019), 7.620         ,   19035 (0)
+  92       , Revive                                   (2022), 7.620         ,   13539 (0)
+  93       , Mechs vs. Minions                        (2016), 7.616         ,   18570 (0)
+  94       , Final Girl                               (2021), 7.615         ,   12174 (0)
+  95       , Race for the Galaxy                      (2007), 7.614         ,   59572 (0)
+  96       , Kingdom Death: Monster                   (2015), 7.612         ,   10544 (0)
+  97       , The Crew: The Quest for Planet Nine      (2019), 7.609         ,   49703 (0)
+  98       , Five Tribes: The Djinns of Naqala        (2014), 7.606         ,   45849 (0)
+  99       , Azul                                     (2017), 7.601         ,  111692 (0)
+ 100       , Arkham Horror: The Card Game (Revised... (2021), 7.597         ,    6155 (0)
+
+Watchlist
+101-200
+ 102       , Galactic Cruise                          (2025), 7.594         ,    8339 (0)
+ 106       , Arcs                                     (2024), 7.590         ,   19150 (0)
+ 111       , SCOUT                                    (2019), 7.572         ,   29968 (0)
+ 112 (v96) , Twilight Struggle                        (1999), 7.562 (-0.473),   33234 (-19363)
+ 114       , Beyond the Sun                           (2020), 7.556         ,   18017 (0)
+ 118       , The Search for Planet X                  (2020), 7.544         ,   16205 (0)
+ 129       , Nucleum                                  (2023), 7.522         ,    9159 (0)
+ 130       , Carnegie                                 (2022), 7.518         ,   12353 (0)
+ 133       , Wonderland's War                         (2022), 7.507         ,   11109 (0)
+ 135       , Tigris & Euphrates                       (1997), 7.505         ,   30229 (0)
+ 157       , Civolution                               (2024), 7.442         ,    6845 (0)
+ 184       , Wondrous Creatures                       (2024), 7.388         ,    7842 (0)
+ 197       , Speakeasy                                (2025), 7.368         ,    4737 (0)
+
+201-300
+ 215       , Earth                                    (2023), 7.352         ,   22194 (0)
+ 221       , Meadow                                   (2021), 7.336         ,   14320 (0)
+ 252       , Faraway                                  (2023), 7.278         ,   20114 (0)
+ 260       , Nidavellir                               (2020), 7.264         ,   16631 (0)
+ 265       , So Clover!                               (2021), 7.253         ,   12969 (0)
+ 269       , Coimbra                                  (2018), 7.246         ,   13137 (0)
+ 273       , Magical Athlete                          (2025), 7.238         ,   10391 (0)
+ 289       , Rebirth                                  (2024), 7.219         ,    8280 (0)
+
+301-400
+ 316       , Nippon: Zaibatsu                         (2026), 7.192         ,    3417 (0)
+ 330       , Mind MGMT: The Psychic Espionage “Gam... (2021), 7.176         ,    7584 (0)
+
+401-500
+ 423       , The Old King's Crown                     (2025), 7.072         ,    4824 (0)
+ 452       , Ready Set Bet                            (2022), 7.054         ,    9354 (0)
+ 467       , Eternal Decks                            (2025), 7.044         ,    3529 (0)
+ 484       , Kutná Hora: The City of Silver           (2023), 7.030         ,    5742 (0)
+ 485       , Knarr                                    (2023), 7.029         ,    8926 (0)
+ 495       , Arkham Horror                            (2005), 7.019         ,   40584 (0)
+
+501-600
+ 526       , Caper: Europe                            (2022), 6.987         ,    6252 (0)
+ 530       , Through the Desert                       (1998), 6.982         ,   17008 (0)
+ 558       , Barcelona                                (2023), 6.958         ,    4860 (0)
+
+701-800
+ 713       , First Rat                                (2022), 6.840         ,    5066 (0)
+ 799       , Sleeping Gods: Distant Skies             (2023), 6.778         ,    2231 (0)
+
+1001-1100
+1059       , Inferno                                  (2024), 6.634         ,    2650 (0)
+
+1101-1200
+1104       , Wingspan Pocket                          (2026), 6.608         ,    2347 (0)
+
+1201-1300
+1258       , Pixies                                   (2024), 6.537         ,    4877 (0)
+
+1301-1400
+1326       , Bad Company                              (2021), 6.511         ,    3646 (0)
+1338       , Arborea                                  (2023), 6.507         ,    2487 (0)
+1395       , Vagrantsong                              (2022), 6.483         ,    2831 (0)
+
+1501-1600
+1539       , Dewan                                    (2025), 6.424         ,    2460 (0)
+1597       , Last Light                               (2023), 6.405         ,    2435 (0)
+
+1601-1700
+1612       , Tenby                                    (2025), 6.400         ,    1820 (0)
+
+1701-1800
+1794       , HUANG                                    (2024), 6.331         ,    1262 (0)
+
+1801-1900
+1810       , Origin Story                             (2025), 6.327         ,    2436 (0)
+
+1901-2000
+1919       , Corps of Discovery: A Game Set in the... (2025), 6.299         ,    1513 (0)
+1941       , Orichalcum                               (2022), 6.293         ,    2485 (0)
+1952       , Fractured Sky                            (2024), 6.290         ,    1819 (0)
+1977       , Daitoshi                                 (2024), 6.279         ,    1709 (0)
+
+2001-2100
+2090       , Fate: Defenders of Grimheim              (2025), 6.243         ,    1216 (0)
+
+2101-2200
+2139       , Drillers                                 (2026), 6.233         ,    1225 (0)
+
+2401-2500
+2437       , Avalon: The Riven Veil                   (2026), 6.156         ,     923 (0)
+
+2701-2800
+2776       , Entropy                                  (2026), 6.086         ,     940 (0)
+
+3001-3100
+3012       , Rocketmen                                (2021), 6.041         ,    2014 (0)
+3072       , Karvi                                    (2023), 6.030         ,    1099 (0)
+
+3101-3200
+3176       , Queen Alice                              (2026), 6.008         ,     596 (0)
+3197       , Enchanted Ivy                            (2026), 6.004         ,     571 (0)
+
+3401-3500
+3495       , The Voynich Puzzle                       (2025), 5.958         ,     837 (0)
+
+3601-3700
+3688       , Gunsen: The Battle for Toshi Ranbo       (2026), 5.931         ,     629 (0)
+
+3801-3900
+3900       , Neko Syndicate                           (2024), 5.904         ,     754 (0)
+
+4301-4400
+4397       , Night at the Zoo                         (2026), 5.847         ,     590 (0)
+
+4401-4500
+4426       , From the Moon                            (2024), 5.844         ,     567 (0)
+4431       , Coming of Age                            (2025), 5.843         ,     782 (0)
+
+5001-5100
+5010       , Thebai                                   (2025), 5.789         ,     478 (0)
+
+5101-5200
+5130       , Brass: Pittsburgh                        (2027), 5.779         ,     455 (0)
+
+5201-5300
+5217       , Madcala                                  (2025), 5.772         ,     411 (0)
+
+5401-5500
+5465       , Tax the Rich                             (2025), 5.756         ,     642 (0)
+
+6101-6200
+6169       , DECKO                                    (2026), 5.713         ,     288 (0)
+
+6401-6500
+6479       , Greylune                                 (2026), 5.698         ,     270 (0)
+
+6901-7000
+6978       , Greenwood                                (2026), 5.676         ,     192 (0)
+
+7101-7200
+7182       , Final Titan                              (2026), 5.667         ,     231 (0)
+
+7801-7900
+7872       , Kingdom Come: Deliverance – The Board... (2026), 5.642         ,     176 (0)
+
+7901-8000
+7933       , Click A Tree                             (2025), 5.640         ,     272 (0)
+
+8201-8300
+8227       , Yucatan                                  (2023), 5.632         ,     455 (0)
+
+8701-8800
+8702       , Firefighters on Duty                     (2025), 5.618         ,     182 (0)
+
+8901-9000
+8920       , Citadels Duel                            (2026), 5.614         ,     262 (0)
+
+9101-9200
+9126       , The Great Library                        (2026), 5.610         ,     158 (0)
+
+9301-9400
+9322       , Timespan                                 (2026), 5.606         ,     140 (0)
+9370       , Gaudí                                    (2026), 5.605         ,     168 (0)
+
+9501-9600
+9505       , Medico                                   (2026), 5.602         ,     149 (0)
+
+9801-9900
+9852       , Níjar                                    (2026), 5.596         ,     106 (0)
+
+9901-10000
+10000       , Ovoo                                     (2022), 0.000         ,       3 (0)
+10000       , Andromeda's Edge: Deluxe Edition         (2024), 6.311         ,     840 (0)
+10000       , Niraya                                   (2027), 0.000         ,       0 (0)
+10000       , Harmonies: Crescendo                     (2026), 5.630         ,     145 (0)
+10000       , Too Little Time                          (2028), 0.000         ,       2 (0)
+10000       , The Lord of the Rings: The Return of ... (2027), 0.000         ,       2 (0)
+
+10401-10500
+10420       , -60°                                     (2026), 5.586         ,     105 (0)
+
+10701-10800
+10799       , Tameri                                   (2026), 5.580         ,     104 (0)
+
+10801-10900
+10820       , Spirited                                 (2026), 5.580         ,     382 (0)
+10889       , For the Gods!                            (2026), 5.579         ,     123 (0)
+
+11401-11500
+11454       , Excursions                               (2027), 5.572         ,      86 (0)
+
+11601-11700
+11624       , Kalypso                                  (2026), 5.570         ,     101 (0)
+
+11701-11800
+11713       , Prague Unseen                            (2026), 5.568         ,     113 (0)
+
+11901-12000
+11902       , Braided Skies                            (2026), 5.566         ,      91 (0)
+11934       , Carl von Linné                           (2026), 5.566         ,      79 (0)
+
+12101-12200
+12198       , ASHES: Blackout Protocol                 (2026), 5.562         ,      63 (0)
+
+13301-13400
+13373       , Galileo's Truth                          (2027), 5.551         ,      68 (0)
+
+13401-13500
+13429       , Jackpot: Set the Reel                    (2026), 5.551         ,     194 (0)
+
+16101-16200
+16196       , Chronocritters                           (2026), 5.534         ,      44 (0)
+
+16801-16900
+16871       , Melodies                                 (2026), 5.531         ,      42 (0)
+
+18101-18200
+18200       , The Danes                                (2027), 5.526         ,      36 (0)
+
+27401-27500
+27438       , Nemesis: Legacy                          (2028), 5.497         ,      49 (0)

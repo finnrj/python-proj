@@ -419,6 +419,33 @@ class TestHTMLAndCSS(unittest.TestCase):
         self.assertIn("word-wrap: break-word", css_content)
         self.assertIn("text-align: left", css_content)
 
+    def test_css_table_layout_and_column_alignment_rules(self):
+        css_path = os.path.join(pkg_dir, "table.css")
+        with open(css_path, "r", encoding="utf-8") as f:
+            css_content = f.read()
+
+        self.assertIn("table-layout: fixed", css_content)
+        self.assertIn(".zui-table thead th:nth-child(1)", css_content)
+        self.assertIn(".zui-table thead th:nth-child(2)", css_content)
+        self.assertIn(".zui-table thead th:nth-child(3)", css_content)
+        self.assertIn(".zui-table thead th:nth-child(4)", css_content)
+        self.assertIn(".zui-table thead th:nth-child(5)", css_content)
+        self.assertIn("text-align: left", css_content)
+
+    def test_bggrow_html_str_row_tag(self):
+        row = bgg_scraper.BGGRow(
+            rank=1,
+            name="Brass: Birmingham",
+            year="(2018)",
+            description="Strategy game",
+            image_link="brass.jpg",
+            rating="8.390",
+            votes="60000"
+        )
+        html_str = row.html_str()
+        self.assertTrue(html_str.startswith("<tr>"))
+        self.assertNotIn('<tr"', html_str)
+
 
 class TestCleanDescription(unittest.TestCase):
 

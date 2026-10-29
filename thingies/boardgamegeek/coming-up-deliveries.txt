@@ -10,10 +10,11 @@
 2026.12 Wonderlands War extension
 -----------------------------------
 2027.01 The Great Library
-2027.01 Fractured Sky Awakening
 
 2027.03 Let's go to France
 2027.03 Nippon Zaibatsu Genro
+
+2027.04 Fractured Sky Awakening
 
 2027.05 Brass Pittsburg
 
