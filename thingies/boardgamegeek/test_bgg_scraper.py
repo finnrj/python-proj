@@ -432,6 +432,17 @@ class TestHTMLAndCSS(unittest.TestCase):
         self.assertIn(".zui-table thead th:nth-child(5)", css_content)
         self.assertIn("text-align: left", css_content)
 
+    def test_css_table_font_size_and_reduced_width(self):
+        css_path = os.path.join(pkg_dir, "table.css")
+        with open(css_path, "r", encoding="utf-8") as f:
+            css_content = f.read()
+
+        # Verify larger font size (18px)
+        self.assertIn("18px", css_content)
+        # Verify reduced table width (60% or max-width constraint)
+        self.assertIn("width: 60%", css_content)
+        self.assertIn("max-width: 800px", css_content)
+
     def test_bggrow_html_str_row_tag(self):
         row = bgg_scraper.BGGRow(
             rank=1,
