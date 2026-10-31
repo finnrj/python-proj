@@ -402,7 +402,7 @@ class TestHTMLAndCSS(unittest.TestCase):
 
         self.assertIn(".image:hover", css_content)
         self.assertIn("transform:", css_content)
-        self.assertIn("max-width: 60px", css_content)
+        self.assertIn("max-width: 90px", css_content)
         self.assertIn("h2, h3", css_content)
 
     def test_css_description_tooltip_rules(self):
@@ -432,16 +432,18 @@ class TestHTMLAndCSS(unittest.TestCase):
         self.assertIn(".zui-table thead th:nth-child(5)", css_content)
         self.assertIn("text-align: left", css_content)
 
-    def test_css_table_font_size_and_reduced_width(self):
+    def test_css_table_font_size_and_min_width(self):
         css_path = os.path.join(pkg_dir, "table.css")
         with open(css_path, "r", encoding="utf-8") as f:
             css_content = f.read()
 
-        # Verify larger font size (18px)
-        self.assertIn("18px", css_content)
-        # Verify reduced table width (60% or max-width constraint)
-        self.assertIn("width: 60%", css_content)
-        self.assertIn("max-width: 800px", css_content)
+        # Verify larger font size (20px)
+        self.assertIn("20px", css_content)
+        # Verify table fills at least 75% of width
+        self.assertIn("min-width: 75%", css_content)
+        self.assertIn("width: 75%", css_content)
+        # Verify row heights / padding extended
+        self.assertIn("padding: 12px 10px", css_content)
 
     def test_bggrow_html_str_row_tag(self):
         row = bgg_scraper.BGGRow(
